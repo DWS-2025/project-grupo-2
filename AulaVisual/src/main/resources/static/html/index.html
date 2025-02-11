@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AulaVisual - Home</title>
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+<header>
+    <h1>Welcome to AulaVisual</h1>
+    <nav>
+        <ul>
+            <li><a href="#login">Login</a></li>
+            <li><a href="#about">About Us</a></li>
+        </ul>
+    </nav>
+</header>
+<main>
+    <section id="intro">
+        <h2>About AulaVisual</h2>
+        <p>AulaVisual is a platform dedicated to providing high-quality educational content. Our mission is to make learning accessible and engaging for everyone.</p>
+        <img src="../images/education.jpg" alt="Education Image">
+    </section>
+    <section id="login">
+        <h2>Login</h2>
+        <button onclick="showLoginForm()">Login</button>
+        <div id="loginForm" style="display:none;">
+            <form>
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username">
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password">
+                <button type="submit">Submit</button>
+            </form>
+        </div>
+    </section>
+    <section id="about">
+        <h2>About Us</h2>
+        <p>We are a team of educators and technologists passionate about creating innovative learning experiences. Our content is designed to be interactive and engaging, helping learners achieve their goals.</p>
+    </section>
+</main>
+<footer>
+    <p>&copy; 2025 AulaVisual. All rights reserved.</p>
+</footer>
+<script src="../js/scripts.js"></script>
+</body>
+</html>
