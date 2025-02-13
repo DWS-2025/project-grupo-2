@@ -15,22 +15,6 @@ public class MainViewController {
         return "index";
     }
 
-    @GetMapping("/login")
-    public String login() {
-
-        return "login";
-    }
-
-    @PostMapping("/login")
-    public String userLogin(Model model,@RequestParam String username, @RequestParam String password) {
-
-        if (username.equals("admin") && password.equals("admin")) {
-            model.addAttribute("userName", username);
-            return "welcome";
-        } else {
-            return "redirect:/login/error";
-        }
-    }
 
     @GetMapping("/login/error")
     public String loginError() {
