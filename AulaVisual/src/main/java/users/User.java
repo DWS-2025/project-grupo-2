@@ -17,26 +17,32 @@ public class User {
     }
 
     public String getRealName() {
+
         return realName;
     }
 
     public String getSurname() {
+
         return surname;
     }
 
     public String getUserName() {
+
         return userName;
     }
 
     public String getPasswordHash() {
+
         return passwordHash;
     }
 
     public void setUserName(String userName) {
+
         this.userName = userName;
     }
 
     public void setPasswordHash(String passwordHash) {
+
         this.passwordHash = passwordHash;
     }
 

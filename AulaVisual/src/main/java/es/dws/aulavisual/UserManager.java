@@ -1,18 +1,17 @@
-package users;
-
-import org.springframework.stereotype.Component;
+package es.dws.aulavisual;
 
 import java.io.*;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
-import es.dws.aulavisual.Paths;
 import java.security.MessageDigest;
+import users.User;
+import org.springframework.stereotype.Component;
 
 @Component
 public class UserManager {
 
-    private final Map <Long,User> userList = new HashMap <>();
+    private final Map <Long, User> userList = new HashMap <>();
     private long nextId;
 
     public UserManager(){
@@ -28,6 +27,7 @@ public class UserManager {
         String passwordHash = hashPassword(password);
         User user = new User(name, surname, userName, passwordHash, role);
         saveUserInDisk(id, user);
+        userList.put(id, user);
     }
 
     private void loadNextId() {
@@ -61,14 +61,18 @@ public class UserManager {
     }
 
     private String hashPassword(String password) {
-
-        MessageDigest messageDigest = null;
         try {
-            messageDigest = MessageDigest.getInstance("SHA-256");
-            messageDigest.update(password.getBytes());
-            return new String(messageDigest.digest());
-        }catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
+            MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
+            byte[] hash = messageDigest.digest(password.getBytes());
+            StringBuilder hexString = new StringBuilder();
+            for (byte b : hash) {
+                String hex = Integer.toHexString(0xff & b);
+                if (hex.length() == 1) hexString.append('0');
+                hexString.append(hex);
+            }
+            return hexString.toString();
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException("SHA-256 algorithm not found", e);
         }
     }
 
@@ -77,7 +81,7 @@ public class UserManager {
         try {
 
             Writer writer = new FileWriter(Paths.USERSMAPPATH, true);
-            String line = id + ";" + user.getRealName() + ";" + user.getSurname() + ";" + user.getUserName() + ";" + user.getPasswordHash() + ";" + Integer.toString(user.getRole());
+            String line = id + ";" + user.getRealName() + ";" + user.getSurname() + ";" + user.getUserName() + ";" + user.getPasswordHash() + ";" + Integer.toString(user.getRole()) + "\n";
             writer.write(line);
             writer.close();
 
@@ -107,5 +111,19 @@ public class UserManager {
 
             throw new RuntimeException(e);
         }
+    }
+
+    public boolean login(String username, String string) {
+
+        for (User user : userList.values()) {
+
+            if (user.getUserName().equals(username) && user.getPasswordHash().equals(string)) {
+
+                System.out.println("User " + username + " logged in");
+                return true;
+            }
+        }
+        System.out.println("User " + username + " not found");
+        return false;
     }
 }
