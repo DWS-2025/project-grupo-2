@@ -28,6 +28,49 @@
     z-index: 0;
 }
 
+
+/* CSS Stylesheet of /mycourses */
+
+/* Contenedor de los cursos */
+.CoursesContainer {
+    display: grid; /* Usamos Grid */
+    grid-template-columns: repeat(2, 1fr); /* Dos columnas */
+    gap: 20px; /* Espacio entre elementos */
+    justify-content: center; /* Centrar los elementos */
+    align-items: center;
+    max-width: 800px;
+    margin: auto;
+    padding: 20px;
+}
+
+/* Cada curso */
+.course {
+    background-color: #f5f5f5;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    text-align: center;
+}
+
+/* Imágenes */
+.course img {
+    width: 100px; /* Ajusta el tamaño de la imagen */
+    height: 100px;
+    object-fit: cover;
+}
+
+/* Descripción del curso */
+.course-description {
+    margin-top: 10px;
+}
+
+/* Texto "Completed" */
+.Courses.Completed {
+    margin-top: 30px;
+    font-size: 20px;
+    font-weight: bold;
+}
+
 header, footer {
     background-color: #333;
     color: #fff;
