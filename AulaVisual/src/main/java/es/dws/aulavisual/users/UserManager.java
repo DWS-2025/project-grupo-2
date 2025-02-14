@@ -128,4 +128,20 @@ public class UserManager {
         System.out.println("User " + username + " not found");
         return false;
     }
+
+    public User getUserById(long id) {
+        return userList.get(id);
+    }
+
+    public long getUserId(String username) {
+
+        for (Map.Entry <Long, User> entry : userList.entrySet()) {
+
+            if (entry.getValue().getUserName().equals(username)) {
+
+                return entry.getKey();
+            }
+        }
+        return -1;
+    }
 }

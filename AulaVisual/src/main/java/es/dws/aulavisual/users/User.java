@@ -6,6 +6,7 @@ public class User {
     private final String surname;
     private String userName;
     private String passwordHash;
+    private String pathToImage;
     private int role; //0 for admin, 1 for teacher, 2 for student
 
     public User(String realName, String surname, String userName, String passwordHash, int role) {
@@ -13,6 +14,7 @@ public class User {
         this.surname = surname;
         this.userName = userName;
         this.passwordHash = passwordHash;
+        this.pathToImage = "src/main/files/users/user.png";
         this.role = role;
     }
 
@@ -44,6 +46,16 @@ public class User {
     public void setPasswordHash(String passwordHash) {
 
         this.passwordHash = passwordHash;
+    }
+
+    public String getPathToImage() {
+
+        return pathToImage;
+    }
+
+    public void setPathToImage(String pathToImage) {
+
+        this.pathToImage = pathToImage;
     }
 
     public int getRole() {
