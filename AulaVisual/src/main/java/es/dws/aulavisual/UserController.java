@@ -1,17 +1,20 @@
 package es.dws.aulavisual;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import es.dws.aulavisual.users.UserManager;
 
 @Controller
 public class UserController {
 
-    @Autowired
-    private UserManager userManager;
+    private final UserManager userManager;
+    public UserController(UserManager userManager) {
+
+        this.userManager = userManager;
+    }
 
     @GetMapping("/login")
     public String login() {
@@ -22,9 +25,7 @@ public class UserController {
     @PostMapping("/login")
     public String userLogin(Model model, @RequestParam String username, @RequestParam String password) {
 
-        String hashedPassword = userManager.hashPassword(password);
-
-        if(userManager.login(username, hashedPassword)){
+        if(userManager.login(username, password)){
 
                 model.addAttribute("userName", username);
                 return "welcome";

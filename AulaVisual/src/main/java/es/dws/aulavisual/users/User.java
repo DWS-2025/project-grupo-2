@@ -1,4 +1,4 @@
-package users;
+package es.dws.aulavisual.users;
 
 public class User {
 

@@ -1,6 +1,6 @@
-package courses;
+package es.dws.aulavisual.courses;
 
-import users.User;
+import es.dws.aulavisual.users.User;
 import java.util.ArrayList;
 import java.util.List;
 

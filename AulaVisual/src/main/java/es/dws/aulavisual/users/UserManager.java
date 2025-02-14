@@ -1,14 +1,15 @@
-package es.dws.aulavisual;
+package es.dws.aulavisual.users;
 
 import java.io.*;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
 import java.security.MessageDigest;
-import users.User;
-import org.springframework.stereotype.Component;
 
-@Component
+import es.dws.aulavisual.Paths;
+import org.springframework.stereotype.Service;
+
+@Service
 public class UserManager {
 
     private final Map <Long, User> userList = new HashMap <>();
@@ -60,7 +61,7 @@ public class UserManager {
         }
     }
 
-    public String hashPassword(String password) {
+    private String hashPassword(String password) {
         try {
             MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
             byte[] hash = messageDigest.digest(password.getBytes());
@@ -81,7 +82,7 @@ public class UserManager {
         try {
 
             Writer writer = new FileWriter(Paths.USERSMAPPATH, true);
-            String line = id + ";" + user.getRealName() + ";" + user.getSurname() + ";" + user.getUserName() + ";" + user.getPasswordHash() + ";" + Integer.toString(user.getRole()) + "\n";
+            String line = id + ";" + user.getRealName() + ";" + user.getSurname() + ";" + user.getUserName() + ";" + user.getPasswordHash() + ";" + user.getRole() + "\n";
             writer.write(line);
             writer.close();
 
@@ -113,11 +114,12 @@ public class UserManager {
         }
     }
 
-    public boolean login(String username, String string) {
+    public boolean login(String username, String password) {
 
+        String passwordHash = hashPassword(password);
         for (User user : userList.values()) {
 
-            if (user.getUserName().equals(username) && user.getPasswordHash().equals(string)) {
+            if (user.getUserName().equals(username) && user.getPasswordHash().equals(passwordHash)) {
 
                 System.out.println("User " + username + " logged in");
                 return true;
