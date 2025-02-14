@@ -60,7 +60,7 @@ public class UserManager {
         }
     }
 
-    private String hashPassword(String password) {
+    public String hashPassword(String password) {
         try {
             MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
             byte[] hash = messageDigest.digest(password.getBytes());
