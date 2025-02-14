@@ -29,6 +29,7 @@
 }
 
 header{
+    height: 50px;
     background-color: #fff;
     color: #333; /* Text */
     padding: 1rem 0;
@@ -37,6 +38,34 @@ header{
     position: fixed;
     z-index: 1000; /* The header will be ahead of the rest of the website */
     border-bottom: 2px solid #ccc; /* Separator line */
+}
+
+header a {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    margin: 0 10px;
+    font-size: 1rem;
+    font-weight: bold;
+    text-decoration: none; /* Not underlined */
+    color: #fff;
+    background-color: #333;
+    border-radius: 5px; /* Rounded corners */
+}
+
+header a:hover {  /* Change color due to the mouse */
+    color: #333;
+    background-color: #fff;
+}
+
+.header-title {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 36px;
+    font-weight: bold;
+    font-family: 'Lora', Arial, sans-serif;
+    color: #333;
 }
 
 footer{
