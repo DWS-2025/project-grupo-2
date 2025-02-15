@@ -174,6 +174,7 @@ public class UserManager {
             user.setUserName(username);
             saveUserInDisk(iserId, user);
             userList.put(iserId, user);
+            saveUserInDisk(iserId, user);
             return true;
         }
 
@@ -190,11 +191,13 @@ public class UserManager {
                 user.setPasswordHash(hashPassword(newPassword));
                 saveUserInDisk(userId, user);
                 userList.put(userId, user);
+                saveUserInDisk(userId, user);
                 return true;
             }else {
 
                 System.out.println("Password incorrect");
                 userList.put(userId, user);
+                saveUserInDisk(userId, user);
             }
         }
         return false;

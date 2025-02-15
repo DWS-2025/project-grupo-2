@@ -38,6 +38,7 @@ public class UserController {
             long userId = userManager.getUserId(username);
             // create a cookie
             Cookie cookie = new Cookie("userId", Long.toString(userId));
+            cookie.setMaxAge(24 * 60 * 60); //1 day
 
             //add cookie to response
             response.addCookie(cookie);
