@@ -31,32 +31,50 @@
 
 /* CSS Stylesheet of /mycourses */
 
+.mycourses {
+    h1, h2 {
+        background-color: #007bff;
+        color: white;
+        padding: 15px;
+        margin: 0;
+        width: 100vw;
+        font-size: 24px;
+        text-align: left;
+        padding-left: 20px;
+    }
+}
+
 /* Contenedor de los cursos */
 .CoursesContainer {
-    display: grid; /* Usamos Grid */
-    grid-template-columns: repeat(2, 1fr); /* Dos columnas */
-    gap: 20px; /* Espacio entre elementos */
-    justify-content: center; /* Centrar los elementos */
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* Two columns */
+    gap: 20px; /* Space between elements */
+    justify-content: center; /* Centre the elements */
     align-items: center;
     max-width: 800px;
-    margin: auto;
+    margin: 20px auto;
     padding: 20px;
 }
 
 /* Cada curso */
 .course {
     background-color: #f5f5f5;
-    padding: 15px;
+    padding: 20px;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     text-align: center;
+    transition: transform 0.2s;
 }
 
 /* Imágenes */
-.course img {
-    width: 100px; /* Ajusta el tamaño de la imagen */
+.course-image {
+    width: 100px; /* Measures of the image */
     height: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     object-fit: cover;
+    margin-bottom: 10px;
 }
 
 /* Descripción del curso */
@@ -64,12 +82,14 @@
     margin-top: 10px;
 }
 
-/* Texto "Completed" */
-.Courses.Completed {
+/*  Cursos Completados */
+.CompletedCourses {
     margin-top: 30px;
     font-size: 20px;
     font-weight: bold;
 }
+
+/* AQUÍ TERMINA CSS Stylesheet of /mycourses */
 
 header, footer {
     background-color: #333;
