@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <title>{{userName}} Profile</title>
@@ -7,11 +7,12 @@
 </head>
 <body>
 <div class="container">
-    <img class="profile-img" src="{{userImage}}" alt="profile image">
+    <img class="profile-img" src="/user_pfp" alt="profile image">
     <form>
-        <input type="text" placeholder="Nombre de usuario">
-        <input type="email" placeholder="Correo electrónico">
-        <input type="password" placeholder="Contraseña">
+        <input type="text" placeholder="{{userName}}" id="username" name="username">
+        <input type="password" placeholder="Contraseña Actual" id="previousPassword" name="previousPassword">
+        <input type="password" placeholder="Nueva Contraseña" id="newPassword" name="newPassword">
+        <input type="file" id="userImg" name="userImg" accept="image/png">
         <div class="buttons">
             <button type="button" class="cancel">Cancelar</button>
             <button type="submit" class="save">Guardar</button>

@@ -117,7 +117,7 @@ public class UserController {
     public String getProfile(Model model, @CookieValue("userId") String userId) {
 
         User currentUser = userManager.getUser(Long.parseLong(userId));
-        model.addAttribute("user", currentUser);
+        model.addAttribute("userName", currentUser.getUserName());
         return "/users/userPage";
     }
 }
