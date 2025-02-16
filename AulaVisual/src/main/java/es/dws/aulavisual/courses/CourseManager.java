@@ -1,45 +1,67 @@
 package es.dws.aulavisual.courses;
 
+import es.dws.aulavisual.Paths;
+import es.dws.aulavisual.users.User;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.Reader;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class CourseManager {
 
-    private List <Course> courses;
+    private final Map <Long, Course> courseList = new HashMap <>();
     private long nextId;
 
     public CourseManager() {
 
-        this.courses = new ArrayList <>();
-        this.nextId = 1; // Initialising nextId to 1
+        loadNextId();
+//        loadCourseFromDisk();
     }
 
-    public void addCourse(String name, String description, int duration, String image) {
+    private void loadNextId() {
 
-        Course course = new Course(nextId++, name, description, duration, image);
-        courses.add(course);
-    }
+        try {
 
-    public List <Course> getCourses() {
+            Reader reader = new FileReader(Paths.CURRENTCOURSEIDPATH);
+            BufferedReader bufferedReader = new BufferedReader(reader);
+            String line = bufferedReader.readLine();
+            nextId = Long.parseLong(line);
+            reader.close();
+        }catch (IOException e) {
 
-        return courses;
-    }
-
-    public Course getCourse(long id) {
-
-        for (Course course : courses) {
-            if(course.getId() == id) {
-                return course;
-            }
+            throw new RuntimeException(e);
         }
-        return null;
     }
 
-    public void removeCourse(long id) {
+//    private void loadCourseFromDisk() {
+//
+//        try {
+//
+//            Reader reader = new FileReader(Paths.USERSMAPPATH);
+//            BufferedReader bufferedReader = new BufferedReader(reader);
+//            String line = bufferedReader.readLine();
+//            while (line != null) {
+//
+//                String[] parts = line.split(";");
+//                long nextId = Long.parseLong(parts[0]);
+//                Course course = new User(parts[1], parts[2], parts[3], parts[4], Integer.parseInt(parts[5]));
+//                courseList.put(nextId, course);
+//                line = bufferedReader.readLine();
+//            }
+//            reader.close();
+//        }catch (IOException e) {
+//
+//            throw new RuntimeException(e);
+//        }
+//    }
 
-        courses.removeIf(course -> course.getId() == id);
+    public void createCourse(String name, String description, int duration, String image) {
+
+
     }
 }
