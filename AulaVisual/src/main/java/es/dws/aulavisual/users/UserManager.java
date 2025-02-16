@@ -188,7 +188,6 @@ public class UserManager {
             if(user.getPasswordHash().equals(hashPassword(prevPassword))) {
 
                 user.setPasswordHash(hashPassword(newPassword));
-                saveUserInDisk(userId, user);
                 userList.put(userId, user);
                 saveUserInDisk(userId, user);
                 return true;
