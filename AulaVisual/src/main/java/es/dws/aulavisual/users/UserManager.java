@@ -202,4 +202,9 @@ public class UserManager {
         }
         return false;
     }
+
+    public User getUser(long userId) {
+
+        return userList.getOrDefault(userId, null);
+    }
 }

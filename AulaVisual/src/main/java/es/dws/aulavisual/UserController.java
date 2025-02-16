@@ -1,5 +1,6 @@
 package es.dws.aulavisual;
 
+import es.dws.aulavisual.Images.ImageManager;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.ResponseEntity;
@@ -11,16 +12,17 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import es.dws.aulavisual.users.UserManager;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.nio.file.Files;
+import es.dws.aulavisual.users.User;
 
 @Controller
 public class UserController {
 
     private final UserManager userManager;
-    public UserController(UserManager userManager) {
+    private final ImageManager imageManager;
+    public UserController(UserManager userManager, ImageManager imageManager) {
 
         this.userManager = userManager;
+        this.imageManager = imageManager;
     }
 
     @GetMapping("/login")
@@ -99,23 +101,23 @@ public class UserController {
 
         if(!image.isEmpty()){
 
-
+            imageManager.saveImage("user-" + Long.parseLong(userId), Long.parseLong(userId), image);
         }
 
         return "/profile";
     }
 
-    @GetMapping("/user_pfp{userId}")
-    public ResponseEntity<Object> getUserPfp(@RequestParam String userId) {
+    @GetMapping("/user_pfp")
+    public ResponseEntity<Object> getUserPfp(@CookieValue("userId") String userId) {
 
-        return null;
+        return imageManager.loadImage("user-" + Long.parseLong(userId), Long.parseLong(userId));
     }
 
     @GetMapping("/profile")
-    public String getProfile(Model model) {
+    public String getProfile(Model model, @CookieValue("userId") String userId) {
 
-        model.addAttribute("userName", "Test");
-        model.addAttribute("userImage", "");
-        return "profile";
+        User currentUser = userManager.getUser(Long.parseLong(userId));
+        model.addAttribute("user", currentUser);
+        return "/users/userPage";
     }
 }
