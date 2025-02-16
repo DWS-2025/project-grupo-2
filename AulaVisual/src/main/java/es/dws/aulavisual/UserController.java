@@ -92,19 +92,19 @@ public class UserController {
 
             if(userManager.updatePassword(Long.parseLong(userId), prevPassword, newPassword)){
 
-                return "redirect:/login";
+                return "redirect:/logout";
             }else{
 
                 return "redirect:/profile/error";
             }
         }
 
-        if(!image.isEmpty()){
+        if(image != null && !image.isEmpty()){
 
             imageManager.saveImage("user-" + Long.parseLong(userId), Long.parseLong(userId), image);
         }
 
-        return "/profile";
+        return "redirect:/profile";
     }
 
     @GetMapping("/user_pfp")

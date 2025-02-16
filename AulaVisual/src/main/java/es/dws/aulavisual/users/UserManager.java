@@ -172,7 +172,6 @@ public class UserManager {
         if(removeUser(iserId)){
 
             user.setUserName(username);
-            saveUserInDisk(iserId, user);
             userList.put(iserId, user);
             saveUserInDisk(iserId, user);
             return true;
