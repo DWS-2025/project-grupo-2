@@ -75,49 +75,64 @@ public class UserController {
     }
 
     @PostMapping("/profile/update")
-    public String updateUser(@RequestParam String username, @RequestParam String prevPassword, @RequestParam String newPassword, MultipartFile image, @CookieValue("userId") String userId) {
+    public String updateUser(@RequestParam String username, @RequestParam String prevPassword, @RequestParam String newPassword, MultipartFile image, @CookieValue(value = "userId", defaultValue = "") String userId) {
 
-        if(!username.isEmpty()){
+        if(!userId.isEmpty()) {
 
-            if(userManager.updateUsername(Long.parseLong(userId), username)){
+            if(!username.isEmpty()) {
 
-                return "redirect:/login";
-            }else{
+                if(userManager.updateUsername(Long.parseLong(userId), username)) {
 
-                return "redirect:/profile/error";
+                    return "redirect:/login";
+                }else {
+
+                    return "redirect:/profile/error";
+                }
+            }
+
+            if(!newPassword.isEmpty()) {
+
+                if(userManager.updatePassword(Long.parseLong(userId), prevPassword, newPassword)) {
+
+                    return "redirect:/logout";
+                }else {
+
+                    return "redirect:/profile/error";
+                }
+            }
+
+            if(image != null && !image.isEmpty()) {
+
+                imageManager.saveImage("user-" + Long.parseLong(userId), Long.parseLong(userId), image);
             }
         }
 
-        if(!newPassword.isEmpty()){
-
-            if(userManager.updatePassword(Long.parseLong(userId), prevPassword, newPassword)){
-
-                return "redirect:/login";
-            }else{
-
-                return "redirect:/profile/error";
-            }
-        }
-
-        if(!image.isEmpty()){
-
-            imageManager.saveImage("user-" + Long.parseLong(userId), Long.parseLong(userId), image);
-        }
-
-        return "/profile";
+        return "redirect:/profile";
     }
 
     @GetMapping("/user_pfp")
-    public ResponseEntity<Object> getUserPfp(@CookieValue("userId") String userId) {
+    public ResponseEntity<Object> getUserPfp(@CookieValue(value = "userId", defaultValue = "") String userId) {
 
-        return imageManager.loadImage("user-" + Long.parseLong(userId), Long.parseLong(userId));
+        if(userId.isEmpty()){
+
+            return ResponseEntity.notFound().build();
+        }else {
+
+            return imageManager.loadImage("user-" + Long.parseLong(userId), Long.parseLong(userId));
+        }
     }
 
     @GetMapping("/profile")
-    public String getProfile(Model model, @CookieValue("userId") String userId) {
+    public String getProfile(Model model, @CookieValue(value = "userId", defaultValue = "") String userId) {
 
-        User currentUser = userManager.getUser(Long.parseLong(userId));
-        model.addAttribute("userName", currentUser.getUserName());
-        return "/users/userPage";
+        if(userId.isEmpty()){
+
+            return "redirect:/login";
+        }else {
+
+            User currentUser = userManager.getUser(Long.parseLong(userId));
+            model.addAttribute("userName", currentUser.getUserName());
+            return "/users/userPage";
+        }
     }
 }

@@ -8,11 +8,11 @@
 <body>
 <div class="container">
     <img class="profile-img" src="/user_pfp" alt="profile image">
-    <form>
+    <form id="userForm" action="/profile/update" method="post" enctype="multipart/form-data">
         <input type="text" placeholder="{{userName}}" id="username" name="username">
-        <input type="password" placeholder="Contraseña Actual" id="previousPassword" name="previousPassword">
+        <input type="password" placeholder="Contraseña Actual" id="prevPassword" name="prevPassword">
         <input type="password" placeholder="Nueva Contraseña" id="newPassword" name="newPassword">
-        <input type="file" id="userImg" name="userImg" accept="image/png">
+        <input type="file" id="image" name="image" accept="image/png">
         <div class="buttons">
             <button type="button" class="cancel">Cancelar</button>
             <button type="submit" class="save">Guardar</button>
