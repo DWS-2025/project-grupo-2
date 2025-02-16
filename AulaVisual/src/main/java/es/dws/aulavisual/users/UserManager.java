@@ -15,7 +15,7 @@ public class UserManager {
     private final Map <Long, User> userList = new HashMap <>();
     private long nextId;
 
-    public UserManager(){
+    public UserManager() {
 
         loadNextId();
         loadUsersFromDisk();
@@ -32,6 +32,7 @@ public class UserManager {
     }
 
     private void loadNextId() {
+
         try {
 
             Reader reader = new FileReader(Paths.CURRENTUSERIDPATH);
@@ -62,17 +63,18 @@ public class UserManager {
     }
 
     private String hashPassword(String password) {
+
         try {
             MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
             byte[] hash = messageDigest.digest(password.getBytes());
             StringBuilder hexString = new StringBuilder();
             for (byte b : hash) {
                 String hex = Integer.toHexString(0xff & b);
-                if (hex.length() == 1) hexString.append('0');
+                if(hex.length() == 1) hexString.append('0');
                 hexString.append(hex);
             }
             return hexString.toString();
-        } catch (NoSuchAlgorithmException e) {
+        }catch (NoSuchAlgorithmException e) {
             throw new RuntimeException("SHA-256 algorithm not found", e);
         }
     }
@@ -119,7 +121,7 @@ public class UserManager {
         String passwordHash = hashPassword(password);
         for (User user : userList.values()) {
 
-            if (user.getUserName().equals(username) && user.getPasswordHash().equals(passwordHash)) {
+            if(user.getUserName().equals(username) && user.getPasswordHash().equals(passwordHash)) {
 
                 System.out.println("User " + username + " logged in");
                 return true;
@@ -127,5 +129,80 @@ public class UserManager {
         }
         System.out.println("User " + username + " not found");
         return false;
+    }
+
+    public long getUserId(String username) {
+
+        for (Map.Entry <Long, User> entry : userList.entrySet()) {
+
+            if(entry.getValue().getUserName().equals(username)) {
+
+                return entry.getKey();
+            }
+        }
+        return -1;
+    }
+
+    private boolean removeUser(long userId) {
+
+        if(userList.containsKey(userId)) {
+
+            userList.remove(userId);
+            try {
+
+                Writer writer = new FileWriter(Paths.USERSMAPPATH);
+                for (Map.Entry <Long, User> entry : userList.entrySet()) {
+
+                    String line = entry.getKey() + ";" + entry.getValue().getRealName() + ";" + entry.getValue().getSurname() + ";" + entry.getValue().getUserName() + ";" + entry.getValue().getPasswordHash() + ";" + entry.getValue().getRole() + "\n";
+                    writer.write(line);
+                }
+                writer.close();
+                return true;
+            }catch (IOException e) {
+
+                throw new RuntimeException(e);
+            }
+        }
+        return false;
+    }
+
+    public boolean updateUsername(long iserId, String username) {
+
+        User user = userList.get(iserId);
+        if(removeUser(iserId)){
+
+            user.setUserName(username);
+            userList.put(iserId, user);
+            saveUserInDisk(iserId, user);
+            return true;
+        }
+
+        return false;
+    }
+
+    public boolean updatePassword(long userId, String prevPassword, String newPassword) {
+
+        User user = userList.get(userId);
+        if(removeUser(userId)){
+
+            if(user.getPasswordHash().equals(hashPassword(prevPassword))) {
+
+                user.setPasswordHash(hashPassword(newPassword));
+                userList.put(userId, user);
+                saveUserInDisk(userId, user);
+                return true;
+            }else {
+
+                System.out.println("Password incorrect");
+                userList.put(userId, user);
+                saveUserInDisk(userId, user);
+            }
+        }
+        return false;
+    }
+
+    public User getUser(long userId) {
+
+        return userList.getOrDefault(userId, null);
     }
 }
