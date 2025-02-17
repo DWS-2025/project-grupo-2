@@ -31,13 +31,23 @@ nav {
     z-index: 2;
 }
 
-nav ul {
-    list-style-type: none;
-    padding: 0;
+.logout {
+
+    padding-top: 20px;
+    border-top: white 2px solid;
+}
+
+ul{
+    margin-top: 40%;
 }
 
 nav ul li {
-    margin-bottom: 10px;
+    margin-bottom: 35%;
+}
+
+nav ul {
+    list-style-type: none;
+    padding: 0;
 }
 
 nav ul li a {
