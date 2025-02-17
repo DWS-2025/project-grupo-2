@@ -13,10 +13,20 @@
   <div class="header-title">
     <span style="font-size: 36px; font-weight: bold;">Aula Visual</span>
   </div>
-  <div style="margin-top: 30px; margin-right: 20px;">
+  {{^user}}
+  <div class="header-right">
     <a href="/login">Login</a>
     <a href="/register">Register</a>
   </div>
+  {{/user}}
+
+  {{#user}}
+  <div class="header-right">
+    <img src="https://via.placeholder.com/40" alt="Usuario" class="user-avatar">
+    <a href="/profile" class="user-name">Nombre de Usuario</a>
+  </div>
+  {{/user}}
+
 </header>
 </body>
 </html>
