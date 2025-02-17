@@ -16,8 +16,8 @@ public class CourseManager {
 
     public CourseManager() {
 
-        loadNextId();
-        loadCourseFromDisk();
+        //loadNextId();
+        //loadCourseFromDisk();
     }
 
     private void loadNextId() {
