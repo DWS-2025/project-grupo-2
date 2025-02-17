@@ -1,24 +1,23 @@
 package es.dws.aulavisual.courses;
 
 import es.dws.aulavisual.users.User;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class Course {
 
+    private long id;
     private String name;
     private String description;
-    private int duration;
-    private String image;
-    private List<User> users;
+    private List <Long> userIds;
 
-    public Course(String name, String description, int duration, String image) {
+    public Course(long id, String name, String description, List <Long> userIds) {
 
+        this.id = id;
         this.name = name;
         this.description = description;
-        this.duration = duration;
-        this.image = image;
-        this.users = new ArrayList<>();
+        this.userIds = userIds;
     }
 
     public String getName() {
@@ -31,48 +30,13 @@ public class Course {
         return description;
     }
 
-    public int getDuration() {
+    public long getTeacherId() {
 
-        return duration;
+        return userIds.get(0);
     }
 
-    public String getImage() {
+    public List <Long> getUserIds() {
 
-        return image;
-    }
-
-    public List<User> getUsers() {
-
-        return users;
-    }
-
-    public void setName(String name) {
-
-        this.name = name;
-    }
-
-    public void setDescription(String description) {
-
-        this.description = description;
-    }
-
-    public void setDuration(int duration) {
-
-        this.duration = duration;
-    }
-
-    public void setImage(String image) {
-
-        this.image = image;
-    }
-
-    public void addUser(User user) {
-
-        this.users.add(user);
-    }
-
-    public void removeUser(User user) {
-
-        this.users.remove(user);
+        return userIds;
     }
 }
