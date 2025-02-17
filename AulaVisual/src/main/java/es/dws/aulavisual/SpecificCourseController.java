@@ -1,12 +1,10 @@
 package es.dws.aulavisual;
 
-import es.dws.aulavisual.courses.Course;
-import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import es.dws.aulavisual.courses.Course;
 import es.dws.aulavisual.courses.CourseManager;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 
@@ -18,6 +16,19 @@ public class SpecificCourseController {
     public SpecificCourseController(CourseManager courseManager) {
 
         this.courseManager = courseManager;
+    }
+
+    @GetMapping("/manageCourseS")
+    public String manageCourses(Model model) {
+
+        model.addAttribute("courses", courseManager.getCourses());
+        return "courses/manageCourses";
+    }
+
+    @GetMapping("/addCourse")
+    public String addCourse() {
+
+        return "courses/addCourse";
     }
 
     @GetMapping("/course/{id}")

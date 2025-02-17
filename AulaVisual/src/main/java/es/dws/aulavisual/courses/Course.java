@@ -12,13 +12,12 @@ public class Course {
     private String description;
     private List <Long> userIds;
 
-    public Course(long id, String name, String description, long teacherId) {
+    public Course(long id, String name, String description, List <Long> userIds) {
 
         this.id = id;
         this.name = name;
         this.description = description;
-        userIds = new ArrayList <>();
-        userIds.add(teacherId);
+        this.userIds = userIds;
     }
 
     public String getName() {

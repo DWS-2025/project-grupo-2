@@ -2,8 +2,8 @@ package es.dws.aulavisual.courses;
 
 import es.dws.aulavisual.Paths;
 import org.springframework.stereotype.Service;
-
 import java.io.*;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,7 +17,7 @@ public class CourseManager {
     public CourseManager() {
 
         loadNextId();
-//        loadCourseFromDisk();
+        loadCourseFromDisk();
     }
 
     private void loadNextId() {
@@ -35,33 +35,40 @@ public class CourseManager {
         }
     }
 
-//    private void loadCourseFromDisk() {
-//
-//        try {
-//
-//            Reader reader = new FileReader(Paths.USERSMAPPATH);
-//            BufferedReader bufferedReader = new BufferedReader(reader);
-//            String line = bufferedReader.readLine();
-//            while (line != null) {
-//
-//                String[] parts = line.split(";");
-//                long nextId = Long.parseLong(parts[0]);
-//                Course course = new User(parts[1], parts[2], parts[3], parts[4], Integer.parseInt(parts[5]));
-//                courseList.put(nextId, course);
-//                line = bufferedReader.readLine();
-//            }
-//            reader.close();
-//        }catch (IOException e) {
-//
-//            throw new RuntimeException(e);
-//        }
-//    }
+    private void loadCourseFromDisk() {
+
+        try {
+
+            Reader reader = new FileReader(Paths.COURSESMAPPATH);
+            BufferedReader bufferedReader = new BufferedReader(reader);
+            String line = bufferedReader.readLine();
+            while (line != null) {
+
+                String[] parts = line.split(";");
+                long nextId = Long.parseLong(parts[0]);
+                List <Long> userIds = new ArrayList <>();
+                for(int i = 3; i < parts.length; i++) {
+
+                    userIds.add(Long.parseLong(parts[i]));
+                }
+                Course course = new Course(nextId, parts[1], parts[2], userIds);
+                courseList.put(nextId, course);
+                line = bufferedReader.readLine();
+            }
+            reader.close();
+        }catch (IOException e) {
+
+            throw new RuntimeException(e);
+        }
+    }
 
     public void createCourse(long courseId, String name, String description, long teacherId) {
 
         long id = nextId;
         saveNextId();
-        Course course = new Course(courseId, name, description, teacherId);
+        List <Long> userIds = new ArrayList <>();
+        userIds.add(teacherId);
+        Course course = new Course(courseId, name, description, userIds);
         saveCourseInDisk(id, course);
         courseList.put(id, course);
     }
@@ -102,5 +109,15 @@ public class CourseManager {
 
             throw new RuntimeException(e);
         }
+    }
+
+    public Course getCourse(long id) {
+
+        return courseList.get(id);
+    }
+
+    public List <Course> getCourses() {
+
+        return new ArrayList <>(courseList.values());
     }
 }
