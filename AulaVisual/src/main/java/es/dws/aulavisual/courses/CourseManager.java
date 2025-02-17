@@ -1,14 +1,11 @@
 package es.dws.aulavisual.courses;
 
 import es.dws.aulavisual.Paths;
-import es.dws.aulavisual.users.User;
 import org.springframework.stereotype.Service;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.Reader;
+import java.io.*;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -60,8 +57,50 @@ public class CourseManager {
 //        }
 //    }
 
-    public void createCourse(String name, String description, int duration, String image) {
+    public void createCourse(long courseId, String name, String description, long teacherId) {
 
+        long id = nextId;
+        saveNextId();
+        Course course = new Course(courseId, name, description, teacherId);
+        saveCourseInDisk(id, course);
+        courseList.put(id, course);
+    }
 
+    private void saveNextId() {
+
+        try {
+
+            this.nextId++;
+            Writer writer = new FileWriter(Paths.CURRENTCOURSEIDPATH);
+            String line = Long.toString(nextId);
+            writer.write(line);
+            writer.close();
+
+        }catch (IOException e) {
+
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void saveCourseInDisk(long courseId, Course course) {
+
+        try {
+
+            Writer writer = new FileWriter(Paths.COURSESMAPPATH, true);
+            String line = courseId + ";" + course.getName() + ";" + course.getDescription();
+            writer.write(line);
+            List <Long> userIds = course.getUserIds();
+            for(long userId : userIds) {
+
+                line = ";" + userId;
+                writer.write(line);
+            }
+            writer.write("\n");
+            writer.close();
+
+        }catch (IOException e) {
+
+            throw new RuntimeException(e);
+        }
     }
 }
