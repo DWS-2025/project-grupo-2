@@ -1,23 +1,30 @@
 package es.dws.aulavisual.courses;
 
-import es.dws.aulavisual.users.User;
-
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class Course {
 
-    private long id;
-    private String name;
-    private String description;
-    private List <Long> userIds;
+    private final long id;
+    private final String name;
+    private final String description;
+    private final long teacherId;
+    private final List <Long> userIds;
+    private final Map<Long, Module> modules;
 
-    public Course(long id, String name, String description, List <Long> userIds) {
+    public Course(long id, String name, String description, long teacherId, List <Long> userIds, Map<Long, Module> modules) {
 
         this.id = id;
         this.name = name;
         this.description = description;
+        this.teacherId = teacherId;
         this.userIds = userIds;
+        this.modules = modules;
+    }
+
+    public long getId() {
+
+        return id;
     }
 
     public String getName() {
@@ -32,11 +39,16 @@ public class Course {
 
     public long getTeacherId() {
 
-        return userIds.get(0);
+        return teacherId;
     }
 
     public List <Long> getUserIds() {
 
         return userIds;
+    }
+
+    public Map<Long, Module> getModules() {
+
+        return modules;
     }
 }
