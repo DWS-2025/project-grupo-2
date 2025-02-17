@@ -3,6 +3,8 @@ package es.dws.aulavisual.users;
 import java.io.*;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
+import java.util.List;
+import java.util.ArrayList;
 import java.util.Map;
 import java.security.MessageDigest;
 
@@ -26,7 +28,7 @@ public class UserManager {
         long id = nextId;
         saveNextId();
         String passwordHash = hashPassword(password);
-        User user = new User(name, surname, userName, passwordHash, role);
+        User user = new User(name, surname, userName, passwordHash, role, id);
         saveUserInDisk(id, user);
         userList.put(id, user);
     }
@@ -105,7 +107,7 @@ public class UserManager {
 
                 String[] parts = line.split(";");
                 long nextId = Long.parseLong(parts[0]);
-                User user = new User(parts[1], parts[2], parts[3], parts[4], Integer.parseInt(parts[5]));
+                User user = new User(parts[1], parts[2], parts[3], parts[4], Integer.parseInt(parts[5]), nextId);
                 userList.put(nextId, user);
                 line = bufferedReader.readLine();
             }
@@ -143,7 +145,7 @@ public class UserManager {
         return -1;
     }
 
-    private boolean removeUser(long userId) {
+    public boolean removeUser(long userId) {
 
         if(userList.containsKey(userId)) {
 
@@ -204,5 +206,28 @@ public class UserManager {
     public User getUser(long userId) {
 
         return userList.getOrDefault(userId, null);
+    }
+
+    public List<User> getAllUsers(User ...usersToExclude) {
+
+        List <User> users = new ArrayList <>(List.copyOf(userList.values()));
+
+        if(users.removeAll(List.of(usersToExclude))) {
+
+            return users;
+        }else{
+
+            return null;
+        }
+    }
+
+    public List <String> getAllIds() {
+
+        List <String> ids = new ArrayList <>();
+        for (Map.Entry <Long, User> entry : userList.entrySet()) {
+
+            ids.add(entry.getKey().toString());
+        }
+        return ids;
     }
 }

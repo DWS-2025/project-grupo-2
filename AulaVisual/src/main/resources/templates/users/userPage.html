@@ -7,8 +7,8 @@
 </head>
 <body>
 <div class="container">
-    <img class="profile-img" src="/user_pfp" alt="profile image">
-    <form id="userForm" action="/profile/update" method="post" enctype="multipart/form-data">
+    <img class="profile-img" src="/user_pfp/{{id}}" alt="profile image">
+    <form id="userForm" action="/profile/update/{{id}}" method="post" enctype="multipart/form-data">
         <input type="text" placeholder="{{userName}}" id="username" name="username">
         <input type="password" placeholder="Contraseña Actual" id="prevPassword" name="prevPassword">
         <input type="password" placeholder="Nueva Contraseña" id="newPassword" name="newPassword">
