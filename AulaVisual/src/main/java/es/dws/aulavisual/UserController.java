@@ -26,9 +26,15 @@ public class UserController {
     }
 
     @GetMapping("/login")
-    public String login() {
+    public String login(@CookieValue(value = "userId", defaultValue = "") String userId) {
 
-        return "login";
+        if(userId.isEmpty()) {
+
+            return "login";
+        }else {
+
+            return "redirect:/profile/" + userId;
+        }
     }
 
     @PostMapping("/login")

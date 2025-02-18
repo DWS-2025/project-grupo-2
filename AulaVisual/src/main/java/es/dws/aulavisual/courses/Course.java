@@ -51,4 +51,9 @@ public class Course {
 
         return modules;
     }
+
+    public long getNumberOfModules() {
+
+        return modules.size();
+    }
 }

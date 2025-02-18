@@ -66,12 +66,12 @@ public class CourseManager {
         }
     }
 
-    public void createCourse(long courseId, String name, String description, long teacherId, Map<Long, Module> modules) {
+    public void createCourse(String name, String description, long teacherId, Map<Long, Module> modules) {
 
         long id = nextId;
         saveNextId();
         List <Long> userIds = new ArrayList <>();
-        Course course = new Course(courseId, name, description, teacherId, userIds, modules);
+        Course course = new Course(id, name, description, teacherId, userIds, modules);
         saveCourseInDisk(id, course);
         courseList.put(id, course);
     }
@@ -107,13 +107,11 @@ public class CourseManager {
             writer.write(line.toString());
             writer.close();
 
-            Path folder = Paths.USERIMGS.resolve("course-" + courseId);
+            Path folder = Paths.COURSEMODULESPATH.resolve("course-" + courseId);
             Map<Long, Module> modules = course.getModules();
 
             for (int i = 0; i < modules.size(); i++) {
 
-                Path modulePath = folder.resolve("module-" + courseId + "." + i +".md");
-                modulesContent[i].transferTo(modulePath);
                 Writer moduleWriter = new FileWriter(folder.resolve("module-" + courseId + "." + i +".txt").toFile());
                 Module module = modules.get(Integer.toUnsignedLong(i));
                 moduleWriter.write(module.getId() + ";" + module.getName() + ";" + module.getDescription());
@@ -138,8 +136,8 @@ public class CourseManager {
 
     private void readModules(long courseId, Map<Long, Module> modules) {
 
-        Path folder = Paths.USERIMGS.resolve("course-" + courseId);
-        for (int i = 0; i < folder.getNameCount(); i++) {
+        Path folder = Paths.COURSEMODULESPATH.resolve("course-" + courseId);
+        for (int i = 0; i < folder.getNameCount()/2; i++) {
 
             try {
 
@@ -154,5 +152,12 @@ public class CourseManager {
                 System.out.println("Error loading image: " + e.getMessage());
             }
         }
+    }
+
+    public void addModule(long courseId, String name, String description, MultipartFile content) {
+
+        Course course = courseList.get(courseId);
+        Module module = new Module(course.getNumberOfModules()+1, name, description, null);
+        saveCourseInDisk(courseId, course);
     }
 }
