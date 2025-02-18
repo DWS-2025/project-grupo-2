@@ -7,13 +7,15 @@ public class User {
     private String userName;
     private String passwordHash;
     private int role; //0 for admin, 1 for teacher, 2 for student
+    private final long id;
 
-    public User(String realName, String surname, String userName, String passwordHash, int role) {
+    public User(String realName, String surname, String userName, String passwordHash, int role, long id) {
         this.realName = realName;
         this.surname = surname;
         this.userName = userName;
         this.passwordHash = passwordHash;
         this.role = role;
+        this.id = id;
     }
 
     public String getRealName() {
@@ -34,6 +36,11 @@ public class User {
     public String getPasswordHash() {
 
         return passwordHash;
+    }
+
+    public long getId() {
+
+        return id;
     }
 
     public void setUserName(String userName) {
