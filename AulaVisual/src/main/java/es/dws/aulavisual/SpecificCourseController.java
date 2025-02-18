@@ -25,7 +25,7 @@ public class SpecificCourseController {
     @GetMapping("/manageCourses")
     public String manageCourses(Model model) {
 
-        model.addAttribute("courses", courseManager.getCourses());
+//        model.addAttribute("courses", courseManager.getCourses());
         return "courses/manageCourses";
     }
 
@@ -46,8 +46,8 @@ public class SpecificCourseController {
     @GetMapping("/course/{id}")
     public String getCourseById(@RequestParam long id, Model model) {
 
-        Course course = courseManager.getCourse(id);
-        model.addAttribute("course", course);
+//        Course course = courseManager.getCourse(id);
+//        model.addAttribute("course", course);
         return "courses/course";
     }
 }
