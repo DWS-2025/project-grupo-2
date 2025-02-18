@@ -8,4 +8,6 @@ public class Paths {
     public static final Path USERIMGS = java.nio.file.Paths.get("files/users/images");
     public static final Path USERDEFAULTIMGFOLDER = java.nio.file.Paths.get("files/users/");
     public static final Path USERDEFAULTIMGPATH = java.nio.file.Paths.get("user.png");
+    public static final String CURRENTCOURSEIDPATH = "files/courses/CurrentCourseId.txt";
+    public static final String COURSESMAPPATH = "files/users/userMap.txt";
 }

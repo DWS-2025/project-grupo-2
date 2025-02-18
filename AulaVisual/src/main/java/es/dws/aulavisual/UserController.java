@@ -6,19 +6,19 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.CookieValue;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import es.dws.aulavisual.users.UserManager;
 import org.springframework.web.multipart.MultipartFile;
 import es.dws.aulavisual.users.User;
+
+import java.util.List;
 
 @Controller
 public class UserController {
 
     private final UserManager userManager;
     private final ImageManager imageManager;
+
     public UserController(UserManager userManager, ImageManager imageManager) {
 
         this.userManager = userManager;
@@ -35,7 +35,7 @@ public class UserController {
     public String userLogin(Model model, @RequestParam String username, @RequestParam String password, HttpServletResponse response) {
 
 
-        if(userManager.login(username, password)){
+        if(userManager.login(username, password)) {
 
             long userId = userManager.getUserId(username);
             // create a cookie
@@ -45,8 +45,8 @@ public class UserController {
             //add cookie to response
             response.addCookie(cookie);
             model.addAttribute("userName", username);
-                return "welcome";
-        }else{
+            return "welcome";
+        }else {
 
             return "redirect:/login/error";
         }
@@ -74,65 +74,149 @@ public class UserController {
         return "redirect:/";
     }
 
-    @PostMapping("/profile/update")
-    public String updateUser(@RequestParam String username, @RequestParam String prevPassword, @RequestParam String newPassword, MultipartFile image, @CookieValue(value = "userId", defaultValue = "") String userId) {
+    @PostMapping("/profile/update/{id}")
+    public String updateUser(@PathVariable long id, @RequestParam String username, @RequestParam String prevPassword, @RequestParam String newPassword, MultipartFile image, @CookieValue(value = "userId", defaultValue = "") String userId) {
 
-        if(!userId.isEmpty()) {
+        String redirect = "/login";
+        if(userId.isEmpty()) {
 
-            if(!username.isEmpty()) {
+            return "redirect:" + redirect;
+        }
 
-                if(userManager.updateUsername(Long.parseLong(userId), username)) {
+        redirect = "/login";
+        User currentUser = userManager.getUser(Long.parseLong(userId));
+        if(currentUser.getRole() == 0 && id != Long.parseLong(userId)) {
 
-                    return "redirect:/login";
-                }else {
+            userId = Long.toString(id);
+            redirect = "/admin";
+        }
 
-                    return "redirect:/profile/error";
-                }
+        if(!username.isEmpty()) {
+
+            if(userManager.updateUsername(Long.parseLong(userId), username)) {
+
+                return "redirect:" + redirect;
+            }else {
+
+                return "redirect:/profile/error";
             }
+        }
 
-            if(!newPassword.isEmpty()) {
+        redirect = "/logout";
+        if(!newPassword.isEmpty()) {
 
-                if(userManager.updatePassword(Long.parseLong(userId), prevPassword, newPassword)) {
+            if(userManager.updatePassword(Long.parseLong(userId), prevPassword, newPassword)) {
 
-                    return "redirect:/logout";
-                }else {
+                return "redirect:" + redirect;
+            }else {
 
-                    return "redirect:/profile/error";
-                }
+                return "redirect:/profile/error";
             }
+        }
 
-            if(image != null && !image.isEmpty()) {
+        if(image != null && !image.isEmpty()) {
 
-                imageManager.saveImage("user-" + Long.parseLong(userId), Long.parseLong(userId), image);
-            }
+            imageManager.saveImage("user-" + Long.parseLong(userId), Long.parseLong(userId), image);
         }
 
         return "redirect:/profile";
     }
 
-    @GetMapping("/user_pfp")
-    public ResponseEntity<Object> getUserPfp(@CookieValue(value = "userId", defaultValue = "") String userId) {
+    @GetMapping("/user_pfp/{id}")
+    public ResponseEntity <Object> getUserPfp(@CookieValue(value = "userId", defaultValue = "") String userId, @PathVariable long id) {
 
-        if(userId.isEmpty()){
+        if(userId.isEmpty()) {
 
             return ResponseEntity.notFound().build();
-        }else {
-
-            return imageManager.loadImage("user-" + Long.parseLong(userId), Long.parseLong(userId));
         }
+        User currentUser = userManager.getUser(Long.parseLong(userId));
+        if(currentUser.getRole() == 0 && id != Long.parseLong(userId)) {
+
+            userId = Long.toString(id);
+            currentUser = userManager.getUser(Long.parseLong(userId));
+        }
+        return imageManager.loadImage("user-" + Long.parseLong(userId), Long.parseLong(userId));
+
     }
 
-    @GetMapping("/profile")
-    public String getProfile(Model model, @CookieValue(value = "userId", defaultValue = "") String userId) {
+    @GetMapping("/profile/{id}")
+    public String getProfile(Model model, @CookieValue(value = "userId", defaultValue = "") String userId, @PathVariable long id) {
 
-        if(userId.isEmpty()){
+        if(userId.isEmpty()) {
+
+            return "redirect:/login";
+        }
+        User currentUser = userManager.getUser(Long.parseLong(userId));
+        if(currentUser.getRole() == 0 && id != Long.parseLong(userId)) {
+
+            userId = Long.toString(id);
+            currentUser = userManager.getUser(Long.parseLong(userId));
+            model.addAttribute("id", userId);
+        }
+        model.addAttribute("userName", currentUser.getUserName());
+        return "/users/userPage";
+
+    }
+
+    @GetMapping("/admin")
+    public String getAdmin(Model model, @CookieValue(value = "userId", defaultValue = "") String userId) {
+
+        if(userId.isEmpty()) {
 
             return "redirect:/login";
         }else {
 
             User currentUser = userManager.getUser(Long.parseLong(userId));
-            model.addAttribute("userName", currentUser.getUserName());
-            return "/users/userPage";
+            if(currentUser.getRole() == 0) {
+
+                model.addAttribute("admin", currentUser.getUserName());
+                model.addAttribute("users", userManager.getAllUsers(currentUser));
+                return "/users/adminPanel";
+            }else {
+
+                return "redirect:/";
+            }
+        }
+    }
+
+    @GetMapping("/admin/users/{id}/delete")
+    public String deleteUser(@CookieValue(value = "userId", defaultValue = "") String userId, @PathVariable long id) {
+
+        if(userId.isEmpty()) {
+
+            return "redirect:/login";
+        }else {
+
+            User currentUser = userManager.getUser(Long.parseLong(userId));
+            if(currentUser.getRole() == 0) {
+
+                userManager.removeUser(id);
+                return "redirect:/admin";
+            }else {
+
+                return "redirect:/";
+            }
+        }
+    }
+
+    @GetMapping("/admin/users/{id}")
+    public String editUser(Model model, @CookieValue(value = "userId", defaultValue = "") String userId, @PathVariable long id) {
+
+        if(userId.isEmpty()) {
+
+            return "redirect:/login";
+        }else {
+
+            User currentUser = userManager.getUser(Long.parseLong(userId));
+            if(currentUser.getRole() == 0) {
+
+                User user = userManager.getUser(id);
+                model.addAttribute("user", user);
+                return "redirect:/profile/" + id;
+            }else {
+
+                return "redirect:/";
+            }
         }
     }
 }

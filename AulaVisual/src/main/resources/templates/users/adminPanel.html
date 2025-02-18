@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+    <meta charset="UTF-8">
+    <title>Panel Administración</title>
+    <link rel="stylesheet" href="/css/adminPage.css">
+</head>
+<body>
+<nav>
+    <ul>
+        <li><a href="/admin">Gestionar Usuarios</a></li>
+        <li><a href="/admin/courses">Gestionar Cursos</a></li>
+        <li><a href="/admin/settings">Configuraciones</a></li>
+        <li class="logout"><a href="/logout">Cerrar Sesión</a></li>
+    </ul>
+</nav>
+<section id="content">
+    <div class="container">
+        <h1>Panel de Administración</h1>
+        <div id="Welcome">
+            <p>Bienvenido, {{admin}}</p>
+        </div>
+        <div id="users">
+            <h2>Usuarios</h2>
+            <table id="usersTable">
+                <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Apellido</th>
+                    <th>Nombre Usuario</th>
+                    <th>Acciones</th>
+                </tr>
+                </thead>
+                <tbody>
+                {{#users}}
+                <tr class="tableItems">
+                    <td class="center">{{realName}}</td>
+                    <td class="center">{{surname}}</td>
+                    <td class="center">{{userName}}</td>
+                    <td class="center">
+                        <a href="/admin/users/{{id}}">Editar</a>
+                        <a href="/admin/users/{{id}}/delete">Eliminar</a>
+                    </td>
+                </tr>
+                {{/users}}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+</body>
+</html>
