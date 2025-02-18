@@ -5,28 +5,31 @@
     <title>Manage Courses</title>
 </head>
 <body>
-<h1>Manage Courses</h1>
-<table>
-    <thead>
-    <tr>
-        <th>ID</th>
-        <th>Name</th>
-        <th>Description</th>
-        <th>Duration</th>
-        <th>Actions</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="course : ${courses}">
-        <td th:text="${course.id}">Course ID</td>
-        <td th:text="${course.name}">Course Name</td>
-        <td th:text="${course.description}">Course Description</td>
-        <td th:text="${course.duration}">Course Duration</td>
-        <td>
-            <a th:href="@{'/course/' + ${course.id}}">View</a>
-        </td>
-    </tr>
-    </tbody>
-</table>
+    <h1>Manage Courses</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Duration</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="course : ${courses}">
+                <td th:text="${course.id}">Course ID</td>
+                <td th:text="${course.name}">Course Name</td>
+                <td th:text="${course.description}">Course Description</td>
+                <td th:text="${course.duration}">Course Duration</td>
+                <td>
+                    <a th:href="@{'/course/' + ${course.id}}">View</a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <form action="/addCourse" method="get">
+        <button type="submit">Crear nuevo curso</button>
+    </form>
 </body>
 </html>

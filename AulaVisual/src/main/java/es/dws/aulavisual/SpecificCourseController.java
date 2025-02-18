@@ -2,10 +2,14 @@ package es.dws.aulavisual;
 
 import org.springframework.ui.Model;
 import es.dws.aulavisual.courses.Course;
+import es.dws.aulavisual.courses.Module;
 import es.dws.aulavisual.courses.CourseManager;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import java.util.HashMap;
+import java.util.Map;
 
 
 @Controller
@@ -18,7 +22,7 @@ public class SpecificCourseController {
         this.courseManager = courseManager;
     }
 
-    @GetMapping("/manageCourseS")
+    @GetMapping("/manageCourses")
     public String manageCourses(Model model) {
 
         model.addAttribute("courses", courseManager.getCourses());
@@ -29,6 +33,14 @@ public class SpecificCourseController {
     public String addCourse() {
 
         return "courses/addCourse";
+    }
+
+    @PostMapping("/addCourse")
+    public String addCourse(@RequestParam String name, @RequestParam String description, @RequestParam long teacher) {
+
+        Map <Long, Module> modules = new HashMap <>();
+        courseManager.createCourse(name, description, teacher, modules);
+        return "redirect:/manageCourses";
     }
 
     @GetMapping("/course/{id}")

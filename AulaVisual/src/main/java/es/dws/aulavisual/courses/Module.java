@@ -6,14 +6,12 @@ public class Module {
 
     private final long id;
     private final String name;
-    private final String description;
-    private final Path content;
+    private final String content;
 
 
-    public Module(long id, String name, String description, Path content) {
+    public Module(long id, String name, String description, String content) {
         this.id = id;
         this.name = name;
-        this.description = description;
         this.content = content;
     }
 
@@ -27,12 +25,7 @@ public class Module {
         return name;
     }
 
-    public String getDescription() {
-
-        return description;
-    }
-
-    public Path getContent() {
+    public String getContent() {
 
         return content;
     }

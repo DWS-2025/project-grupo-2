@@ -18,8 +18,12 @@ public class CourseManager {
 
     public CourseManager() {
 
-        loadNextId();
-        loadCourseFromDisk();
+        List<Long> userIds = new ArrayList <>();
+        userIds.add(Long.parseLong("2"));
+        userIds.add(Long.parseLong("3"));
+        Course lolCourse = new Course(0, "League of Legends", "Learn to play League of Legends", 1, userIds, new HashMap <>());
+//        loadNextId();
+//        loadCourseFromDisk();
     }
 
     private void loadNextId() {
@@ -54,7 +58,7 @@ public class CourseManager {
                     userIds.add(Long.parseLong(parts[i]));
                 }
                 Map <Long, Module> modules = new HashMap <>();
-                readModules(nextId, modules);
+//                readModules(nextId, modules);
                 Course course = new Course(nextId, parts[1], parts[2], Long.parseLong(parts[3]), userIds, modules);
                 courseList.put(nextId, course);
                 line = bufferedReader.readLine();
@@ -69,95 +73,94 @@ public class CourseManager {
     public void createCourse(String name, String description, long teacherId, Map<Long, Module> modules) {
 
         long id = nextId;
-        saveNextId();
+        this.nextId++;
         List <Long> userIds = new ArrayList <>();
         Course course = new Course(id, name, description, teacherId, userIds, modules);
-        saveCourseInDisk(id, course);
         courseList.put(id, course);
     }
 
-    private void saveNextId() {
+//    private void saveNextId() {
+//
+//        try {
+//
+//            this.nextId++;
+//            Writer writer = new FileWriter(Paths.CURRENTCOURSEIDPATH);
+//            String line = Long.toString(nextId);
+//            writer.write(line);
+//            writer.close();
+//
+//        }catch (IOException e) {
+//
+//            throw new RuntimeException(e);
+//        }
+//    }
 
-        try {
+//    private void saveCourseInDisk(long courseId, Course course, MultipartFile ...modulesContent) {
+//
+//        try {
+//
+//            Writer writer = new FileWriter(Paths.COURSESMAPPATH, true);
+//            StringBuilder line = new StringBuilder(courseId + ";" + course.getName() + ";" + course.getDescription() + ";" + course.getTeacherId());
+//            List <Long> userIds = course.getUserIds();
+//            for(long userId : userIds) {
+//
+//                line.append(";").append(userId);
+//            }
+//            line.append("\n");
+//            writer.write(line.toString());
+//            writer.close();
+//
+//            Path folder = Paths.COURSEMODULESPATH.resolve("course-" + courseId);
+//            Map<Long, Module> modules = course.getModules();
+//
+//            for (int i = 0; i < modules.size(); i++) {
+//
+//                Writer moduleWriter = new FileWriter(folder.resolve("module-" + courseId + "." + i +".txt").toFile());
+//                Module module = modules.get(Integer.toUnsignedLong(i));
+//                moduleWriter.write(module.getId() + ";" + module.getName() + ";" + module.getDescription());
+//                moduleWriter.close();
+//            }
+//
+//        }catch (IOException e) {
+//
+//            throw new RuntimeException(e);
+//        }
+//    }
+//
+//    public Course getCourse(long id) {
+//
+//        return courseList.get(id);
+//    }
+//
+//    public List <Course> getCourses() {
+//
+//        return new ArrayList <>(courseList.values());
+//    }
 
-            this.nextId++;
-            Writer writer = new FileWriter(Paths.CURRENTCOURSEIDPATH);
-            String line = Long.toString(nextId);
-            writer.write(line);
-            writer.close();
-
-        }catch (IOException e) {
-
-            throw new RuntimeException(e);
-        }
-    }
-
-    private void saveCourseInDisk(long courseId, Course course, MultipartFile ...modulesContent) {
-
-        try {
-
-            Writer writer = new FileWriter(Paths.COURSESMAPPATH, true);
-            StringBuilder line = new StringBuilder(courseId + ";" + course.getName() + ";" + course.getDescription() + ";" + course.getTeacherId());
-            List <Long> userIds = course.getUserIds();
-            for(long userId : userIds) {
-
-                line.append(";").append(userId);
-            }
-            line.append("\n");
-            writer.write(line.toString());
-            writer.close();
-
-            Path folder = Paths.COURSEMODULESPATH.resolve("course-" + courseId);
-            Map<Long, Module> modules = course.getModules();
-
-            for (int i = 0; i < modules.size(); i++) {
-
-                Writer moduleWriter = new FileWriter(folder.resolve("module-" + courseId + "." + i +".txt").toFile());
-                Module module = modules.get(Integer.toUnsignedLong(i));
-                moduleWriter.write(module.getId() + ";" + module.getName() + ";" + module.getDescription());
-                moduleWriter.close();
-            }
-
-        }catch (IOException e) {
-
-            throw new RuntimeException(e);
-        }
-    }
-
-    public Course getCourse(long id) {
-
-        return courseList.get(id);
-    }
-
-    public List <Course> getCourses() {
-
-        return new ArrayList <>(courseList.values());
-    }
-
-    private void readModules(long courseId, Map<Long, Module> modules) {
-
-        Path folder = Paths.COURSEMODULESPATH.resolve("course-" + courseId);
-        for (int i = 0; i < folder.getNameCount()/2; i++) {
-
-            try {
-
-                Path modulePath = folder.resolve("module-" + courseId + "." + i +".md");
-                Reader reader = new FileReader(folder.resolve("module-" + courseId + "." + i +".txt").toFile());
-                BufferedReader bufferedReader = new BufferedReader(reader);
-                String line = bufferedReader.readLine();
-                String[] parts = line.split(";");
-                modules.put(Integer.toUnsignedLong(i), new Module(Long.parseLong(parts[0]), parts[1], parts[2], modulePath));
-            }catch (Exception e) {
-
-                System.out.println("Error loading image: " + e.getMessage());
-            }
-        }
-    }
-
-    public void addModule(long courseId, String name, String description, MultipartFile content) {
-
-        Course course = courseList.get(courseId);
-        Module module = new Module(course.getNumberOfModules()+1, name, description, null);
-        saveCourseInDisk(courseId, course);
-    }
+//    private void readModules(long courseId, Map<Long, Module> modules) {
+//
+//        Path folder = Paths.COURSEMODULESPATH.resolve("course-" + courseId);
+//        for (int i = 0; i < folder.getNameCount()/2; i++) {
+//
+//            try {
+//
+//                Path modulePath = folder.resolve("module-" + courseId + "." + i +".md");
+//                Reader reader = new FileReader(folder.resolve("module-" + courseId + "." + i +".txt").toFile());
+//                BufferedReader bufferedReader = new BufferedReader(reader);
+//                String line = bufferedReader.readLine();
+//                String[] parts = line.split(";");
+//                modules.put(Integer.toUnsignedLong(i), new Module(Long.parseLong(parts[0]), parts[1], parts[2], modulePath));
+//            }catch (Exception e) {
+//
+//                System.out.println("Error loading image: " + e.getMessage());
+//            }
+//        }
+//    }
+//
+//    public void addModule(long courseId, String name, String description, MultipartFile content) {
+//
+//        Course course = courseList.get(courseId);
+//        Module module = new Module(course.getNumberOfModules()+1, name, description, null);
+//        saveCourseInDisk(courseId, course);
+//    }
 }
