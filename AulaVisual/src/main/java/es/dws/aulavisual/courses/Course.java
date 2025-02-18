@@ -10,9 +10,9 @@ public class Course {
     private final String description;
     private final long teacherId;
     private final List <Long> userIds;
-    private final Map<Long, Module> modules;
+    private final List <Module> modules;
 
-    public Course(long id, String name, String description, long teacherId, List <Long> userIds, Map<Long, Module> modules) {
+    public Course(long id, String name, String description, long teacherId, List <Long> userIds, List<Module> modules) {
 
         this.id = id;
         this.name = name;
@@ -47,7 +47,7 @@ public class Course {
         return userIds;
     }
 
-    public Map<Long, Module> getModules() {
+    public List <Module> getModules() {
 
         return modules;
     }
@@ -55,5 +55,10 @@ public class Course {
     public long getNumberOfModules() {
 
         return modules.size();
+    }
+
+    public void addModule(Module module) {
+
+        modules.add(module);
     }
 }

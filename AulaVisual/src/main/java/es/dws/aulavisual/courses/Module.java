@@ -1,18 +1,16 @@
 package es.dws.aulavisual.courses;
 
-import java.nio.file.Path;
-
 public class Module {
 
     private final long id;
     private final String name;
-    private final String content;
+    private final String path;
 
 
-    public Module(long id, String name, String description, String content) {
+    public Module(long id, String name, String description, String path) {
         this.id = id;
         this.name = name;
-        this.content = content;
+        this.path = path;
     }
 
     public long getId() {
@@ -25,8 +23,8 @@ public class Module {
         return name;
     }
 
-    public String getContent() {
+    public String getPath() {
 
-        return content;
+        return path;
     }
 }

@@ -8,7 +8,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -38,7 +41,7 @@ public class SpecificCourseController {
     @PostMapping("/addCourse")
     public String addCourse(@RequestParam String name, @RequestParam String description, @RequestParam long teacher) {
 
-        Map <Long, Module> modules = new HashMap <>();
+        List <Module> modules = new ArrayList <>();
         courseManager.createCourse(name, description, teacher, modules);
         return "redirect:/manageCourses";
     }

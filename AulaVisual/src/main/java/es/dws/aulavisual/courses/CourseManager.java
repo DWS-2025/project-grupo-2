@@ -18,10 +18,21 @@ public class CourseManager {
 
     public CourseManager() {
 
-        List<Long> userIds = new ArrayList <>();
-        userIds.add(Long.parseLong("2"));
-        userIds.add(Long.parseLong("3"));
-        Course lolCourse = new Course(0, "League of Legends", "Learn to play League of Legends", 1, userIds, new HashMap <>());
+        List<Long> loluserIds = new ArrayList <>();
+        loluserIds.add(Long.parseLong("2"));
+        loluserIds.add(Long.parseLong("3"));
+        List<Module> lolModules = new ArrayList <>();
+        Course lolCourse = new Course(0, "League of Legends", "Learn to play League of Legends", 1, loluserIds, new ArrayList <>());
+
+        List<Long> padelUserIds = new ArrayList <>();
+        padelUserIds.add(Long.parseLong("3"));
+        padelUserIds.add(Long.parseLong("4"));
+        Course padelCourse = new Course(0, "Paddle", "Star having fun while exercising", 1, padelUserIds, new ArrayList <>());
+
+        List<Long> cookingUserIds = new ArrayList <>();
+        cookingUserIds.add(Long.parseLong("2"));
+        cookingUserIds.add(Long.parseLong("4"));
+        Course cookingUourse = new Course(0, "Cooking", "Learn how to prepare easy yet delicious meals", 1, cookingUserIds, new ArrayList <>());
 //        loadNextId();
 //        loadCourseFromDisk();
     }
@@ -57,7 +68,7 @@ public class CourseManager {
 
                     userIds.add(Long.parseLong(parts[i]));
                 }
-                Map <Long, Module> modules = new HashMap <>();
+                List <Module> modules = new ArrayList <>();
 //                readModules(nextId, modules);
                 Course course = new Course(nextId, parts[1], parts[2], Long.parseLong(parts[3]), userIds, modules);
                 courseList.put(nextId, course);
@@ -70,7 +81,7 @@ public class CourseManager {
         }
     }
 
-    public void createCourse(String name, String description, long teacherId, Map<Long, Module> modules) {
+    public void createCourse(String name, String description, long teacherId, List <Module> modules) {
 
         long id = nextId;
         this.nextId++;
