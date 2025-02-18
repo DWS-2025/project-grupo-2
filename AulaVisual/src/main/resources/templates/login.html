@@ -7,14 +7,7 @@
     <link rel="stylesheet" href="/css/styles.css">
 </head>
 <body class="indexBody">
-<header>
-    <h1>Login to AulaVisual</h1>
-    <nav>
-        <ul>
-            <li><a href="/">Home</a></li>
-        </ul>
-    </nav>
-</header>
+{{>header}}
 <div class="backgroundLoginDiv">
     <div class="login-container">
         <form id="loginForm" action="/login" method="post">
@@ -31,9 +24,7 @@
         </form>
     </div>
 </div>
-<footer>
-    <p>&copy; 2025 AulaVisual. All rights reserved.</p>
-</footer>
+{{>footer}}
 <script src="/js/login.js"></script>
 </body>
 </html>
