@@ -39,8 +39,8 @@ section {
 #intro {
     position: relative;
     color: #fff;
-    width: 1408px;
-    height: 643px; /* Full screen height */
+    width: 100%;
+    height: 70vh; /* Full screen height */
     text-align: center;
     display: flex;
     flex-direction: column;
@@ -185,4 +185,9 @@ form input {
     width: 100%;
     padding: 0.5rem;
     margin-bottom: 1rem;
+}
+
+footer {
+
+    display: flex;
 }
