@@ -61,4 +61,13 @@ public class Course {
 
         modules.add(module);
     }
+
+    public void removeModule(Module module) {
+
+        modules.remove(module);
+    }
+
+    public long getNumberModules() {
+        return modules.size();
+    }
 }

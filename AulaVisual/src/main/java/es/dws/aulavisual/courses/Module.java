@@ -7,7 +7,7 @@ public class Module {
     private final String path;
 
 
-    public Module(long id, String name, String description, String path) {
+    public Module(long id, String name, String path) {
         this.id = id;
         this.name = name;
         this.path = path;

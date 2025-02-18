@@ -18,67 +18,23 @@ public class CourseManager {
 
     public CourseManager() {
 
-        List<Long> loluserIds = new ArrayList <>();
+        List <Long> loluserIds = new ArrayList <>();
         loluserIds.add(Long.parseLong("2"));
         loluserIds.add(Long.parseLong("3"));
-        List<Module> lolModules = new ArrayList <>();
-        Course lolCourse = new Course(0, "League of Legends", "Learn to play League of Legends", 1, loluserIds, new ArrayList <>());
+        List <Module> lolModules = new ArrayList <>();
+        Module lolModule1 = new Module(0, "Introducción", "/files/courses/course-0/module-0-Intro.md");
+        Module lolModule2 = new Module(1, "Campeones", "/files/courses/course-0/module-1-Champions.md");
+        Course lolCourse = new Course(0, "League of Legends", "Aprende a jugar al LOL", 1, loluserIds, lolModules);
 
-        List<Long> padelUserIds = new ArrayList <>();
+        List <Long> padelUserIds = new ArrayList <>();
         padelUserIds.add(Long.parseLong("3"));
         padelUserIds.add(Long.parseLong("4"));
-        Course padelCourse = new Course(0, "Paddle", "Star having fun while exercising", 1, padelUserIds, new ArrayList <>());
+        Course padelCourse = new Course(1, "Paddle", "Star having fun while exercising", 1, padelUserIds, new ArrayList <>());
 
-        List<Long> cookingUserIds = new ArrayList <>();
+        List <Long> cookingUserIds = new ArrayList <>();
         cookingUserIds.add(Long.parseLong("2"));
         cookingUserIds.add(Long.parseLong("4"));
-        Course cookingUourse = new Course(0, "Cooking", "Learn how to prepare easy yet delicious meals", 1, cookingUserIds, new ArrayList <>());
-//        loadNextId();
-//        loadCourseFromDisk();
-    }
-
-    private void loadNextId() {
-
-        try {
-
-            Reader reader = new FileReader(Paths.CURRENTCOURSEIDPATH);
-            BufferedReader bufferedReader = new BufferedReader(reader);
-            String line = bufferedReader.readLine();
-            nextId = Long.parseLong(line);
-            reader.close();
-        }catch (IOException e) {
-
-            throw new RuntimeException(e);
-        }
-    }
-
-    private void loadCourseFromDisk() {
-
-        try {
-
-            Reader reader = new FileReader(Paths.COURSESMAPPATH);
-            BufferedReader bufferedReader = new BufferedReader(reader);
-            String line = bufferedReader.readLine();
-            while (line != null) {
-
-                String[] parts = line.split(";");
-                long nextId = Long.parseLong(parts[0]);
-                List <Long> userIds = new ArrayList <>();
-                for(int i = 4; i < parts.length; i++) {
-
-                    userIds.add(Long.parseLong(parts[i]));
-                }
-                List <Module> modules = new ArrayList <>();
-//                readModules(nextId, modules);
-                Course course = new Course(nextId, parts[1], parts[2], Long.parseLong(parts[3]), userIds, modules);
-                courseList.put(nextId, course);
-                line = bufferedReader.readLine();
-            }
-            reader.close();
-        }catch (IOException e) {
-
-            throw new RuntimeException(e);
-        }
+        Course cookingUourse = new Course(2, "Cooking", "Learn how to prepare easy yet delicious meals", 1, cookingUserIds, new ArrayList <>());
     }
 
     public void createCourse(String name, String description, long teacherId, List <Module> modules) {
@@ -90,88 +46,14 @@ public class CourseManager {
         courseList.put(id, course);
     }
 
-//    private void saveNextId() {
-//
-//        try {
-//
-//            this.nextId++;
-//            Writer writer = new FileWriter(Paths.CURRENTCOURSEIDPATH);
-//            String line = Long.toString(nextId);
-//            writer.write(line);
-//            writer.close();
-//
-//        }catch (IOException e) {
-//
-//            throw new RuntimeException(e);
-//        }
-//    }
+    public void addModule(long courseId, Module module) {
 
-//    private void saveCourseInDisk(long courseId, Course course, MultipartFile ...modulesContent) {
-//
-//        try {
-//
-//            Writer writer = new FileWriter(Paths.COURSESMAPPATH, true);
-//            StringBuilder line = new StringBuilder(courseId + ";" + course.getName() + ";" + course.getDescription() + ";" + course.getTeacherId());
-//            List <Long> userIds = course.getUserIds();
-//            for(long userId : userIds) {
-//
-//                line.append(";").append(userId);
-//            }
-//            line.append("\n");
-//            writer.write(line.toString());
-//            writer.close();
-//
-//            Path folder = Paths.COURSEMODULESPATH.resolve("course-" + courseId);
-//            Map<Long, Module> modules = course.getModules();
-//
-//            for (int i = 0; i < modules.size(); i++) {
-//
-//                Writer moduleWriter = new FileWriter(folder.resolve("module-" + courseId + "." + i +".txt").toFile());
-//                Module module = modules.get(Integer.toUnsignedLong(i));
-//                moduleWriter.write(module.getId() + ";" + module.getName() + ";" + module.getDescription());
-//                moduleWriter.close();
-//            }
-//
-//        }catch (IOException e) {
-//
-//            throw new RuntimeException(e);
-//        }
-//    }
-//
-//    public Course getCourse(long id) {
-//
-//        return courseList.get(id);
-//    }
-//
-//    public List <Course> getCourses() {
-//
-//        return new ArrayList <>(courseList.values());
-//    }
+        Course course = courseList.get(courseId);
+        course.addModule(module);
+    }
 
-//    private void readModules(long courseId, Map<Long, Module> modules) {
-//
-//        Path folder = Paths.COURSEMODULESPATH.resolve("course-" + courseId);
-//        for (int i = 0; i < folder.getNameCount()/2; i++) {
-//
-//            try {
-//
-//                Path modulePath = folder.resolve("module-" + courseId + "." + i +".md");
-//                Reader reader = new FileReader(folder.resolve("module-" + courseId + "." + i +".txt").toFile());
-//                BufferedReader bufferedReader = new BufferedReader(reader);
-//                String line = bufferedReader.readLine();
-//                String[] parts = line.split(";");
-//                modules.put(Integer.toUnsignedLong(i), new Module(Long.parseLong(parts[0]), parts[1], parts[2], modulePath));
-//            }catch (Exception e) {
-//
-//                System.out.println("Error loading image: " + e.getMessage());
-//            }
-//        }
-//    }
-//
-//    public void addModule(long courseId, String name, String description, MultipartFile content) {
-//
-//        Course course = courseList.get(courseId);
-//        Module module = new Module(course.getNumberOfModules()+1, name, description, null);
-//        saveCourseInDisk(courseId, course);
-//    }
+    public Course getCourse(long courseId) {
+
+        return courseList.get(courseId);
+    }
 }
