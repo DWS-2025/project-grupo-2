@@ -1,36 +1,53 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<html lang="en" >
 <head>
     <meta charset="UTF-8">
-    <title>Manage Courses</title>
+    <title>Panel Administración</title>
+    <link rel="stylesheet" href="/css/adminPage.css">
     <link rel="icon" href="/images/1.svg" sizes="any" type="image/svg+xml">
 </head>
 <body>
-    <h1>Manage Courses</h1>
-    <table>
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Description</th>
-                <th>Duration</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr th:each="course : ${courses}">
-                <td th:text="${course.id}">Course ID</td>
-                <td th:text="${course.name}">Course Name</td>
-                <td th:text="${course.description}">Course Description</td>
-                <td th:text="${course.duration}">Course Duration</td>
-                <td>
-                    <a th:href="@{'/course/' + ${course.id}}">View</a>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <form action="/addCourse" method="get">
-        <button type="submit">Crear nuevo curso</button>
-    </form>
+<nav>
+    <ul>
+        <li><a href="/admin">Gestionar Usuarios</a></li>
+        <li><a href="/admin/courses">Gestionar Cursos</a></li>
+        <li><a href="/admin/settings">Configuraciones</a></li>
+        <li class="logout"><a href="/logout">Cerrar Sesión</a></li>
+    </ul>
+</nav>
+<section id="content">
+    <div class="container">
+        <h1>Panel de Gestión de Cursos</h1>
+        <div id="Welcome">
+            <p>Bienvenido, {{admin}}</p>
+        </div>
+        <div id="users">
+            <h2>Cursos</h2>
+            <table id="usersTable">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Curso</th>
+                    <th>Profesor responsable</th>
+                    <th>Acciones</th>
+                </tr>
+                </thead>
+                <tbody>
+                {{#courses}}
+                <tr class="tableItems">
+                    <td class="center">{{id}}</td>
+                    <td class="center">{{name}}</td>
+                    <td class="center">{{teacherId}}</td>
+                    <td class="center">
+                        <a href="/admin/courses/{{id}}/modules">Ver</a>
+                        <a href="/admin/courses/{{id}}/delete">Eliminar curso</a>
+                    </td>
+                </tr>
+                {{/courses}}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
 </body>
 </html>
