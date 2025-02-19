@@ -71,9 +71,11 @@ public class Course {
         return modules.size();
     }
 
-    public Module getModule(long moduleId) {
-        if(modules.contains((int) moduleId)) {
-            return modules.get((int) moduleId);
+    public Module getModuleById(long moduleId) {
+        for (Module module : modules) {
+            if (module.getId() == moduleId) {
+                return module;
+            }
         }
         return null;
     }

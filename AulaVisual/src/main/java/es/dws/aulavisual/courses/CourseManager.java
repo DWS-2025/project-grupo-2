@@ -23,10 +23,10 @@ public class CourseManager {
         loluserIds.add(Long.parseLong("3"));
 
         List <Module> lolModules = new ArrayList <>();
-        Module lolModule1 = new Module(0, "Introducción", "/files/courses/course-0/module-0-Intro.md");
+        Module lolModule1 = new Module(0, "Intro", "/files/courses/course-0/module-0-Intro.md");
         lolModules.add(lolModule1);
 
-        Module lolModule2 = new Module(1, "Campeones", "/files/courses/course-0/module-1-Champions.md");
+        Module lolModule2 = new Module(1, "Champions", "/files/courses/course-0/module-1-Champions.md");
         lolModules.add(lolModule2);
 
         Course lolCourse = new Course(0, "League of Legends", "Aprende a jugar al LOL", 1, loluserIds, lolModules);

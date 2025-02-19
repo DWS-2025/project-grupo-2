@@ -6,7 +6,7 @@ body {
     /*height: 100%;  Asegura que el body ocupe toda la altura de la ventana */
 }
 
-.container {
+#container {
     width: 70%;
     text-align: center;
     background: rgba(255,255,255, 0.8);

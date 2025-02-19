@@ -53,7 +53,7 @@ Si eres principiante, es recomendable empezar con campeones fáciles de usar. Aq
 - 🎯 **Tirador**: Ashe 🏹
 - ✨ **Mago**: Lux 🌟
 - 🩹 **Soporte**: Sona 🌬️
-- 🔪 **Asesino**: Ekko 🗡️~~~~~~~~~~~~~~~~~~~~
+- 🔪 **Asesino**: Ekko 🗡️
 
 Puedes consultar la lista completa de campeones aquí: [Lista de Campeones](https://www.leagueoflegends.com/es-mx/champions/)
 

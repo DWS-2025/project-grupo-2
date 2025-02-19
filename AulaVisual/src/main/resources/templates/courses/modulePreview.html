@@ -12,17 +12,17 @@
   <ul>
     <li><a href="/admin">Gestionar Usuarios</a></li>
     <li><a href="/admin/courses">Gestionar Cursos</a></li>
-    <li><a href="/admin/settings">Configuraciones</a></li>
+    <li><a href="profile/{{userId}}">Configuraciones</a></li>
     <li class="logout"><a href="/logout">Cerrar Sesión</a></li>
   </ul>
 </nav>
 <section id="content">
-  <div class="container">
+  <div id="container">
     <script>
       fetch("/course/{{courseId}}/module/{{id}}/content")
               .then(response => response.text())
               .then(text => {
-                document.getElementById('content').innerHTML = marked.parse(text);
+                document.getElementById('container').innerHTML = marked.parse(text);
               });
     </script>
   </div>

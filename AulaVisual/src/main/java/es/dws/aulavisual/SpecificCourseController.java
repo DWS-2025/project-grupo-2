@@ -42,6 +42,7 @@ public class SpecificCourseController {
         if(user.getRole() == 0){
 
             model.addAttribute("admin", user.getRealName());
+            model.addAttribute("userId", Long.parseLong(userId));
             List <Course> courses = courseManager.getCourses();
             model.addAttribute("courses", courses);
             return "courses/manageCourses";
@@ -62,6 +63,7 @@ public class SpecificCourseController {
 
             model.addAttribute("courseName", course.getName());
             model.addAttribute("courseId", id);
+            model.addAttribute("userId", Long.parseLong(userId));
             model.addAttribute("admin", user.getRealName());
             model.addAttribute("modules", course.getModules());
             return "courses/modules";
@@ -101,20 +103,21 @@ public class SpecificCourseController {
         User user = userManager.getUser(Long.parseLong(userId));
         if(user.getRole() == 0){
 
-            Module module = course.getModule(id);
+            Module module = course.getModuleById(id);
             if (module == null) {
 
                 return "redirect:/admin/courses/{courseId}/modules/{id}";
             }
 
             model.addAttribute("courseId", course.getId());
-            return "courses/modulePreview";
+            model.addAttribute("userId", Long.parseLong(userId));
+            return "courses/test";
         }
         return "redirect:/";
     }
 
-    @GetMapping("/course/{courseId}/module/{moduleId}/content")
-    public ResponseEntity <Object> getModuleContent(@PathVariable long courseId, @PathVariable long moduleId, @CookieValue(value = "userId", defaultValue = "") String userId) {
+    @GetMapping("/course/{courseId}/module/{id}/content")
+    public ResponseEntity <Object> getModuleContent(@PathVariable long courseId, @PathVariable long id, @CookieValue(value = "userId", defaultValue = "") String userId) {
 
         if(userId.isEmpty()) {
 
@@ -122,24 +125,24 @@ public class SpecificCourseController {
         }
 
         Course course = courseManager.getCourse(courseId);
-        Module module = course.getModule(moduleId);
+        Module module = course.getModuleById(id);
         if (module == null) {
 
-            return ResponseEntity.status(404).body("Module not found");
+            return ResponseEntity.status(404).body("Module not found1");
         }
         try {
 
             Path coursePath = Paths.COURSEMODULESPATH.resolve("course-" + courseId);
-            Path modulePath = coursePath.resolve("module-" + course.getNumberModules() + "-" + module.getName() + ".md");
+            Path modulePath = coursePath.resolve("module" + id + "-" + module.getName() + ".md");
             Resource content = new UrlResource(modulePath.toUri());
             if (!Files.exists(modulePath)) {
 
-                return ResponseEntity.status(404).body("Module not found");
+                return ResponseEntity.status(404).body("Module not found2");
             }
             return ResponseEntity.ok().header(HttpHeaders.CONTENT_TYPE, "text/markdown").body(content);
         }catch (Exception e) {
 
-            return ResponseEntity.status(404).body("Module not found");
+            return ResponseEntity.status(404).body("Module not found3");
         }
     }
 
