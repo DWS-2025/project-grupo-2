@@ -26,9 +26,15 @@ public class UserController {
     }
 
     @GetMapping("/login")
-    public String login() {
+    public String login(@CookieValue(value = "userId", defaultValue = "") String userId) {
 
-        return "login"; /* return login template */
+        if(userId.isEmpty()) {
+
+            return "login";
+        }else {
+
+            return "redirect:/profile/" + userId;
+        }
     }
 
     @PostMapping("/login")
@@ -171,6 +177,7 @@ public class UserController {
 
                 model.addAttribute("admin", currentUser.getUserName());
                 model.addAttribute("users", userManager.getAllUsers(currentUser));
+                model.addAttribute("userId", Long.parseLong(userId));
                 return "/users/adminPanel";
             }else {
 
@@ -212,6 +219,7 @@ public class UserController {
 
                 User user = userManager.getUser(id);
                 model.addAttribute("user", user);
+                model.addAttribute("userId", Long.parseLong(userId));
                 return "redirect:/profile/" + id;
             }else {
 

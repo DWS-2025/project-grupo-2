@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+  <title>Panel Administración</title>
+  <link rel="stylesheet" href="/css/adminPage.css">
+  <link rel="icon" href="/images/1.svg" sizes="any" type="image/svg+xml">
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body>
+<nav>
+  <ul>
+    <li><a href="/admin">Gestionar Usuarios</a></li>
+    <li><a href="/admin/courses">Gestionar Cursos</a></li>
+    <li><a href="profile/{{userId}}">Configuraciones</a></li>
+    <li class="logout"><a href="/logout">Cerrar Sesión</a></li>
+  </ul>
+</nav>
+<section id="content">
+  <div id="container">
+    <script>
+      fetch("/course/{{courseId}}/module/{{id}}/content")
+              .then(response => response.text())
+              .then(text => {
+                document.getElementById('container').innerHTML = marked.parse(text);
+              });
+    </script>
+  </div>
+</section>
+</body>
+</html>

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+  <title>Panel Administración</title>
+  <link rel="stylesheet" href="/css/adminPage.css">
+  <link rel="icon" href="/images/1.svg" sizes="any" type="image/svg+xml">
+</head>
+<body>
+<nav>
+  <ul>
+    <li><a href="/admin">Gestionar Usuarios</a></li>
+    <li><a href="/admin/courses">Gestionar Cursos</a></li>
+    <li><a href="profile/{{userId}}">Configuraciones</a></li>
+    <li class="logout"><a href="/logout">Cerrar Sesión</a></li>
+  </ul>
+</nav>
+<section id="content">
+  <div id="container">
+    <h1>Panel de Gestión de Módulos de {{courseName}}</h1>
+    <div id="Welcome">
+      <p>Bienvenido, {{admin}}</p>
+    </div>
+    <div id="users">
+      <h2>Módulos</h2>
+      <table id="usersTable">
+        <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th>Acciones</th>
+        </tr>
+        </thead>
+        <tbody>
+        {{#modules}}
+        <tr class="tableItems">
+          <td class="center">{{id}}</td>
+          <td class="center">{{name}}</td>
+          <td class="center">
+            <a href="/admin/courses/{{courseId}}/modules/{{id}}">Ver</a>
+            <a href="/admin/courses/{{courseId}}/module/{{id}}/delete">Eliminar módulo</a>
+          </td>
+        </tr>
+        {{/modules}}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+</body>
+</html>
