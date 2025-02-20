@@ -227,4 +227,47 @@ public class UserController {
             }
         }
     }
+
+    @GetMapping("/admin/users/{id}/roles")
+    public String editUserRole(Model model, @CookieValue(value = "userId", defaultValue = "") String userId, @PathVariable long id) {
+
+        if(userId.isEmpty()) {
+
+            return "redirect:/login";
+        }else {
+
+            User currentUser = userManager.getUser(Long.parseLong(userId));
+            if(currentUser.getRole() == 0) {
+
+                User user = userManager.getUser(id);
+                model.addAttribute("userId", Long.parseLong(userId));
+                model.addAttribute("user", user.getRealName() + " " + user.getSurname());
+                model.addAttribute("id", user.getId());
+                return "/users/editRole";
+            }else {
+
+                return "redirect:/";
+            }
+        }
+    }
+
+    @GetMapping("/admin/users/{id}/roles/{role}")
+    public String updateUserRole(@CookieValue(value = "userId", defaultValue = "") String userId, @PathVariable long id, @PathVariable int role) {
+
+        if(userId.isEmpty()) {
+
+            return "redirect:/login";
+        }else {
+
+            User currentUser = userManager.getUser(Long.parseLong(userId));
+            if(currentUser.getRole() == 0) {
+
+                userManager.updateRole(id, role);
+                return "redirect:/admin";
+            }else {
+
+                return "redirect:/";
+            }
+        }
+    }
 }
