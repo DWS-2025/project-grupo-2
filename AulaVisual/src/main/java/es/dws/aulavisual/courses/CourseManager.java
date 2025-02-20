@@ -2,7 +2,9 @@ package es.dws.aulavisual.courses;
 
 import es.dws.aulavisual.Paths;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import java.io.*;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -16,104 +18,52 @@ public class CourseManager {
 
     public CourseManager() {
 
-        //loadNextId();
-        //loadCourseFromDisk();
+        List <Long> loluserIds = new ArrayList <>();
+        loluserIds.add(Long.parseLong("2"));
+        loluserIds.add(Long.parseLong("3"));
+
+        List <Module> lolModules = new ArrayList <>();
+        Module lolModule1 = new Module(0, "Intro", "/files/courses/course-0/module-0-Intro.md");
+        lolModules.add(lolModule1);
+
+        Module lolModule2 = new Module(1, "Champions", "/files/courses/course-0/module-1-Champions.md");
+        lolModules.add(lolModule2);
+
+        Course lolCourse = new Course(0, "League of Legends", "Aprende a jugar al LOL", 1, loluserIds, lolModules);
+        courseList.put(0L, lolCourse);
+
+        List <Long> padelUserIds = new ArrayList <>();
+        padelUserIds.add(Long.parseLong("3"));
+        padelUserIds.add(Long.parseLong("4"));
+        Course padelCourse = new Course(1, "Paddle", "Star having fun while exercising", 1, padelUserIds, new ArrayList <>());
+        courseList.put(1L, padelCourse);
+
+        List <Long> cookingUserIds = new ArrayList <>();
+        cookingUserIds.add(Long.parseLong("2"));
+        cookingUserIds.add(Long.parseLong("4"));
+        Course cookingUourse = new Course(2, "Cooking", "Learn how to prepare easy yet delicious meals", 1, cookingUserIds, new ArrayList <>());
+        courseList.put(2L, cookingUourse);
+        this.nextId = 3;
     }
 
-    private void loadNextId() {
-
-        try {
-
-            Reader reader = new FileReader(Paths.CURRENTCOURSEIDPATH);
-            BufferedReader bufferedReader = new BufferedReader(reader);
-            String line = bufferedReader.readLine();
-            nextId = Long.parseLong(line);
-            reader.close();
-        }catch (IOException e) {
-
-            throw new RuntimeException(e);
-        }
-    }
-
-    private void loadCourseFromDisk() {
-
-        try {
-
-            Reader reader = new FileReader(Paths.COURSESMAPPATH);
-            BufferedReader bufferedReader = new BufferedReader(reader);
-            String line = bufferedReader.readLine();
-            while (line != null) {
-
-                String[] parts = line.split(";");
-                long nextId = Long.parseLong(parts[0]);
-                List <Long> userIds = new ArrayList <>();
-                for(int i = 3; i < parts.length; i++) {
-
-                    userIds.add(Long.parseLong(parts[i]));
-                }
-                Course course = new Course(nextId, parts[1], parts[2], userIds);
-                courseList.put(nextId, course);
-                line = bufferedReader.readLine();
-            }
-            reader.close();
-        }catch (IOException e) {
-
-            throw new RuntimeException(e);
-        }
-    }
-
-    public void createCourse(long courseId, String name, String description, long teacherId) {
+    public void createCourse(String name, String description, long teacherId, List <Module> modules) {
 
         long id = nextId;
-        saveNextId();
+        this.nextId++;
         List <Long> userIds = new ArrayList <>();
-        userIds.add(teacherId);
-        Course course = new Course(courseId, name, description, userIds);
-        saveCourseInDisk(id, course);
+        Course course = new Course(id, name, description, teacherId, userIds, modules);
         courseList.put(id, course);
     }
 
-    private void saveNextId() {
+    public void addModule(long courseId, Module module) {
 
-        try {
-
-            this.nextId++;
-            Writer writer = new FileWriter(Paths.CURRENTCOURSEIDPATH);
-            String line = Long.toString(nextId);
-            writer.write(line);
-            writer.close();
-
-        }catch (IOException e) {
-
-            throw new RuntimeException(e);
-        }
+        Course course = courseList.get(courseId);
+        course.addModule(module);
     }
 
-    private void saveCourseInDisk(long courseId, Course course) {
+    public Course getCourse(long courseId) {
 
-        try {
-
-            Writer writer = new FileWriter(Paths.COURSESMAPPATH, true);
-            String line = courseId + ";" + course.getName() + ";" + course.getDescription();
-            writer.write(line);
-            List <Long> userIds = course.getUserIds();
-            for(long userId : userIds) {
-
-                line = ";" + userId;
-                writer.write(line);
-            }
-            writer.write("\n");
-            writer.close();
-
-        }catch (IOException e) {
-
-            throw new RuntimeException(e);
-        }
-    }
-
-    public Course getCourse(long id) {
-
-        return courseList.get(id);
+        return courseList.get(courseId);
     }
 
     public List <Course> getCourses() {
