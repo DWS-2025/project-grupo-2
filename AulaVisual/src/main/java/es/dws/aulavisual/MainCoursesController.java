@@ -8,10 +8,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @Controller
@@ -25,7 +23,7 @@ public class MainCoursesController {
         this.userManager = userManager;
     }
 
-    @GetMapping("/coursesview")
+    @GetMapping("/courses")
     public String coursesview(Model model, @CookieValue(value = "userId", defaultValue = "") String userId) {
 
         User user = userManager.getUser(Long.parseLong(userId));
@@ -33,19 +31,32 @@ public class MainCoursesController {
             return "redirect:/";
         }
         List <Course> courses = courseManager.getCourses();
+        List <Course> userCourses = new ArrayList<>();
+        List <Course> availableCourses = new ArrayList<>();
 
-        List <Long> usersInCourse;
-        for (Course course : courses) {
+        for(Course course : courses){
 
-            usersInCourse = course.getUserIds();
-            if(usersInCourse.contains(Long.parseLong(userId))){
+            if(courseManager.userInCourse(course.getId(), Long.parseLong(userId))){
 
+                userCourses.add(course);
+            }else{
 
+                availableCourses.add(course);
             }
         }
 
-        model.addAttribute("courses", courses);
-        return "courses/coursesview";
+        model.addAttribute("userCourses", userCourses);
+        model.addAttribute("availableCourses", availableCourses);
+        return "courses_users/coursesview";
+    }
+
+
+
+    @GetMapping("/usercourses")
+    public String usersCoursePanel(Model model, @CookieValue(value = "userId", defaultValue = "") String userId) {
+
+
+        return "courses_users/usersCoursePanel";
     }
 }
 

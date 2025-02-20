@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+  <title>Panel Cursos de Usuario</title>
+  <link rel="stylesheet" href="/css/usersCoursePanel.css">
+  <link rel="icon" href="/images/1.svg" sizes="any" type="image/svg+xml">
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+</head>
+<body>
+<nav>
+  <ul>
+    <li><a href="/admin">Gestionar Usuarios</a></li> <!-- Cabiar nombre a nombre de los módulos -->
+    <li><a href="/admin/courses">Gestionar Cursos</a></li>
+    <li><a href="profile/{{userId}}">Configuraciones</a></li>
+    <li class="logout"><a href="/logout">Cerrar Sesión</a></li>
+  </ul>
+</nav>
+<section id="content">
+  <script>
+    fetch("/course/{{courseId}}/module/{{id}}/content")
+            .then(response => response.text())
+            .then(text => {
+              document.getElementById('content').innerHTML = marked.parse(text);
+            });
+  </script>
+</section>
+</body>
+</html>
