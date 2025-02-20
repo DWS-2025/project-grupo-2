@@ -127,7 +127,7 @@ nav ul li a {
 }
 
 .roleButton {
-    background-color: #4CAF50; /* Verde */
+    background-color: #333; /* Verde */
     border: none;
     color: white;
     padding: 15px 32px;
@@ -144,5 +144,32 @@ nav ul li a {
 .roleButton:hover {
     background-color: white;
     color: black;
-    border: 2px solid #4CAF50;
+    border: 2px solid #333;
+}
+
+#newButtonDiv {
+
+    display: flex;
+    justify-content: center;
+    align-content: flex-end;
+}
+
+#newButton {
+
+    background-color: #333; /* Verde */
+    color: white;
+    padding: 7px 16px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    cursor: pointer;
+    transition-duration: 0.4s;
+    border-radius: 10px;
+}
+
+#newButton:hover {
+    background-color: white;
+    color: black;
+    border: 2px solid #333;
 }
