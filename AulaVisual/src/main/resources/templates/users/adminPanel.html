@@ -29,7 +29,9 @@
                     <th>Nombre</th>
                     <th>Apellido</th>
                     <th>Nombre Usuario</th>
+                    <th>Rol</th>
                     <th>Acciones</th>
+                    <th>Gestionar Roles</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -38,9 +40,13 @@
                     <td class="center">{{realName}}</td>
                     <td class="center">{{surname}}</td>
                     <td class="center">{{userName}}</td>
+                    <td class="center">{{role}}</td>
                     <td class="center">
                         <a href="/admin/users/{{id}}">Editar</a>
                         <a href="/admin/users/{{id}}/delete">Eliminar</a>
+                    </td>
+                    <td class="center">
+                        <a href="/admin/users/{{id}}/roles">Gestionar Roles</a>
                     </td>
                 </tr>
                 {{/users}}
