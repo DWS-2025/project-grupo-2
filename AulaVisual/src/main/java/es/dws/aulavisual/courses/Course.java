@@ -32,29 +32,9 @@ public class Course {
         return name;
     }
 
-    public String getDescription() {
-
-        return description;
-    }
-
-    public long getTeacherId() {
-
-        return teacherId;
-    }
-
-    public List <Long> getUserIds() {
-
-        return userIds;
-    }
-
     public List <Module> getModules() {
 
         return modules;
-    }
-
-    public long getNumberOfModules() {
-
-        return modules.size();
     }
 
     public void addModule(Module module) {
@@ -65,6 +45,10 @@ public class Course {
     public void removeModule(Module module) {
 
         modules.remove(module);
+    }
+
+    public List <Long> getUserIds(){
+        return userIds;
     }
 
     public long getNumberModules() {

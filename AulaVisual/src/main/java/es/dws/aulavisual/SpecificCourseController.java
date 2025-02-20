@@ -75,19 +75,7 @@ public class SpecificCourseController {
     public String addModule(@RequestParam String name, @PathVariable long id, MultipartFile module) {
 
         if (!module.isEmpty()) {
-            try {
-
-                Course course = courseManager.getCourse(id);
-                Path coursePath = Paths.COURSEMODULESPATH.resolve("course-" + id);
-                Files.createDirectories(coursePath);
-                Path modulePath = coursePath.resolve("module-" + course.getNumberModules() + "-" + name + ".md");
-                module.transferTo(modulePath);
-                String modulePathString = modulePath.toString();
-                course.addModule(new Module(course.getNumberModules(), name, modulePathString));
-            }catch (Exception e) {
-
-                System.out.println("Error saving madule: " + e.getMessage());
-            }
+            courseManager.addModule(id, name, module);
         }
         return "redirect:/admin/courses";
     }
@@ -130,22 +118,46 @@ public class SpecificCourseController {
 
             return ResponseEntity.status(404).body("Module not found1");
         }
-        try {
-
-            Path coursePath = Paths.COURSEMODULESPATH.resolve("course-" + courseId);
-            Path modulePath = coursePath.resolve("module" + id + "-" + module.getName() + ".md");
-            Resource content = new UrlResource(modulePath.toUri());
-            if (!Files.exists(modulePath)) {
-
-                return ResponseEntity.status(404).body("Module not found2");
-            }
-            return ResponseEntity.ok().header(HttpHeaders.CONTENT_TYPE, "text/markdown").body(content);
-        }catch (Exception e) {
-
-            return ResponseEntity.status(404).body("Module not found3");
-        }
+        return courseManager.viewCourse(courseId, id);
     }
 
+    @GetMapping("/course/{courseId}/delete")
+    public String deleteCourse(@PathVariable long courseId, @CookieValue(value = "userId", defaultValue = "") String userId) {
+
+        if(userId.isEmpty()) {
+
+            return "redirect:/login";
+        }
+        User user = userManager.getUser(Long.parseLong(userId));
+        if(user.getRole() != 0) {
+
+            return "redirect:/";
+        }
+        courseManager.removeCourse(courseId);
+        return "redirect:/admin/courses";
+    }
+
+    @GetMapping("/admin/courses/{courseId}/module/{id}/delete")
+    public String deleteModule(@PathVariable long courseId, @PathVariable long id, @CookieValue(value = "userId", defaultValue = "") String userId) {
+
+        if(userId.isEmpty()) {
+
+            return "redirect:/login";
+        }
+        User user = userManager.getUser(Long.parseLong(userId));
+        if(user.getRole() != 0) {
+
+            return "redirect:/";
+        }
+        Course course = courseManager.getCourse(courseId);
+        Module module = course.getModuleById(id);
+        if (module == null) {
+
+            return "redirect:/admin/courses/{courseId}/modules";
+        }
+        courseManager.removeModule(courseId, id);
+        return "redirect:/admin/courses/{courseId}/modules";
+    }
     @GetMapping("/addCourse")
     public String addCourse() {
 
