@@ -157,4 +157,37 @@ public class CourseManager {
         }
         course.getModules().clear();
     }
+
+    public void addImage(MultipartFile image) {
+
+        try {
+
+            long courseId = this.nextId--;
+            Course course = getCourse(courseId);
+            Path coursePath = Paths.COURSEMODULESPATH.resolve("course-" + courseId);
+            Files.createDirectories(coursePath);
+            Path imgPath = coursePath.resolve("img.png");
+            image.transferTo(imgPath);
+        }catch (Exception e) {
+
+            System.out.println("Error saving img: " + e.getMessage());
+        }
+    }
+
+    public Path getImage(long courseId) {
+
+        try {
+
+            Path coursePath = Paths.COURSEMODULESPATH.resolve("course-" + courseId);
+            Path imgPath = coursePath.resolve("img.png");
+            if (Files.exists(imgPath)) {
+
+                return imgPath;
+            }
+        }catch (Exception e) {
+
+            System.out.println("Error getting img: " + e.getMessage());
+        }
+        return null;
+    }
 }
