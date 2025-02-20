@@ -41,21 +41,26 @@ public class UserController {
     public String userLogin(Model model, @RequestParam String username, @RequestParam String password, HttpServletResponse response) {
 
 
-        if(userManager.login(username, password)) {
+        if(!(username.isEmpty() && password.isEmpty())) {
 
-            long userId = userManager.getUserId(username);
-            // create a cookie
-            Cookie cookie = new Cookie("userId", Long.toString(userId));
-            cookie.setMaxAge(24 * 60 * 60); //1 day
+            if(userManager.login(username, password)) {
 
-            //add cookie to response
-            response.addCookie(cookie);
-            model.addAttribute("userName", username);
-            return "welcome";
-        }else {
+                long userId = userManager.getUserId(username);
+                // create a cookie
+                Cookie cookie = new Cookie("userId", Long.toString(userId));
+                cookie.setMaxAge(24 * 60 * 60); //1 day
 
-            return "redirect:/login/error";
+                //add cookie to response
+                response.addCookie(cookie);
+                model.addAttribute("userName", username);
+                return "welcome";
+            }else {
+
+                return "redirect:/login/error";
+            }
         }
+
+        return "redirect:/login";
     }
 
     @GetMapping("/register")
@@ -67,8 +72,13 @@ public class UserController {
     @PostMapping("/register")
     public String register(@RequestParam String name, @RequestParam String surname, @RequestParam String username, @RequestParam String password) {
 
-        userManager.addUser(name, surname, username, password, 2);
-        return "redirect:/login";
+        if(!(name.isEmpty() && surname.isEmpty() && username.isEmpty() && password.isEmpty())) {
+
+            userManager.addUser(name, surname, username, password, 2);
+            return "redirect:/login";
+        }
+
+        return "redirect:/register";
     }
 
     @GetMapping("/logout")
