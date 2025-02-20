@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+  <title>Panel Administración</title>
+  <link rel="stylesheet" href="/css/adminPage.css">
+  <link rel="icon" href="/images/1.svg" sizes="any" type="image/svg+xml">
+</head>
+<body>
+<nav>
+  <ul>
+    <li><a href="/admin">Gestionar Usuarios</a></li>
+    <li><a href="/admin/courses">Gestionar Cursos</a></li>
+    <li><a href="profile/{{userId}}">Configuraciones</a></li>
+    <li class="logout"><a href="/logout">Cerrar Sesión</a></li>
+  </ul>
+</nav>
+<section id="content">
+  <div id="container">
+    <h1>{{user}}</h1>
+    <div class="centerRoles">
+      <a class="roleButton" href="/admin/users/{{id}}/roles/0">Convertir en Admin</a>
+      <a class="roleButton" href="/admin/users/{{id}}/roles/1">Convertir en Profesor</a>
+      <a class="roleButton" href="/admin/users/{{id}}/roles/2">Convertir en Alumno</a>
+    </div>
+  </div>
+</section>
+</body>
+</html>

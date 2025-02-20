@@ -230,4 +230,15 @@ public class UserManager {
         }
         return ids;
     }
+
+    public void updateRole(long id, int role) {
+
+        User user = userList.get(id);
+        if(removeUser(id)) {
+
+            user.setRole(role);
+            userList.put(id, user);
+            saveUserInDisk(id, user);
+        }
+    }
 }
