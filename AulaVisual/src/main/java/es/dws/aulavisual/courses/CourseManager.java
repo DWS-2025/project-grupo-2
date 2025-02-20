@@ -1,9 +1,14 @@
 package es.dws.aulavisual.courses;
 
 import es.dws.aulavisual.Paths;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.*;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,11 +28,14 @@ public class CourseManager {
         loluserIds.add(Long.parseLong("3"));
 
         List <Module> lolModules = new ArrayList <>();
-        Module lolModule1 = new Module(0, "Intro", "/files/courses/course-0/module-0-Intro.md");
+        Module lolModule1 = new Module(0, "Intro");
         lolModules.add(lolModule1);
 
-        Module lolModule2 = new Module(1, "Champions", "/files/courses/course-0/module-1-Champions.md");
+        Module lolModule2 = new Module(1, "Champions");
         lolModules.add(lolModule2);
+
+        Module lolModule3 = new Module(2, "Delete_me");
+        lolModules.add(lolModule3);
 
         Course lolCourse = new Course(0, "League of Legends", "Aprende a jugar al LOL", 1, loluserIds, lolModules);
         courseList.put(0L, lolCourse);
@@ -55,10 +63,20 @@ public class CourseManager {
         courseList.put(id, course);
     }
 
-    public void addModule(long courseId, Module module) {
+    public void addModule(long courseId, String name, MultipartFile module) {
 
-        Course course = courseList.get(courseId);
-        course.addModule(module);
+        try {
+
+            Course course = getCourse(courseId);
+            Path coursePath = Paths.COURSEMODULESPATH.resolve("course-" + courseId);
+            Files.createDirectories(coursePath);
+            Path modulePath = coursePath.resolve("module-" + course.getNumberModules() + "-" + name + ".md");
+            module.transferTo(modulePath);
+            course.addModule(new Module(course.getNumberModules(), name));
+        }catch (Exception e) {
+
+            System.out.println("Error saving madule: " + e.getMessage());
+        }
     }
 
     public Course getCourse(long courseId) {
@@ -69,5 +87,74 @@ public class CourseManager {
     public List <Course> getCourses() {
 
         return new ArrayList <>(courseList.values());
+    }
+
+    public boolean userInCourse(long courseId, long userId) {
+        Course course = courseList.get(courseId);
+        return course.getUserIds().contains(userId);
+    }
+
+    public void removeModule(long courseId, long moduleId) {
+        Course course = courseList.get(courseId);
+        Module module = course.getModuleById(moduleId);
+        if (module != null) {
+
+            try {
+                Path coursePath = Paths.COURSEMODULESPATH.resolve("course-" + courseId);
+                Path modulePath = coursePath.resolve("module" + moduleId + "-" + module.getName() + ".md");
+                Files.deleteIfExists(modulePath);
+            } catch (IOException e) {
+                System.out.println("Error deleting module file: " + e.getMessage());
+            }
+            course.removeModule(module);
+        }
+    }
+
+    public ResponseEntity<Object> viewCourse(long courseId, long id) {
+        Course course = courseList.get(courseId);
+        Module module = course.getModuleById(id);
+
+        try {
+
+            Path coursePath = Paths.COURSEMODULESPATH.resolve("course-" + courseId);
+            Path modulePath = coursePath.resolve("module" + id + "-" + module.getName() + ".md");
+            Resource content = new UrlResource(modulePath.toUri());
+            if (!Files.exists(modulePath)) {
+
+                return ResponseEntity.status(404).body("Module not found2");
+            }
+            return ResponseEntity.ok().header(HttpHeaders.CONTENT_TYPE, "text/markdown").body(content);
+        }catch (Exception e) {
+
+            return ResponseEntity.status(404).body("Module not found3");
+        }
+    }
+
+    public void removeCourse(long courseId) {
+        Course course = courseList.get(courseId);
+        List <Module> modules = course.getModules();
+        deleteAllModules(courseId);
+        try {
+            Path coursePath = Paths.COURSEMODULESPATH.resolve("course-" + courseId);
+            Files.deleteIfExists(coursePath);
+        } catch (IOException e) {
+            System.out.println("Error deleting course file: " + e.getMessage());
+        }
+        courseList.remove(courseId);
+    }
+
+    public void deleteAllModules(Long courseId) {
+        Course course = courseList.get(courseId);
+        List <Module> modules = course.getModules();
+        for (Module module : modules) {
+            try {
+                Path coursePath = Paths.COURSEMODULESPATH.resolve("course-" + courseId);
+                Path modulePath = coursePath.resolve("module" + module.getId() + "-" + module.getName() + ".md");
+                Files.deleteIfExists(modulePath);
+            } catch (IOException e) {
+                System.out.println("Error deleting module file: " + e.getMessage());
+            }
+        }
+        course.getModules().clear();
     }
 }

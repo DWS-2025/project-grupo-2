@@ -4,13 +4,10 @@ public class Module {
 
     private final long id;
     private final String name;
-    private final String path;
 
-
-    public Module(long id, String name, String path) {
+    public Module(long id, String name) {
         this.id = id;
         this.name = name;
-        this.path = path;
     }
 
     public long getId() {
@@ -21,10 +18,5 @@ public class Module {
     public String getName() {
 
         return name;
-    }
-
-    public String getPath() {
-
-        return path;
     }
 }
