@@ -19,12 +19,12 @@ import java.util.List;
 
 
 @Controller
-public class SpecificCourseController {
+public class CourseManagementController {
 
     private final CourseManager courseManager;
     private final UserManager userManager;
 
-    public SpecificCourseController(CourseManager courseManager, UserManager userManager) {
+    public CourseManagementController(CourseManager courseManager, UserManager userManager) {
 
         this.courseManager = courseManager;
         this.userManager = userManager;
@@ -217,13 +217,5 @@ public class SpecificCourseController {
 
             return ResponseEntity.notFound().build();
         }
-    }
-
-    @PostMapping("/addCourse")
-    public String addCourse(@RequestParam String name, @RequestParam String description, @RequestParam long teacher) {
-
-        List <Module> modules = new ArrayList <>();
-        courseManager.createCourse(name, description, teacher, modules);
-        return "redirect:/manageCourses";
     }
 }
