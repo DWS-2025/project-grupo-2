@@ -1,7 +1,8 @@
 package es.dws.aulavisual.courses;
 
+import es.dws.aulavisual.submissions.Submission;
+
 import java.util.List;
-import java.util.Map;
 
 public class Course {
 
@@ -11,8 +12,9 @@ public class Course {
     private final long teacherId;
     private final List <Long> userIds;
     private final List <Module> modules;
+    private final Submission submission;
 
-    public Course(long id, String name, String description, long teacherId, List <Long> userIds, List<Module> modules) {
+    public Course(long id, String name, String description, long teacherId, List <Long> userIds, List<Module> modules, Submission submission) {
 
         this.id = id;
         this.name = name;
@@ -20,6 +22,7 @@ public class Course {
         this.teacherId = teacherId;
         this.userIds = userIds;
         this.modules = modules;
+        this.submission = submission;
     }
 
     public long getId() {

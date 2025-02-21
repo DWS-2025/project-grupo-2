@@ -1,5 +1,6 @@
 package es.dws.aulavisual;
 
+import es.dws.aulavisual.submissions.Submission;
 import es.dws.aulavisual.users.User;
 import es.dws.aulavisual.users.UserManager;
 import org.springframework.core.io.Resource;
@@ -44,7 +45,7 @@ public class SpecificCourseController {
             model.addAttribute("userId", Long.parseLong(userId));
             List <Course> courses = courseManager.getCourses();
             model.addAttribute("courses", courses);
-            return "courses/manageCourses";
+            return "courses-management/manageCourses";
         }
         return "redirect:/";
     }
@@ -65,7 +66,7 @@ public class SpecificCourseController {
             model.addAttribute("userId", Long.parseLong(userId));
             model.addAttribute("admin", user.getRealName());
             model.addAttribute("modules", course.getModules());
-            return "courses/modules";
+            return "courses-management/modules";
         }
         return "redirect:/";
     }
@@ -98,7 +99,7 @@ public class SpecificCourseController {
 
             model.addAttribute("courseId", course.getId());
             model.addAttribute("userId", Long.parseLong(userId));
-            return "courses/test";
+            return "courses-management/test";
         }
         return "redirect:/";
     }
@@ -171,11 +172,11 @@ public class SpecificCourseController {
             return "redirect:/";
         }
         model.addAttribute("userId", Long.parseLong(userId));
-        return "courses/addCourse";
+        return "courses-management/addCourse";
     }
 
     @PostMapping("/admin/courses/addCourse")
-    public String addCourse(@RequestParam String name, @RequestParam String description, @RequestParam long teacherId, MultipartFile image, @CookieValue(value = "userId", defaultValue = "") String userId) {
+    public String addCourse(@RequestParam String name, @RequestParam String description, @RequestParam long teacherId, MultipartFile image, @RequestParam String submission, @CookieValue(value = "userId", defaultValue = "") String userId) {
 
         if(userId.isEmpty()) {
 
@@ -192,7 +193,7 @@ public class SpecificCourseController {
             return "redirect:/";    //Should inform the user that a teacher is required
         }
         List <Module> modules = new ArrayList <>();
-        courseManager.createCourse(name, description, teacherId, modules);
+        courseManager.createCourse(name, description, teacherId, modules, submission);
         if(image != null && !image.isEmpty()) {
 
             courseManager.addImage(image);
@@ -203,7 +204,7 @@ public class SpecificCourseController {
     @GetMapping("/admin/courses/{courseId}/addModule")
     public String addModule() {
 
-        return "courses/addModule";
+        return "courses-management/addModule";
     }
 
     @GetMapping("/courses/{courseId}/getImage")
@@ -217,13 +218,5 @@ public class SpecificCourseController {
 
             return ResponseEntity.notFound().build();
         }
-    }
-
-    @PostMapping("/addCourse")
-    public String addCourse(@RequestParam String name, @RequestParam String description, @RequestParam long teacher) {
-
-        List <Module> modules = new ArrayList <>();
-        courseManager.createCourse(name, description, teacher, modules);
-        return "redirect:/manageCourses";
     }
 }

@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Entrega</title>
+    <link rel="stylesheet" href="/css/userPage.css">
+    <link rel="icon" href="/images/1.svg" sizes="any" type="image/svg+xml">
+</head>
+<body>
+<div class="container">
+    <h1>Entrega del Curso {{courseName}}</h1>
+    {{^submitted}}
+    {{/submitted}}
+    {{#submitted}}
+    <h2>Entrega Realizada</h2>
+    {{/submitted}}
+</div>
+</body>
+</html>

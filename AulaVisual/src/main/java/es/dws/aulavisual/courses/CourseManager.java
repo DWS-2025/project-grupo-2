@@ -1,6 +1,7 @@
 package es.dws.aulavisual.courses;
 
 import es.dws.aulavisual.Paths;
+import es.dws.aulavisual.submissions.Submission;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
@@ -37,29 +38,31 @@ public class CourseManager {
         Module lolModule3 = new Module(2, "Delete_me");
         lolModules.add(lolModule3);
 
-        Course lolCourse = new Course(0, "League of Legends", "Aprende a jugar al LOL", 1, loluserIds, lolModules);
+        Submission lolSubmission = new Submission(0, "Cual es el genero del LOL?");
+        Course lolCourse = new Course(0, "League of Legends", "Aprende a jugar al LOL", 1, loluserIds, lolModules, lolSubmission);
         courseList.put(0L, lolCourse);
 
         List <Long> padelUserIds = new ArrayList <>();
         padelUserIds.add(Long.parseLong("3"));
         padelUserIds.add(Long.parseLong("4"));
-        Course padelCourse = new Course(1, "Paddle", "Star having fun while exercising", 1, padelUserIds, new ArrayList <>());
+        Course padelCourse = new Course(1, "Paddle", "Star having fun while exercising", 1, padelUserIds, new ArrayList <>(), null);
         courseList.put(1L, padelCourse);
 
         List <Long> cookingUserIds = new ArrayList <>();
         cookingUserIds.add(Long.parseLong("2"));
         cookingUserIds.add(Long.parseLong("4"));
-        Course cookingUourse = new Course(2, "Cooking", "Learn how to prepare easy yet delicious meals", 1, cookingUserIds, new ArrayList <>());
+        Course cookingUourse = new Course(2, "Cooking", "Learn how to prepare easy yet delicious meals", 1, cookingUserIds, new ArrayList <>(), null);
         courseList.put(2L, cookingUourse);
         this.nextId = 3;
     }
 
-    public void createCourse(String name, String description, long teacherId, List <Module> modules) {
+    public void createCourse(String name, String description, long teacherId, List <Module> modules, String submissiontext) {
 
         long id = nextId;
         this.nextId++;
         List <Long> userIds = new ArrayList <>();
-        Course course = new Course(id, name, description, teacherId, userIds, modules);
+        Submission submission = new Submission(id, submissiontext);
+        Course course = new Course(id, name, description, teacherId, userIds, modules, submission);
         courseList.put(id, course);
     }
 
