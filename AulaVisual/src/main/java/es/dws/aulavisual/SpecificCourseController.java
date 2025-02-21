@@ -13,6 +13,7 @@ import es.dws.aulavisual.courses.CourseManager;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -39,7 +40,7 @@ public class SpecificCourseController {
             return "redirect:/login";
         }
         User user = userManager.getUser(Long.parseLong(userId));
-        if(user.getRole() == 0){
+        if(user.getRole() == 0) {
 
             model.addAttribute("admin", user.getRealName());
             model.addAttribute("userId", Long.parseLong(userId));
@@ -59,7 +60,7 @@ public class SpecificCourseController {
         }
         Course course = courseManager.getCourse(id);
         User user = userManager.getUser(Long.parseLong(userId));
-        if(user.getRole() == 0){
+        if(user.getRole() == 0) {
 
             model.addAttribute("courseName", course.getName());
             model.addAttribute("courseId", id);
@@ -74,7 +75,7 @@ public class SpecificCourseController {
     @PostMapping("/admin/courses/{id}/modules/add")
     public String addModule(@RequestParam String name, @PathVariable long id, MultipartFile module) {
 
-        if (!module.isEmpty()) {
+        if(!module.isEmpty()) {
             courseManager.addModule(id, name, module);
         }
         return "redirect:/admin/courses";
@@ -89,10 +90,10 @@ public class SpecificCourseController {
         }
         Course course = courseManager.getCourse(courseId);
         User user = userManager.getUser(Long.parseLong(userId));
-        if(user.getRole() == 0){
+        if(user.getRole() == 0) {
 
             Module module = course.getModuleById(id);
-            if (module == null) {
+            if(module == null) {
 
                 return "redirect:/admin/courses/{courseId}/modules/{id}";
             }
@@ -114,7 +115,7 @@ public class SpecificCourseController {
 
         Course course = courseManager.getCourse(courseId);
         Module module = course.getModuleById(id);
-        if (module == null) {
+        if(module == null) {
 
             return ResponseEntity.status(404).body("Module not found1");
         }
@@ -151,17 +152,52 @@ public class SpecificCourseController {
         }
         Course course = courseManager.getCourse(courseId);
         Module module = course.getModuleById(id);
-        if (module == null) {
+        if(module == null) {
 
             return "redirect:/admin/courses/{courseId}/modules";
         }
         courseManager.removeModule(courseId, id);
         return "redirect:/admin/courses/{courseId}/modules";
     }
-    @GetMapping("/addCourse")
+
+    @GetMapping("/admin/courses/addCourse")
     public String addCourse() {
 
         return "courses/addCourse";
+    }
+
+    @PostMapping("/admin/courses/addCourse")
+    public String addCourse(@RequestParam String name, @RequestParam String description, @RequestParam long teacherId, MultipartFile image, @CookieValue(value = "userId", defaultValue = "") String userId) {
+
+        if(userId.isEmpty()) {
+
+            return "redirect:/login";
+        }
+        User user = userManager.getUser(Long.parseLong(userId));
+        if(user.getRole() != 0) {
+
+            return "redirect:/";
+        }
+        List <Module> modules = new ArrayList <>();
+        courseManager.createCourse(name, description, teacherId, modules);
+        if(image != null && !image.isEmpty()) {
+
+            courseManager.addImage(image);
+        }
+        return "redirect:/admin/courses";
+    }
+
+    @GetMapping("/courses/{courseId}/getImage")
+    public ResponseEntity <Resource> getImage(@PathVariable Long courseId) {
+
+        try {
+            Path path = courseManager.getImage(courseId);
+            Resource resource = new UrlResource(path.toUri());
+            return ResponseEntity.ok().header(HttpHeaders.CONTENT_TYPE, "image/jpeg").body(resource);
+        } catch (Exception e) {
+
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @PostMapping("/addCourse")
@@ -170,11 +206,5 @@ public class SpecificCourseController {
         List <Module> modules = new ArrayList <>();
         courseManager.createCourse(name, description, teacher, modules);
         return "redirect:/manageCourses";
-    }
-
-    @GetMapping("/course/{id}")
-    public String getCourseById(@RequestParam long id) {
-
-        return "courses/course";
     }
 }
