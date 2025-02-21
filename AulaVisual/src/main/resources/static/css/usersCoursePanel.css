@@ -16,10 +16,11 @@ nav {
     box-shadow: 2px 0 5px rgba(0,0,0,0.1);
     color: #fff;
     z-index: 2;
+    position: fixed;
 }
 
-ul{
-    margin-top: 40%;
+.modules{
+    margin-top: 10%;
 }
 
 nav ul li {
@@ -34,4 +35,9 @@ nav ul {
 nav ul li a {
     text-decoration: none;
     color: #fff;
+}
+
+#content {
+
+    margin-left: 11%;
 }
