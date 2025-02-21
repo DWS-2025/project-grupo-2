@@ -46,9 +46,11 @@ public class MainCoursesController {
             }
         }
 
+        model.addAttribute("user", user);
+        model.addAttribute("userId", Long.parseLong(userId));
         model.addAttribute("userCourses", userCourses);
         model.addAttribute("availableCourses", availableCourses);
-        return "courses_users/coursesview";
+        return "courses-user/courses";
     }
 
 
@@ -67,7 +69,7 @@ public class MainCoursesController {
             model.addAttribute("modules", course.getModules());
             model.addAttribute("courseId", id);
             model.addAttribute("id", moduleId);
-            return "courses_users/usersCoursePanel";
+            return "courses-user/singleCourse";
         }
 
         return "redirect:/courses";

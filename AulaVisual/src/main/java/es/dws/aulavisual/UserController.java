@@ -1,6 +1,5 @@
 package es.dws.aulavisual;
 
-import es.dws.aulavisual.Images.ImageManager;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.ResponseEntity;
@@ -11,18 +10,13 @@ import es.dws.aulavisual.users.UserManager;
 import org.springframework.web.multipart.MultipartFile;
 import es.dws.aulavisual.users.User;
 
-import java.util.List;
-
 @Controller
 public class UserController {
 
     private final UserManager userManager;
-    private final ImageManager imageManager;
-
-    public UserController(UserManager userManager, ImageManager imageManager) {
+    public UserController(UserManager userManager) {
 
         this.userManager = userManager;
-        this.imageManager = imageManager;
     }
 
     @GetMapping("/login")
@@ -53,7 +47,13 @@ public class UserController {
                 //add cookie to response
                 response.addCookie(cookie);
                 model.addAttribute("userName", username);
-                return "welcome";
+                if(userManager.getUser(userId).getRole() == 0) {
+
+                    return "redirect:/admin";
+                }else {
+
+                    return "redirect:/courses";
+                }
             }else {
 
                 return "redirect:/login/error";
@@ -132,7 +132,7 @@ public class UserController {
 
         if(image != null && !image.isEmpty()) {
 
-            imageManager.saveImage("user-" + Long.parseLong(userId), Long.parseLong(userId), image);
+            userManager.saveImage("user-" + Long.parseLong(userId), Long.parseLong(userId), image);
         }
 
         return "redirect:/profile";
@@ -151,7 +151,7 @@ public class UserController {
             userId = Long.toString(id);
             currentUser = userManager.getUser(Long.parseLong(userId));
         }
-        return imageManager.loadImage("user-" + Long.parseLong(userId), Long.parseLong(userId));
+        return userManager.loadImage("user-" + Long.parseLong(userId), Long.parseLong(userId));
 
     }
 
