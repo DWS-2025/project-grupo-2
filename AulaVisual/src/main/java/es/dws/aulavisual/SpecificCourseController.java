@@ -13,8 +13,6 @@ import es.dws.aulavisual.courses.CourseManager;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -122,7 +120,7 @@ public class SpecificCourseController {
         return courseManager.viewCourse(courseId, id);
     }
 
-    @GetMapping("/course/{courseId}/delete")
+    @GetMapping("/admin/courses/{courseId}/delete")
     public String deleteCourse(@PathVariable long courseId, @CookieValue(value = "userId", defaultValue = "") String userId) {
 
         if(userId.isEmpty()) {
@@ -161,8 +159,18 @@ public class SpecificCourseController {
     }
 
     @GetMapping("/admin/courses/addCourse")
-    public String addCourse() {
+    public String addCourse(@CookieValue(value = "userId", defaultValue = "") String userId, Model model) {
 
+        if(userId.isEmpty()) {
+
+            return "redirect:/login";
+        }
+        User user = userManager.getUser(Long.parseLong(userId));
+        if(user.getRole() != 0) {
+
+            return "redirect:/";
+        }
+        model.addAttribute("userId", Long.parseLong(userId));
         return "courses/addCourse";
     }
 
@@ -178,6 +186,11 @@ public class SpecificCourseController {
 
             return "redirect:/";
         }
+        User techer = userManager.getUser(teacherId);
+        if (techer.getRole() != 1) {
+
+            return "redirect:/";    //Should inform the user that a teacher is required
+        }
         List <Module> modules = new ArrayList <>();
         courseManager.createCourse(name, description, teacherId, modules);
         if(image != null && !image.isEmpty()) {
@@ -185,6 +198,12 @@ public class SpecificCourseController {
             courseManager.addImage(image);
         }
         return "redirect:/admin/courses";
+    }
+
+    @GetMapping("/admin/courses/{courseId}/addModule")
+    public String addModule() {
+
+        return "courses/addModule";
     }
 
     @GetMapping("/courses/{courseId}/getImage")

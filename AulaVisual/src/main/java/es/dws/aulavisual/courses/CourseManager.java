@@ -131,10 +131,10 @@ public class CourseManager {
     }
 
     public void removeCourse(long courseId) {
-        Course course = courseList.get(courseId);
-        List <Module> modules = course.getModules();
         deleteAllModules(courseId);
         try {
+            Path imagePath = Paths.COURSEMODULESPATH.resolve("course-" + courseId).resolve("img.png");
+            Files.deleteIfExists(imagePath);
             Path coursePath = Paths.COURSEMODULESPATH.resolve("course-" + courseId);
             Files.deleteIfExists(coursePath);
         } catch (IOException e) {
@@ -162,8 +162,8 @@ public class CourseManager {
 
         try {
 
-            long courseId = this.nextId--;
-            Course course = getCourse(courseId);
+            long courseId = this.nextId;
+            courseId--;
             Path coursePath = Paths.COURSEMODULESPATH.resolve("course-" + courseId);
             Files.createDirectories(coursePath);
             Path imgPath = coursePath.resolve("img.png");
