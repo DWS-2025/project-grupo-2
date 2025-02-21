@@ -5,17 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Courses</title>
     <link rel="stylesheet" href="/css/coursesviewPage.css">
+    <script src="/js/course-view.js"></script>
 </head>
 <body class="mycourses">
 <h1>Mis Cursos</h1>
 <div class="CoursesContainer">
     {{#userCourses}} <!-- Plantilla Mustache de cómo será el modelo de un curso para generar dinámicamente el resto -->
-    <div class="course">
+    <div class="course" onclick='redirect("/courses/{{id}}")'>
         <div class="course-title">
             <h3>{{name}}</h3>   <!-- Usamos Mustache para cargar el nombre del curso (solicitado de Victor) , que en el controlador es dado a través del ArrayList del objeto curso -->
         </div>
         <div class="course-image">
-            <img src="/images/course1_LOL.jpg" alt="League of Legends"> <!-- Victor debe pasarme la imagen que estará guardada como una propoiedad en la clase Course, para que fuese dinámica sería del estilo de: img src="{imageUrl}" alt="{name}" -->
+            <img src="/courses/{{id}}/getImage" alt="League of Legends"> <!-- Victor debe pasarme la imagen que estará guardada como una propoiedad en la clase Course, para que fuese dinámica sería del estilo de: img src="{imageUrl}" alt="{name}" -->
         </div>
         <div class="course-description">
             <p>{{description}}</p> <!-- Usamos Mustache para cargar la descripción del curso (solicitado de Victor), que en el controlador es dado a través del ArrayList del objeto curso -->
@@ -31,7 +32,7 @@
             <h3>{{name}}</h3>   <!-- Usamos Mustache para cargar el nombre del curso (solicitado de Victor) , que en el controlador es dado a través del ArrayList del objeto curso -->
         </div>
         <div class="course-image">
-            <img src="/images/course1_LOL.jpg" alt="League of Legends"> <!-- Victor debe pasarme la imagen que estará guardada como una propoiedad en la clase Course, para que fuese dinámica sería del estilo de: img src="{imageUrl}" alt="{name}" -->
+            <img src="/courses/{{id}}/getImage" alt="League of Legends"> <!-- Victor debe pasarme la imagen que estará guardada como una propoiedad en la clase Course, para que fuese dinámica sería del estilo de: img src="{imageUrl}" alt="{name}" -->
         </div>
         <div class="course-description">
             <p>{{description}}</p> <!-- Usamos Mustache para cargar la descripción del curso (solicitado de Victor), que en el controlador es dado a través del ArrayList del objeto curso -->

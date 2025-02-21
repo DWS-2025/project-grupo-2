@@ -8,6 +8,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,11 +53,24 @@ public class MainCoursesController {
 
 
 
-    @GetMapping("/usercourses")
-    public String usersCoursePanel(Model model, @CookieValue(value = "userId", defaultValue = "") String userId) {
+    @GetMapping("/courses/{id}/module/{moduleId}")
+    public String usersCoursePanel(Model model, @CookieValue(value = "userId", defaultValue = "") String userId, @PathVariable long id, @PathVariable long moduleId) {
 
+        if(userId.isEmpty()) {
 
-        return "courses_users/usersCoursePanel";
+            return "redirect:/login";
+        }
+        User user = userManager.getUser(Long.parseLong(userId));
+        Course course = courseManager.getCourse(id);
+        if(courseManager.userInCourse(id, Long.parseLong(userId))) {
+
+            model.addAttribute("modules", course.getModules());
+            model.addAttribute("courseId", id);
+            model.addAttribute("id", moduleId);
+            return "courses_users/usersCoursePanel";
+        }
+
+        return "redirect:/courses";
     }
 }
 
