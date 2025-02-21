@@ -1,27 +1,44 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns="http://www.w3.org/1999/html">
 <head>
     <meta charset="UTF-8">
-    <title>Create Course</title>
+    <title>Panel Administración</title>
+    <link rel="stylesheet" href="/css/adminPage.css">
     <link rel="icon" href="/images/1.svg" sizes="any" type="image/svg+xml">
 </head>
 <body>
-<h1>Create a New Course</h1>
-    <div>
-        <label for="name">Course Name:</label>
-        <input type="text" id="name" name="name" required>
+<nav>
+    <ul>
+        <li><a href="/admin">Gestionar Usuarios</a></li>
+        <li><a href="/admin/courses">Gestionar Cursos</a></li>
+        <li><a href="/profile/{{userId}}">Configuraciones</a></li>
+        <li class="logout"><a href="/logout">Cerrar Sesión</a></li>
+    </ul>
+</nav>
+<section id="content">
+    <div id="container">
+        <h1>Introduzca los datos</h1>
+        <div id="users">
+            <form id="courseForm" action="/admin/courses/addCourse" method="post" enctype="multipart/form-data">
+                <div>
+                    <label for="name">Nombre del curso:</label>
+                    <input type="text" id="name" name="name" required>
+                </div>
+                <div>
+                    <label for="description">Descripción:</label>
+                    <textarea id="description" name="description" required></textarea>
+                </div>
+                <div>
+                    <label for="teacherId">ID del profesor:</label>
+                    <input type="text" id="teacherId" name="teacherId" required>
+                </div>
+                <input type="file" id="image" name="image" accept="image/png">
+                <div>
+                    <button type="submit">Crear curso</button>
+                </div>
+            </form>
+        </div>
     </div>
-    <div>
-        <label for="description">Description:</label>
-        <textarea id="description" name="description" required></textarea>
-    </div>
-    <div>
-        <label for="teacherId">Teacher ID:</label>
-        <input type="number" id="teacherId" name="teacherId" required>
-    </div>
-    <div>
-        <button type="submit">Create Course</button>
-    </div>
-</form>
+</section>
 </body>
 </html>
