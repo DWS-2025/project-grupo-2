@@ -173,3 +173,31 @@ nav ul li a {
     color: black;
     border: 2px solid #333;
 }
+
+form {
+    width: 100%;
+    max-width: 400px;
+}
+
+input,textarea {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+.buttons {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+}
+
+button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
