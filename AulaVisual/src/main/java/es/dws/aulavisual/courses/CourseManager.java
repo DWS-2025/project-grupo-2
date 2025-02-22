@@ -38,31 +38,29 @@ public class CourseManager {
         Module lolModule3 = new Module(2, "Delete_me");
         lolModules.add(lolModule3);
 
-        Submission lolSubmission = new Submission(0, "Cual es el genero del LOL?");
-        Course lolCourse = new Course(0, "League of Legends", "Aprende a jugar al LOL", 1, loluserIds, lolModules, lolSubmission);
+        Course lolCourse = new Course(0, "League of Legends", "Aprende a jugar al LOL", 1, loluserIds, lolModules, "Haz una redacción sobre el control de oleadas");
         courseList.put(0L, lolCourse);
 
         List <Long> padelUserIds = new ArrayList <>();
         padelUserIds.add(Long.parseLong("3"));
         padelUserIds.add(Long.parseLong("4"));
-        Course padelCourse = new Course(1, "Paddle", "Star having fun while exercising", 1, padelUserIds, new ArrayList <>(), null);
+        Course padelCourse = new Course(1, "Paddle", "Star having fun while exercising", 1, padelUserIds, new ArrayList <>(), "Explica las reglas del padel");
         courseList.put(1L, padelCourse);
 
         List <Long> cookingUserIds = new ArrayList <>();
         cookingUserIds.add(Long.parseLong("2"));
         cookingUserIds.add(Long.parseLong("4"));
-        Course cookingUourse = new Course(2, "Cooking", "Learn how to prepare easy yet delicious meals", 1, cookingUserIds, new ArrayList <>(), null);
-        courseList.put(2L, cookingUourse);
+        Course cookingCourse = new Course(2, "Cooking", "Learn how to prepare easy yet delicious meals", 1, cookingUserIds, new ArrayList <>(), "Haz una receta que incluya huevos, pasta y tomate");
+        courseList.put(2L, cookingCourse);
         this.nextId = 3;
     }
 
-    public void createCourse(String name, String description, long teacherId, List <Module> modules, String submissiontext) {
+    public void createCourse(String name, String description, long teacherId, List <Module> modules, String task) {
 
         long id = nextId;
         this.nextId++;
         List <Long> userIds = new ArrayList <>();
-        Submission submission = new Submission(id, submissiontext);
-        Course course = new Course(id, name, description, teacherId, userIds, modules, submission);
+        Course course = new Course(id, name, description, teacherId, userIds, modules, task);
         courseList.put(id, course);
     }
 
@@ -192,5 +190,28 @@ public class CourseManager {
             System.out.println("Error getting img: " + e.getMessage());
         }
         return null;
+    }
+
+    public boolean addSubmission(long courseId, long UserId){
+
+        Course course = courseList.get(courseId);
+        if(course.userMadeSubmission(UserId)){
+            return false;
+        }else {
+
+            Submission submission = new Submission(UserId, courseId);
+            course.addSubmission(submission);
+            return true;
+        }
+    }
+
+    public boolean userMadeSubmission(long courseId, long userId) {
+        Course course = courseList.get(courseId);
+        return course.userMadeSubmission(userId);
+    }
+
+    public String getTask(long courseId) {
+        Course course = courseList.get(courseId);
+        return course.getTask();
     }
 }

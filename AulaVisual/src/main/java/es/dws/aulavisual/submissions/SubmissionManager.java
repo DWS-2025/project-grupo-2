@@ -20,7 +20,7 @@ public class SubmissionManager {
             if (!Files.exists(path)) {
                 Files.createDirectories(path);
             }
-            Path pathToFile = path.resolve("user" + "-" + userId + ".txt");
+            Path pathToFile = path.resolve("user" + "-" + userId + ".pdf");
             if (Files.exists(pathToFile)) {
                 return false;
             } else {
@@ -35,10 +35,10 @@ public class SubmissionManager {
     public ResponseEntity<Object> getSubmission(long userId, long courseId) {
         try {
             Path path = Paths.SUBMISSIONSFOLDER.resolve("course" + "-" + courseId);
-            Path pathToFile = path.resolve("user" + "-" + userId + ".txt");
+            Path pathToFile = path.resolve("user" + "-" + userId + ".pdf");
             if (Files.exists(pathToFile)) {
                 Resource resource = new UrlResource(pathToFile.toUri());
-                return ResponseEntity.ok().header(HttpHeaders.CONTENT_TYPE, "text/plaintext").body(resource);
+                return ResponseEntity.ok().header(HttpHeaders.CONTENT_TYPE, "application/pdf").body(resource);
             } else {
                 return null;
             }

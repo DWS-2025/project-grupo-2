@@ -1,7 +1,7 @@
 package es.dws.aulavisual.courses;
 
 import es.dws.aulavisual.submissions.Submission;
-
+import java.util.ArrayList;
 import java.util.List;
 
 public class Course {
@@ -9,12 +9,13 @@ public class Course {
     private final long id;
     private final String name;
     private final String description;
+    private final String task;
     private final long teacherId;
     private final List <Long> userIds;
     private final List <Module> modules;
-    private final Submission submission;
+    private final List<Submission> submissions;
 
-    public Course(long id, String name, String description, long teacherId, List <Long> userIds, List<Module> modules, Submission submission) {
+    public Course(long id, String name, String description, long teacherId, List <Long> userIds, List<Module> modules, String task) {
 
         this.id = id;
         this.name = name;
@@ -22,7 +23,8 @@ public class Course {
         this.teacherId = teacherId;
         this.userIds = userIds;
         this.modules = modules;
-        this.submission = submission;
+        this.submissions = new ArrayList<>();
+        this.task = task;
     }
 
     public long getId() {
@@ -65,5 +67,27 @@ public class Course {
             }
         }
         return null;
+    }
+
+    public boolean userMadeSubmission(long userId) {
+        for (Submission submission : submissions) {
+            if (submission.getUserId() == userId) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void addSubmission(Submission submission) {
+
+        submissions.add(submission);
+    }
+
+    public List<Submission> getSubmissions() {
+        return submissions;
+    }
+
+    public String getTask() {
+        return task;
     }
 }

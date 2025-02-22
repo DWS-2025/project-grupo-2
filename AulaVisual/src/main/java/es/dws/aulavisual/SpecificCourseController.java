@@ -176,7 +176,7 @@ public class SpecificCourseController {
     }
 
     @PostMapping("/admin/courses/addCourse")
-    public String addCourse(@RequestParam String name, @RequestParam String description, @RequestParam long teacherId, MultipartFile image, @RequestParam String submission, @CookieValue(value = "userId", defaultValue = "") String userId) {
+    public String addCourse(@RequestParam String name, @RequestParam String description, @RequestParam long teacherId, MultipartFile image, @RequestParam String task, @CookieValue(value = "userId", defaultValue = "") String userId) {
 
         if(userId.isEmpty()) {
 
@@ -193,7 +193,7 @@ public class SpecificCourseController {
             return "redirect:/";    //Should inform the user that a teacher is required
         }
         List <Module> modules = new ArrayList <>();
-        courseManager.createCourse(name, description, teacherId, modules, submission);
+        courseManager.createCourse(name, description, teacherId, modules, task);
         if(image != null && !image.isEmpty()) {
 
             courseManager.addImage(image);

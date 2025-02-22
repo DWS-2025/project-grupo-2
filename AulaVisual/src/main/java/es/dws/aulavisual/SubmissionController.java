@@ -5,6 +5,7 @@ import es.dws.aulavisual.submissions.SubmissionManager;
 import org.springframework.web.bind.annotation.*;
 import es.dws.aulavisual.users.UserManager;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.http.ResponseEntity;
 import es.dws.aulavisual.users.User;
 import org.springframework.ui.Model;
 import org.springframework.stereotype.Controller;
@@ -39,20 +40,30 @@ public class SubmissionController {
 
             if(courseManager.userInCourse(courseId, Long.parseLong(userId))){
 
-                Object submission = submissionManager.getSubmission(Long.parseLong(userId), courseId);
-                if(submission == null){
+                model.addAttribute("courseId", courseId);
+                model.addAttribute("courseName", courseManager.getCourse(courseId).getName());
+                if(!courseManager.userMadeSubmission(courseId, Long.parseLong(userId))){
 
                     model.addAttribute("submitted", false);
+                    model.addAttribute("task", courseManager.getTask(courseId));
                 }else {
 
                     model.addAttribute("submitted", true);
                 }
-                model.addAttribute("courseId", courseId);
-                model.addAttribute("userId", Long.parseLong(userId));
-                return "courses-user/submission";
             }
+
+            return "courses-user/submission";
         }
         return "redirect:/courses";
+    }
+
+    @GetMapping("/courses/{courseId}/submission/download")
+    public ResponseEntity<Object> downloadCourseSubmission(@CookieValue(value = "userId", defaultValue = "") String userId, @PathVariable long courseId) {
+
+        if(userId.isEmpty()){
+            return null;
+        }
+        return submissionManager.getSubmission(Long.parseLong(userId), courseId);
     }
 
     @PostMapping("/courses/{courseId}/submission")
@@ -65,12 +76,17 @@ public class SubmissionController {
             return "redirect:/login";
         }
 
-        if(courseManager.userInCourse(courseId, Long.parseLong(userId))){
-            if(submissionManager.submitCourseSubmission(Long.parseLong(userId), courseId, submission)){
-                return "redirect:/courses";
-            }else {
+        if(courseManager.userInCourse(courseId, Long.parseLong(userId))) {
 
-                return "redirect:/courses/" + courseId + "/submission";
+            if(!courseManager.userMadeSubmission(courseId, Long.parseLong(userId))) {
+
+                if(submissionManager.submitCourseSubmission(Long.parseLong(userId), courseId, submission)) {
+                    //Add submission to course
+                    return "redirect:/courses";
+                }else {
+
+                    return "redirect:/courses/" + courseId + "/submission";
+                }
             }
         }
         return "redirect:/courses";
