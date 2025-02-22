@@ -9,12 +9,16 @@
 
 </head>
 <body>
+
 <nav>
   {{#modules}}
   <ul class="modules">
     <li><a href="/courses/{{courseId}}/module/{{id}}">{{name}}</a></li> <!-- Cabiar nombre a nombre de los módulos -->
   </ul>
   {{/modules}}
+  <ul class="modules">
+    <li><a href="/courses/{{courseId}}/submission">Entrega</a></li>
+  </ul>
 </nav>
 <section id="content">
   <script>

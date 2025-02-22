@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Entrega</title>
+    <link rel="stylesheet" href="/css/userPage.css">
+    <link rel="icon" href="/images/1.svg" sizes="any" type="image/svg+xml">
+</head>
+<body>
+<div class="container">
+    <h1>Entrega del Curso {{courseName}}</h1>
+    {{^submitted}}
+    <h2>{{task}}</h2>
+    <form id="userForm" action="/courses/{{courseId}}/submission" method="post" enctype="multipart/form-data">
+        <input type="file" id="file" name="file" accept="application/pdf">
+        <div class="buttons">
+            <button type="reset" class="cancel">Borrar Todo</button>
+            <button type="submit" class="save">Guardar</button>
+        </div>
+    </form>
+    {{/submitted}}
+    {{#submitted}}
+    <h2>Entrega Realizada</h2>
+    {{/submitted}}
+</div>
+</body>
+</html>
