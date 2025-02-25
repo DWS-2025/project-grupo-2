@@ -56,7 +56,8 @@ public class UserController {
                 }
             }else {
 
-                return "redirect:/login/error";
+                model.addAttribute("message", "Nombre de usuario o contraseña incorrectos");
+                return "error";
             }
         }
 
@@ -70,12 +71,15 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public String register(@RequestParam String name, @RequestParam String surname, @RequestParam String username, @RequestParam String password) {
+    public String register(Model model, @RequestParam String name, @RequestParam String surname, @RequestParam String username, @RequestParam String password) {
 
         if(!(name.isEmpty() && surname.isEmpty() && username.isEmpty() && password.isEmpty())) {
 
             userManager.addUser(name, surname, username, password, 2);
             return "redirect:/login";
+        }else{
+
+            model.addAttribute("message", "Todos los campos son obligatorios");
         }
 
         return "redirect:/register";
@@ -99,7 +103,6 @@ public class UserController {
             return "redirect:" + redirect;
         }
 
-        redirect = "/login";
         User currentUser = userManager.getUser(Long.parseLong(userId));
         if(currentUser.getRole() == 0 && id != Long.parseLong(userId)) {
 
@@ -143,13 +146,12 @@ public class UserController {
 
         if(userId.isEmpty()) {
 
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.status(401).body("Unauthorized");
         }
         User currentUser = userManager.getUser(Long.parseLong(userId));
         if(currentUser.getRole() == 0 && id != Long.parseLong(userId)) {
 
             userId = Long.toString(id);
-            currentUser = userManager.getUser(Long.parseLong(userId));
         }
         return userManager.loadImage("user-" + Long.parseLong(userId), Long.parseLong(userId));
 
@@ -163,6 +165,11 @@ public class UserController {
             return "redirect:/login";
         }
         User currentUser = userManager.getUser(Long.parseLong(userId));
+        if(currentUser == null){
+
+            model.addAttribute("message", "Usuario no encontrado");
+            return "error";
+        }
         if(currentUser.getRole() == 0 && id != Long.parseLong(userId)) {
 
             userId = Long.toString(id);
@@ -191,13 +198,14 @@ public class UserController {
                 return "/users/adminPanel";
             }else {
 
-                return "redirect:/";
+                model.addAttribute("message", "No tienes permisos para acceder a esta página");
+                return "error";
             }
         }
     }
 
     @GetMapping("/admin/users/{id}/delete")
-    public String deleteUser(@CookieValue(value = "userId", defaultValue = "") String userId, @PathVariable long id) {
+    public String deleteUser(Model model, @CookieValue(value = "userId", defaultValue = "") String userId, @PathVariable long id) {
 
         if(userId.isEmpty()) {
 
@@ -207,8 +215,15 @@ public class UserController {
             User currentUser = userManager.getUser(Long.parseLong(userId));
             if(currentUser.getRole() == 0) {
 
-                userManager.removeUser(id);
-                return "redirect:/admin";
+                if(userManager.removeUser(id)){
+
+                    return "redirect:/admin";
+                }else {
+
+                    model.addAttribute("message", "Usuario no encontrado");
+                    return "error";
+                }
+
             }else {
 
                 return "redirect:/";
@@ -228,6 +243,11 @@ public class UserController {
             if(currentUser.getRole() == 0) {
 
                 User user = userManager.getUser(id);
+                if(user == null) {
+
+                    model.addAttribute("message", "Usuario no encontrado");
+                    return "error";
+                }
                 model.addAttribute("user", user);
                 model.addAttribute("userId", Long.parseLong(userId));
                 return "redirect:/profile/" + id;
@@ -250,6 +270,11 @@ public class UserController {
             if(currentUser.getRole() == 0) {
 
                 User user = userManager.getUser(id);
+                if(user == null) {
+
+                    model.addAttribute("message", "Usuario no encontrado");
+                    return "error";
+                }
                 model.addAttribute("userId", Long.parseLong(userId));
                 model.addAttribute("user", user.getRealName() + " " + user.getSurname());
                 model.addAttribute("id", user.getId());
@@ -262,7 +287,7 @@ public class UserController {
     }
 
     @GetMapping("/admin/users/{id}/roles/{role}")
-    public String updateUserRole(@CookieValue(value = "userId", defaultValue = "") String userId, @PathVariable long id, @PathVariable int role) {
+    public String updateUserRole(Model model, @CookieValue(value = "userId", defaultValue = "") String userId, @PathVariable long id, @PathVariable int role) {
 
         if(userId.isEmpty()) {
 
@@ -272,7 +297,13 @@ public class UserController {
             User currentUser = userManager.getUser(Long.parseLong(userId));
             if(currentUser.getRole() == 0) {
 
-                userManager.updateRole(id, role);
+                if(userManager.updateRole(id, role)){
+
+                    return "redirect:/admin";
+                }else {
+
+                    model.addAttribute("message", "Usuario o Rol inválido");
+                }
                 return "redirect:/admin";
             }else {
 

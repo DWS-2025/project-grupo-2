@@ -65,7 +65,7 @@ public class CourseManager {
         courseList.put(id, course);
     }
 
-    public void addModule(long courseId, String name, MultipartFile module) {
+    public boolean addModule(long courseId, String name, MultipartFile module) {
 
         try {
 
@@ -76,10 +76,12 @@ public class CourseManager {
             Files.createFile(modulePath);
             module.transferTo(modulePath);
             course.addModule(new Module(course.getNumberModules(), name));
+            return true;
         }catch (Exception e) {
 
             System.out.println("Error saving madule: " + e.getMessage());
         }
+        return false;
     }
 
     public Course getCourse(long courseId) {
@@ -133,7 +135,7 @@ public class CourseManager {
         }
     }
 
-    public void removeCourse(long courseId) {
+    public Course removeCourse(long courseId) {
         deleteAllModules(courseId);
         try {
             Path imagePath = Paths.COURSEMODULESPATH.resolve("course-" + courseId).resolve("img.png");
@@ -143,7 +145,7 @@ public class CourseManager {
         } catch (IOException e) {
             System.out.println("Error deleting course file: " + e.getMessage());
         }
-        courseList.remove(courseId);
+        return courseList.remove(courseId);
     }
 
     public void deleteAllModules(Long courseId) {

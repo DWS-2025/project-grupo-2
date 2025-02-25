@@ -11,8 +11,6 @@ import org.springframework.http.ResponseEntity;
 import es.dws.aulavisual.users.User;
 import org.springframework.ui.Model;
 import org.springframework.stereotype.Controller;
-
-import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -35,7 +33,17 @@ public class SubmissionController {
             return "redirect:/login";
         }
         User user = userManager.getUser(Long.parseLong(userId));
+        if(user == null){
 
+            model.addAttribute("message", "Usuario no encontrado");
+            return "error";
+        }
+        Course course = courseManager.getCourse(courseId);
+        if(course == null){
+
+            model.addAttribute("message", "Curso no encontrado");
+            return "error";
+        }
         if(user.getRole() == 1){
 
             return "redirect:/courses/" + courseId + "/grade";
@@ -62,9 +70,13 @@ public class SubmissionController {
                         model.addAttribute("grade", "No Disponible");
                     }
                 }
+            }else {
+
+                model.addAttribute("message", "No tienes acceso a este curso");
+                return "error";
             }
 
-            return "courses-user/submission";
+            return "courses-user/submissions";
         }
         return "redirect:/courses";
     }
@@ -76,7 +88,17 @@ public class SubmissionController {
             return "redirect:/login";
         }
         User user = userManager.getUser(Long.parseLong(userId));
+        if(user == null){
+
+            model.addAttribute("message", "Usuario no encontrado");
+            return "error";
+        }
         Course course = courseManager.getCourse(courseId);
+        if(course == null){
+
+            model.addAttribute("message", "Curso no encontrado");
+            return "error";
+        }
         if(user.getRole() == 1){
 
             List<Submission> submissions = course.getUngradedSubmission();
@@ -89,12 +111,29 @@ public class SubmissionController {
     }
 
     @PostMapping("/courses/{courseId}/grade/{studentId}")
-    public String gradeCourseSubmission(@CookieValue(value = "userId", defaultValue = "") String userId, @PathVariable long courseId, @PathVariable long studentId, @RequestParam float grade) {
+    public String gradeCourseSubmission(Model model, @CookieValue(value = "userId", defaultValue = "") String userId, @PathVariable long courseId, @PathVariable long studentId, @RequestParam float grade) {
 
         if(userId.isEmpty()){
             return "redirect:/login";
         }
         User user = userManager.getUser(Long.parseLong(userId));
+        if(user == null){
+
+            model.addAttribute("message", "Usuario no encontrado");
+            return "error";
+        }
+        Course course = courseManager.getCourse(courseId);
+        if(course == null){
+
+            model.addAttribute("message", "Curso no encontrado");
+            return "error";
+        }
+        User student = userManager.getUser(studentId);
+        if(student == null){
+
+            model.addAttribute("message", "Estudiante no encontrado");
+            return "error";
+        }
         if(user.getRole() == 1 && courseManager.getTeacherId(courseId) == Long.parseLong(userId)){
 
             courseManager.gradeSubmission(courseId, studentId, grade);
@@ -107,32 +146,48 @@ public class SubmissionController {
     public ResponseEntity<Object> downloadCourseSubmission(@CookieValue(value = "userId", defaultValue = "") String userId, @PathVariable long courseId, @PathVariable long studentId) {
 
         if(userId.isEmpty()){
-            return null;
+            return ResponseEntity.status(401).body("Unauthorized");
         }
         User user = userManager.getUser(Long.parseLong(userId));
+        if(user == null){
+
+            return ResponseEntity.status(401).body("Unauthorized");
+        }
         if(user.getRole() == 1 && courseManager.getTeacherId(courseId) == Long.parseLong(userId)){
 
             return submissionManager.getSubmission(studentId, courseId);
         }
-        return null;
+        return ResponseEntity.status(401).body("Unauthorized");
     }
 
     @PostMapping("/courses/{courseId}/submission")
-    public String submitCourseSubmission(@CookieValue(value = "userId", defaultValue = "") String userId, @PathVariable long courseId, MultipartFile submission) {
+    public String submitCourseSubmission(Model model, @CookieValue(value = "userId", defaultValue = "") String userId, @PathVariable long courseId, MultipartFile submission) {
 
-        if(submission.isEmpty()){
-            return "redirect:/courses/" + courseId + "/submission";
-        }
         if(userId.isEmpty()){
             return "redirect:/login";
         }
+        User user = userManager.getUser(Long.parseLong(userId));
+        if(user == null){
 
+            model.addAttribute("message", "Usuario no encontrado");
+            return "error";
+        }
+        Course course = courseManager.getCourse(courseId);
+        if(course == null){
+
+            model.addAttribute("message", "Curso no encontrado");
+            return "error";
+        }
+        if(submission.isEmpty()){
+
+            model.addAttribute("message", "No se ha seleccionado un archivo");
+            return "redirect:/courses/" + courseId + "/submission";
+        }
         if(courseManager.userInCourse(courseId, Long.parseLong(userId))) {
 
             if(!courseManager.userMadeSubmission(courseId, Long.parseLong(userId))) {
 
                 if(submissionManager.submitCourseSubmission(Long.parseLong(userId), courseId, submission)) {
-                    Course course = courseManager.getCourse(courseId);
                     course.saveSubmission(userManager.getUser(Long.parseLong(userId)));
                     return "redirect:/courses";
                 }else {

@@ -238,15 +238,21 @@ public class UserManager {
         return ids;
     }
 
-    public void updateRole(long id, int role) {
+    public boolean updateRole(long id, int role) {
 
         User user = userList.get(id);
-        if(removeUser(id)) {
+        if(user != null && role >= 0 && role <= 2) {
 
-            user.setRole(role);
-            userList.put(id, user);
-            saveUserInDisk(id, user);
+            if(removeUser(id)) {
+
+                user.setRole(role);
+                userList.put(id, user);
+                saveUserInDisk(id, user);
+                return true;
+            }
         }
+
+        return false;
     }
 
     public void saveImage(String folderName, long userId, MultipartFile image) {
