@@ -10,7 +10,7 @@
 <div class="container">
     <h1>Entrega del Curso {{courseName}}</h1>
     {{#submissions}}
-    <form action="/" method="post" id="grade-user-{{user.id}}"></form>
+    <form action="/courses/{{courseId}}/grade/{{user.id}}" method="post" id="grade-user-{{user.id}}"></form>
     {{/submissions}}
     <table id="usersTable">
         <thead>

@@ -15,7 +15,7 @@
         {{#userCourses}} <!-- Plantilla Mustache de cómo será el modelo de un curso para generar dinámicamente el resto -->
         <div class="course" onclick='redirect("/courses/{{id}}")'>
             <div class="course-title">
-                <h3>{{name}}</h3>   <!-- Usamos Mustache para cargar el nombre del curso (solicitado de Victor) , que en el controlador es dado a través del ArrayList del objeto curso -->
+                <h3>{{name}}</h3>   <!-- Usamos Mustache para cargar el nombre del curso (solicitado de Victor), que en el controlador es dado a través del ArrayList del objeto curso -->
             </div>
             <div class="course-image">
                 <img src="/courses/{{id}}/getImage" alt="League of Legends"> <!-- Victor debe pasarme la imagen que estará guardada como una propoiedad en la clase Course, para que fuese dinámica sería del estilo de: img src="{imageUrl}" alt="{name}" -->
@@ -26,12 +26,12 @@
         </div>
         {{/userCourses}}
     </div>
-    <h1 class="AvailableCourses">Cursos Disponibles</h1>  <!-- Hacerlo mediante checkbox -->
+    <h1 class="AvailableCourses">Cursos No Disponibles</h1>  <!-- Hacerlo mediante checkbox -->
     <div class="CoursesContainer">
         {{#availableCourses}} <!-- Plantilla Mustache de cómo será el modelo de un curso para generar dinámicamente el resto -->
         <div class="course">
             <div class="course-title">
-                <h3>{{name}}</h3>   <!-- Usamos Mustache para cargar el nombre del curso (solicitado de Victor) , que en el controlador es dado a través del ArrayList del objeto curso -->
+                <h3>{{name}}</h3>   <!-- Usamos Mustache para cargar el nombre del curso (solicitado de Victor), que en el controlador es dado a través del ArrayList del objeto curso -->
             </div>
             <div class="course-image">
                 <img src="/courses/{{id}}/getImage" alt="League of Legends"> <!-- Victor debe pasarme la imagen que estará guardada como una propoiedad en la clase Course, para que fuese dinámica sería del estilo de: img src="{imageUrl}" alt="{name}" -->

@@ -236,4 +236,11 @@ public class CourseManager {
         Submission submission = course.getSubmission(userId);
         return submission.getGrade();
     }
+
+    public boolean isgraded(long courseId, long userId) {
+
+        Course course = courseList.get(courseId);
+        Submission submission = course.getSubmission(userId);
+        return submission.isGraded();
+    }
 }

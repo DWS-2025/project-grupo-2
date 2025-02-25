@@ -54,7 +54,13 @@ public class SubmissionController {
                 }else {
 
                     model.addAttribute("submitted", true);
-                    model.addAttribute("grade", courseManager.getGrade(courseId, Long.parseLong(userId)));
+                    if(courseManager.isgraded(courseId, Long.parseLong(userId))) {
+
+                        model.addAttribute("grade", courseManager.getGrade(courseId, Long.parseLong(userId)));
+                    }else{
+
+                        model.addAttribute("grade", "No Disponible");
+                    }
                 }
             }
 
