@@ -243,7 +243,7 @@ public class CourseManagementController {
 
             return "redirect:/";    //Should inform the user that a teacher is required
         }
-        if(name.isEmpty() || description == null || description.isEmpty() || task == null || task.isEmpty()) {
+        if(name.isEmpty() || description == null || description.isEmpty() || task.isEmpty()) {
 
             model.addAttribute("message", "Faltan campos por rellenar");
             return "error";

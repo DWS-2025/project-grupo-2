@@ -76,7 +76,7 @@ public class SubmissionController {
                 return "error";
             }
 
-            return "courses-user/submissions";
+            return "courses-user/submission";
         }
         return "redirect:/courses";
     }
