@@ -1,6 +1,8 @@
 package es.dws.aulavisual.courses;
 
 import es.dws.aulavisual.submissions.Submission;
+import es.dws.aulavisual.users.User;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -53,10 +55,12 @@ public class Course {
     }
 
     public List <Long> getUserIds(){
+
         return userIds;
     }
 
     public long getNumberModules() {
+
         return modules.size();
     }
 
@@ -71,11 +75,17 @@ public class Course {
 
     public boolean userMadeSubmission(long userId) {
         for (Submission submission : submissions) {
-            if (submission.getUserId() == userId) {
+            if (submission.getUser().getId() == userId) {
                 return true;
             }
         }
         return false;
+    }
+
+    public void saveSubmission(User user) {
+
+        Submission submission = new Submission(this.id, user);
+        submissions.add(submission);
     }
 
     public void addSubmission(Submission submission) {
@@ -84,10 +94,37 @@ public class Course {
     }
 
     public List<Submission> getSubmissions() {
+
         return submissions;
     }
 
     public String getTask() {
+
         return task;
+    }
+
+    public List <Submission> getUngradedSubmission() {
+        List <Submission> ungraded = new ArrayList <>();
+        for (Submission submission : submissions) {
+            if (!submission.isGraded()) {
+                ungraded.add(submission);
+            }
+        }
+        return ungraded;
+    }
+
+    public long getTeacherId() {
+
+        return teacherId;
+    }
+
+    public Submission getSubmission(long studentId) {
+
+        for (Submission submission : submissions) {
+            if (submission.getUser().getId() == studentId) {
+                return submission;
+            }
+        }
+        return null;
     }
 }

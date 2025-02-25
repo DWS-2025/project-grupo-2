@@ -1,6 +1,8 @@
 package es.dws.aulavisual;
 
+import es.dws.aulavisual.courses.Course;
 import es.dws.aulavisual.courses.CourseManager;
+import es.dws.aulavisual.submissions.Submission;
 import es.dws.aulavisual.submissions.SubmissionManager;
 import org.springframework.web.bind.annotation.*;
 import es.dws.aulavisual.users.UserManager;
@@ -9,6 +11,9 @@ import org.springframework.http.ResponseEntity;
 import es.dws.aulavisual.users.User;
 import org.springframework.ui.Model;
 import org.springframework.stereotype.Controller;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Controller
 public class SubmissionController {
@@ -33,7 +38,7 @@ public class SubmissionController {
 
         if(user.getRole() == 1){
 
-            return "redirect:/courses";
+            return "redirect:/courses/" + courseId + "/grade";
         }
 
         if(user.getRole() == 2){
@@ -49,6 +54,7 @@ public class SubmissionController {
                 }else {
 
                     model.addAttribute("submitted", true);
+                    model.addAttribute("grade", courseManager.getGrade(courseId, Long.parseLong(userId)));
                 }
             }
 
@@ -57,13 +63,52 @@ public class SubmissionController {
         return "redirect:/courses";
     }
 
-    @GetMapping("/courses/{courseId}/submission/download")
-    public ResponseEntity<Object> downloadCourseSubmission(@CookieValue(value = "userId", defaultValue = "") String userId, @PathVariable long courseId) {
+    @GetMapping("/courses/{courseId}/grade")
+    public String gradeCourseSubmission(Model model, @CookieValue(value = "userId", defaultValue = "") String userId, @PathVariable long courseId) {
+
+        if(userId.isEmpty()){
+            return "redirect:/login";
+        }
+        User user = userManager.getUser(Long.parseLong(userId));
+        Course course = courseManager.getCourse(courseId);
+        if(user.getRole() == 1){
+
+            List<Submission> submissions = course.getUngradedSubmission();
+            model.addAttribute("submissions", submissions);
+            model.addAttribute("courseId", courseId);
+            model.addAttribute("courseName", course.getName());
+            return "courses-user/submissionsGrade";
+        }
+        return "redirect:/courses";
+    }
+
+    @PostMapping("/courses/{courseId}/grade/{studentId}")
+    public String gradeCourseSubmission(@CookieValue(value = "userId", defaultValue = "") String userId, @PathVariable long courseId, @PathVariable long studentId, @RequestParam float grade) {
+
+        if(userId.isEmpty()){
+            return "redirect:/login";
+        }
+        User user = userManager.getUser(Long.parseLong(userId));
+        if(user.getRole() == 1 && courseManager.getTeacherId(courseId) == Long.parseLong(userId)){
+
+            courseManager.gradeSubmission(courseId, studentId, grade);
+            return "redirect:/courses/" + courseId + "/grade";
+        }
+        return "redirect:/courses";
+    }
+
+    @GetMapping("/courses/{courseId}/submission/download/{studentId}")
+    public ResponseEntity<Object> downloadCourseSubmission(@CookieValue(value = "userId", defaultValue = "") String userId, @PathVariable long courseId, @PathVariable long studentId) {
 
         if(userId.isEmpty()){
             return null;
         }
-        return submissionManager.getSubmission(Long.parseLong(userId), courseId);
+        User user = userManager.getUser(Long.parseLong(userId));
+        if(user.getRole() == 1 && courseManager.getTeacherId(courseId) == Long.parseLong(userId)){
+
+            return submissionManager.getSubmission(studentId, courseId);
+        }
+        return null;
     }
 
     @PostMapping("/courses/{courseId}/submission")
@@ -81,7 +126,8 @@ public class SubmissionController {
             if(!courseManager.userMadeSubmission(courseId, Long.parseLong(userId))) {
 
                 if(submissionManager.submitCourseSubmission(Long.parseLong(userId), courseId, submission)) {
-                    //Add submission to course
+                    Course course = courseManager.getCourse(courseId);
+                    course.saveSubmission(userManager.getUser(Long.parseLong(userId)));
                     return "redirect:/courses";
                 }else {
 

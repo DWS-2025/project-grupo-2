@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Entrega</title>
+    <link rel="stylesheet" href="/css/userPage.css">
+    <link rel="icon" href="/images/1.svg" sizes="any" type="image/svg+xml">
+</head>
+<body>
+<div class="container">
+    <h1>Entrega del Curso {{courseName}}</h1>
+    {{#submissions}}
+    <form action="/" method="post" id="grade-user-{{user.id}}"></form>
+    {{/submissions}}
+    <table id="usersTable">
+        <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>Apellido</th>
+            <th>Entrega</th>
+            <th>Nota</th>
+            <th>Guardar</th>
+        </tr>
+        </thead>
+        <tbody>
+    {{#submissions}}
+    <tr class="tableItems">
+        <td class="center">{{user.realName}}</td>
+        <td class="center">{{user.surname}}</td>
+        <td class="center">
+            <a href="/courses/{{courseId}}/submission/download/{{user.id}}" download="{{user.realName}}">Descargar</a>
+        </td>
+        <td class="center">
+            <input type="number" id="grade" name="grade" value="" form="grade-user-{{user.id}}">
+        </td>
+        <td class="center">
+            <button type="submit" class="save" form="grade-user-{{user.id}}">Guardar</button>
+        </td>
+    </tr>
+    {{/submissions}}
+        </tbody>
+    </table>
+</div>
+</body>
+</html>
