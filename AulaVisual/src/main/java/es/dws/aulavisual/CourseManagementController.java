@@ -1,6 +1,5 @@
 package es.dws.aulavisual;
 
-import es.dws.aulavisual.submissions.Submission;
 import es.dws.aulavisual.users.User;
 import es.dws.aulavisual.users.UserManager;
 import org.springframework.core.io.Resource;
@@ -39,6 +38,11 @@ public class CourseManagementController {
             return "redirect:/login";
         }
         User user = userManager.getUser(Long.parseLong(userId));
+        if(user == null) {
+
+            model.addAttribute("message", "Usuario no encontrado");
+            return "error";
+        }
         if(user.getRole() == 0) {
 
             model.addAttribute("admin", user.getRealName());
@@ -58,7 +62,17 @@ public class CourseManagementController {
             return "redirect:/login";
         }
         Course course = courseManager.getCourse(id);
+        if(course == null) {
+
+            model.addAttribute("message", "Curso no encontrado");
+            return "error";
+        }
         User user = userManager.getUser(Long.parseLong(userId));
+        if(user == null) {
+
+            model.addAttribute("message", "Usuario no encontrado");
+            return "error";
+        }
         if(user.getRole() == 0) {
 
             model.addAttribute("courseName", course.getName());
@@ -79,13 +93,24 @@ public class CourseManagementController {
             return "redirect:/login";
         }
         Course course = courseManager.getCourse(courseId);
+        if(course == null) {
+
+            model.addAttribute("message", "Curso no encontrado");
+            return "error";
+        }
         User user = userManager.getUser(Long.parseLong(userId));
+        if(user == null) {
+
+            model.addAttribute("message", "Usuario no encontrado");
+            return "error";
+        }
         if(user.getRole() == 0) {
 
             Module module = course.getModuleById(id);
             if(module == null) {
 
-                return "redirect:/admin/courses/{courseId}/modules/{id}";
+                model.addAttribute("message", "Módulo no encontrado");
+                return "error";
             }
 
             model.addAttribute("courseId", course.getId());
@@ -113,38 +138,58 @@ public class CourseManagementController {
     }
 
     @GetMapping("/admin/courses/{courseId}/delete")
-    public String deleteCourse(@PathVariable long courseId, @CookieValue(value = "userId", defaultValue = "") String userId) {
+    public String deleteCourse(@PathVariable long courseId, @CookieValue(value = "userId", defaultValue = "") String userId, Model model) {
 
         if(userId.isEmpty()) {
 
             return "redirect:/login";
         }
         User user = userManager.getUser(Long.parseLong(userId));
+        if(user == null) {
+
+            model.addAttribute("message", "Usuario no encontrado");
+            return "error";
+        }
         if(user.getRole() != 0) {
 
             return "redirect:/";
         }
-        courseManager.removeCourse(courseId);
+        if(courseManager.removeCourse(courseId) == null) {
+
+            model.addAttribute("message", "Curso no encontrado");
+            return "error";
+        }
         return "redirect:/admin/courses";
     }
 
     @GetMapping("/admin/courses/{courseId}/module/{id}/delete")
-    public String deleteModule(@PathVariable long courseId, @PathVariable long id, @CookieValue(value = "userId", defaultValue = "") String userId) {
+    public String deleteModule(Model model, @PathVariable long courseId, @PathVariable long id, @CookieValue(value = "userId", defaultValue = "") String userId) {
 
         if(userId.isEmpty()) {
 
             return "redirect:/login";
         }
         User user = userManager.getUser(Long.parseLong(userId));
+        if(user == null) {
+
+            model.addAttribute("message", "Usuario no encontrado");
+            return "error";
+        }
         if(user.getRole() != 0) {
 
             return "redirect:/";
         }
         Course course = courseManager.getCourse(courseId);
+        if(course == null) {
+
+            model.addAttribute("message", "Curso no encontrado");
+            return "error";
+        }
         Module module = course.getModuleById(id);
         if(module == null) {
 
-            return "redirect:/admin/courses/{courseId}/modules";
+            model.addAttribute("message", "Módulo no encontrado");
+            return "error";
         }
         courseManager.removeModule(courseId, id);
         return "redirect:/admin/courses/{courseId}/modules";
@@ -158,6 +203,11 @@ public class CourseManagementController {
             return "redirect:/login";
         }
         User user = userManager.getUser(Long.parseLong(userId));
+        if(user == null) {
+
+            model.addAttribute("message", "Usuario no encontrado");
+            return "error";
+        }
         if(user.getRole() != 0) {
 
             return "redirect:/";
@@ -167,21 +217,36 @@ public class CourseManagementController {
     }
 
     @PostMapping("/admin/courses/addCourse")
-    public String addCourse(@RequestParam String name, @RequestParam String description, @RequestParam long teacherId, MultipartFile image, @RequestParam String task, @CookieValue(value = "userId", defaultValue = "") String userId) {
+    public String addCourse(Model model, @RequestParam String name, @RequestParam String description, @RequestParam long teacherId, MultipartFile image, @RequestParam String task, @CookieValue(value = "userId", defaultValue = "") String userId) {
 
         if(userId.isEmpty()) {
 
             return "redirect:/login";
         }
         User user = userManager.getUser(Long.parseLong(userId));
+        if(user == null) {
+
+            model.addAttribute("message", "Usuario no encontrado");
+            return "error";
+        }
         if(user.getRole() != 0) {
 
             return "redirect:/";
         }
         User techer = userManager.getUser(teacherId);
+        if(techer == null) {
+
+            model.addAttribute("message", "Profesor no encontrado");
+            return "error";
+        }
         if (techer.getRole() != 1) {
 
             return "redirect:/";    //Should inform the user that a teacher is required
+        }
+        if(name.isEmpty() || description == null || description.isEmpty() || task == null || task.isEmpty()) {
+
+            model.addAttribute("message", "Faltan campos por rellenar");
+            return "error";
         }
         List <Module> modules = new ArrayList <>();
         courseManager.createCourse(name, description, teacherId, modules, task);
@@ -200,6 +265,11 @@ public class CourseManagementController {
             return "redirect:/login";
         }
         User user = userManager.getUser(Long.parseLong(userId));
+        if(user == null) {
+
+            model.addAttribute("message", "Usuario no encontrado");
+            return "error";
+        }
         if(user.getRole() != 0) {
 
             return "redirect:/";
@@ -210,19 +280,35 @@ public class CourseManagementController {
     }
 
     @PostMapping("/admin/courses/{courseId}/addModule")
-    public String addModule(@PathVariable long courseId, @RequestParam String name, MultipartFile module, @CookieValue(value = "userId", defaultValue = "") String userId) {
+    public String addModule(Model model, @PathVariable long courseId, @RequestParam String name, MultipartFile module, @CookieValue(value = "userId", defaultValue = "") String userId) {
 
         if(userId.isEmpty()) {
 
             return "redirect:/login";
         }
         User user = userManager.getUser(Long.parseLong(userId));
+        if(user == null) {
+
+            model.addAttribute("message", "Usuario no encontrado");
+            return "error";
+        }
         if(user.getRole() != 0) {
 
             return "redirect:/";
         }
-        courseManager.addModule(courseId, name, module);
-        return "redirect:/admin/courses/{courseId}/modules";
+        if(name.isEmpty() || module == null || module.isEmpty()) {
+
+            model.addAttribute("message", "Faltan campos por rellenar");
+            return "error";
+        }
+        if(courseManager.addModule(courseId, name, module)){
+
+            return "redirect:/admin/courses/{courseId}/modules";
+        }else {
+
+            model.addAttribute("message", "Error al añadir el módulo");
+            return "error";
+        }
     }
 
     @GetMapping("/courses/{courseId}/getImage")

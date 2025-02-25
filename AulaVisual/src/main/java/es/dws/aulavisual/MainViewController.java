@@ -30,11 +30,4 @@ public class MainViewController {
         }
         return "index";
     }
-
-
-    @GetMapping("/login/error")
-    public String loginError() {
-
-        return "../static/html/login-error";
-    }
 }

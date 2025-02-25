@@ -29,7 +29,7 @@ public class MainCoursesController {
 
         User user = userManager.getUser(Long.parseLong(userId));
         if(user == null){
-            return "redirect:/";
+            return "redirect:/login";
         }
         List <Course> courses = courseManager.getCourses();
         List <Course> userCourses = new ArrayList<>();
@@ -62,17 +62,23 @@ public class MainCoursesController {
 
             return "redirect:/login";
         }
-        User user = userManager.getUser(Long.parseLong(userId));
         Course course = courseManager.getCourse(id);
+        if(course == null) {
+
+            model.addAttribute("message", "Curso no encontrado");
+            return "error";
+        }
         if(courseManager.userInCourse(id, Long.parseLong(userId))) {
 
             model.addAttribute("modules", course.getModules());
             model.addAttribute("courseId", id);
             model.addAttribute("id", moduleId);
             return "courses-user/singleCourse";
-        }
+        }else {
 
-        return "redirect:/courses";
+            model.addAttribute("message", "No tienes acceso a este curso");
+            return "error";
+        }
     }
 }
 
