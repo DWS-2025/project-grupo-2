@@ -1,23 +1,36 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns="http://www.w3.org/1999/html">
 <head>
     <meta charset="UTF-8">
-    <title>Crea un módulo</title>
+    <title>Panel Administración</title>
+    <link rel="stylesheet" href="/css/adminPage.css">
     <link rel="icon" href="/images/1.svg" sizes="any" type="image/svg+xml">
 </head>
 <body>
-<h1>Crea un nuevo módulo para el curso</h1>
-<div>
-    <label for="name">Nombre del módulo:</label>
-    <input type="text" id="name" name="name" required>
-</div>
-<div>
-    <label for="description">Descripción:</label>
-    <textarea id="description" name="description" required></textarea>
-</div>
-<div>
-    <button type="submit">Crear módulo</button>
-</div>
-</form>
+<nav>
+    <ul>
+        <li><a href="/admin">Gestionar Usuarios</a></li>
+        <li><a href="/admin/courses">Gestionar Cursos</a></li>
+        <li><a href="/profile/{{userId}}">Configuraciones</a></li>
+        <li class="logout"><a href="/logout">Cerrar Sesión</a></li>
+    </ul>
+</nav>
+<section id="content">
+    <div id="container">
+        <h1>Introduzca los datos</h1>
+        <div id="users">
+            <form id="moduleForm" action="/admin/courses/{{courseId}}/addModule" method="post" enctype="multipart/form-data">
+                <div>
+                    <label for="name">Nombre del módulo:</label>
+                    <input type="text" id="name" name="name" required>
+                </div>
+                <input type="file" id="module" name="module" accept="text/markdown">
+                <div>
+                    <button type="submit">Crear módulo</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
 </body>
 </html>

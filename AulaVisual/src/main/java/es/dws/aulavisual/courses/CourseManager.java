@@ -71,7 +71,8 @@ public class CourseManager {
             Course course = getCourse(courseId);
             Path coursePath = Paths.COURSEMODULESPATH.resolve("course-" + courseId);
             Files.createDirectories(coursePath);
-            Path modulePath = coursePath.resolve("module-" + course.getNumberModules() + "-" + name + ".md");
+            Path modulePath = coursePath.resolve("module" + course.getNumberModules() + "-" + name + ".md");
+            Files.createFile(modulePath);
             module.transferTo(modulePath);
             course.addModule(new Module(course.getNumberModules(), name));
         }catch (Exception e) {

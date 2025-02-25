@@ -71,15 +71,6 @@ public class CourseManagementController {
         return "redirect:/";
     }
 
-    @PostMapping("/admin/courses/{id}/modules/add")
-    public String addModule(@RequestParam String name, @PathVariable long id, MultipartFile module) {
-
-        if(!module.isEmpty()) {
-            courseManager.addModule(id, name, module);
-        }
-        return "redirect:/admin/courses";
-    }
-
     @GetMapping("/admin/courses/{courseId}/modules/{id}")
     public String getModule(@PathVariable long courseId, @PathVariable long id, Model model, @CookieValue(value = "userId", defaultValue = "") String userId) {
 
@@ -202,9 +193,36 @@ public class CourseManagementController {
     }
 
     @GetMapping("/admin/courses/{courseId}/addModule")
-    public String addModule() {
+    public String addModule(@CookieValue(value = "userId", defaultValue = "") String userId, Model model, @PathVariable long courseId) {
 
+        if(userId.isEmpty()) {
+
+            return "redirect:/login";
+        }
+        User user = userManager.getUser(Long.parseLong(userId));
+        if(user.getRole() != 0) {
+
+            return "redirect:/";
+        }
+        model.addAttribute("userId", Long.parseLong(userId));
+        model.addAttribute("courseId", courseId);
         return "courses-management/addModule";
+    }
+
+    @PostMapping("/admin/courses/{courseId}/addModule")
+    public String addModule(@PathVariable long courseId, @RequestParam String name, MultipartFile module, @CookieValue(value = "userId", defaultValue = "") String userId) {
+
+        if(userId.isEmpty()) {
+
+            return "redirect:/login";
+        }
+        User user = userManager.getUser(Long.parseLong(userId));
+        if(user.getRole() != 0) {
+
+            return "redirect:/";
+        }
+        courseManager.addModule(courseId, name, module);
+        return "redirect:/admin/courses/{courseId}/modules";
     }
 
     @GetMapping("/courses/{courseId}/getImage")
