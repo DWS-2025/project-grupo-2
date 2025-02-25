@@ -2,6 +2,7 @@ package es.dws.aulavisual.courses;
 
 import es.dws.aulavisual.Paths;
 import es.dws.aulavisual.submissions.Submission;
+import es.dws.aulavisual.users.User;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
@@ -93,7 +94,7 @@ public class CourseManager {
 
     public boolean userInCourse(long courseId, long userId) {
         Course course = courseList.get(courseId);
-        return course.getUserIds().contains(userId);
+        return course.getUserIds().contains(userId) || course.getTeacherId() == userId;
     }
 
     public void removeModule(long courseId, long moduleId) {
@@ -193,14 +194,14 @@ public class CourseManager {
         return null;
     }
 
-    public boolean addSubmission(long courseId, long UserId){
+    public boolean addSubmission(long courseId, User user){
 
         Course course = courseList.get(courseId);
-        if(course.userMadeSubmission(UserId)){
+        if(course.userMadeSubmission(user.getId())) {
             return false;
         }else {
 
-            Submission submission = new Submission(UserId, courseId);
+            Submission submission = new Submission(courseId, user);
             course.addSubmission(submission);
             return true;
         }
@@ -214,5 +215,25 @@ public class CourseManager {
     public String getTask(long courseId) {
         Course course = courseList.get(courseId);
         return course.getTask();
+    }
+
+    public long getTeacherId(long courseId) {
+
+        Course course = courseList.get(courseId);
+        return course.getTeacherId();
+    }
+
+    public void gradeSubmission(long courseId, long studentId, float grade) {
+
+        Course course = courseList.get(courseId);
+        Submission submission = course.getSubmission(studentId);
+        submission.setGrade(grade);
+    }
+
+    public float getGrade(long courseId, long userId) {
+
+        Course course = courseList.get(courseId);
+        Submission submission = course.getSubmission(userId);
+        return submission.getGrade();
     }
 }

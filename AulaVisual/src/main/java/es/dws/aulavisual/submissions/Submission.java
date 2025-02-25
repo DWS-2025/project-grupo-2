@@ -1,34 +1,41 @@
 package es.dws.aulavisual.submissions;
 
+import es.dws.aulavisual.users.User;
+
 public class Submission {
 
-    private final long id;
-    private final long userId;
-    private boolean graded;
-    private float grade;
+    private final User user;
+    private final long courseId;
+    private boolean graded = false;
+    private float grade = -1;
 
-    public Submission(long id, long userId) {
-        this.id = id;
-        this.userId = userId;
+    public Submission(long courseId, User user) {
+        this.courseId = courseId;
+        this.user = user;
     }
 
-    public long getId() {
-        return id;
+    public long getcourseId() {
+        return courseId;
     }
 
-    public long getUserId() {
-        return userId;
+    public User getUser() {
+
+        return user;
+    }
+
+    public void setGrade(float grade) {
+
+        this.grade = grade;
+        this.graded = true;
     }
 
     public boolean isGraded() {
+
         return graded;
     }
 
-    public void setGraded(boolean graded) {
-        this.graded = graded;
-    }
-
     public float getGrade() {
-        return grade;
+
+        return this.grade;
     }
 }
