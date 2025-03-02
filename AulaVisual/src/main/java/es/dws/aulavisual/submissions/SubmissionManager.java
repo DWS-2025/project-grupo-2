@@ -46,4 +46,15 @@ public class SubmissionManager {
             throw new RuntimeException("Error retrieving submission", e);
         }
     }
+
+    public void deleteSubmission(long studentId, long courseId) {
+
+        try {
+            Path path = Paths.SUBMISSIONSFOLDER.resolve("course" + "-" + courseId);
+            Path pathToFile = path.resolve("user" + "-" + studentId + ".pdf");
+            Files.deleteIfExists(pathToFile);
+        } catch (IOException e) {
+            throw new RuntimeException("Error deleting submission", e);
+        }
+    }
 }

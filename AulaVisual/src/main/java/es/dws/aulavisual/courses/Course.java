@@ -113,6 +113,16 @@ public class Course {
         return ungraded;
     }
 
+    public List<Submission> getGradedSubmissions() {
+        List <Submission> graded = new ArrayList <>();
+        for (Submission submission : submissions) {
+            if (submission.isGraded()) {
+                graded.add(submission);
+            }
+        }
+        return graded;
+    }
+
     public long getTeacherId() {
 
         return teacherId;
@@ -126,5 +136,10 @@ public class Course {
             }
         }
         return null;
+    }
+
+    public void removeSubmission(Submission submission) {
+
+        submissions.remove(submission);
     }
 }
