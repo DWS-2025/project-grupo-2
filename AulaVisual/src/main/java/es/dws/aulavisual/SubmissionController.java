@@ -102,6 +102,8 @@ public class SubmissionController {
         if(user.getRole() == 1){
 
             List<Submission> submissions = course.getUngradedSubmission();
+            List<Submission> graded = course.getGradedSubmissions();
+            model.addAttribute("gradedSubmissions", graded);
             model.addAttribute("submissions", submissions);
             model.addAttribute("courseId", courseId);
             model.addAttribute("courseName", course.getName());
@@ -193,6 +195,39 @@ public class SubmissionController {
                 }else {
 
                     return "redirect:/courses/" + courseId + "/submission";
+                }
+            }
+        }
+        return "redirect:/courses";
+    }
+
+    @PostMapping("/courses/{courseId}/draft/{studentId}")
+    public String deleteSubmission(Model model, @CookieValue(value = "userId", defaultValue = "") String userId, @PathVariable long courseId, @PathVariable long studentId) {
+
+        if(userId.isEmpty()){
+            return "redirect:/login";
+        }
+        User user = userManager.getUser(Long.parseLong(userId));
+        if(user == null){
+
+            model.addAttribute("message", "Usuario no encontrado");
+            return "error";
+        }
+        Course course = courseManager.getCourse(courseId);
+        if(course == null){
+
+            model.addAttribute("message", "Curso no encontrado");
+            return "error";
+        }
+        if(courseManager.userInCourse(courseId, Long.parseLong(userId))) {
+
+            if(courseManager.userMadeSubmission(courseId, studentId)) {
+
+                if(courseManager.getTeacherId(courseId) == Long.parseLong(userId)) {
+
+                    courseManager.deleteSubmission(courseId, studentId);
+                    submissionManager.deleteSubmission(studentId, courseId);
+                    return "redirect:/courses/" + courseId + "/grade";
                 }
             }
         }

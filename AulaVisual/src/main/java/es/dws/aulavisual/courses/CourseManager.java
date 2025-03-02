@@ -245,4 +245,11 @@ public class CourseManager {
         Submission submission = course.getSubmission(userId);
         return submission.isGraded();
     }
+
+    public void deleteSubmission(long courseId, long studentId) {
+
+        Course course = courseList.get(courseId);
+        Submission submission = course.getSubmission(studentId);
+        course.removeSubmission(submission);
+    }
 }
