@@ -95,7 +95,7 @@ public class UserController {
     }
 
     @PostMapping("/profile/update/{id}")
-    public String updateUser(@PathVariable long id, @RequestParam String username, @RequestParam String prevPassword, @RequestParam String newPassword, MultipartFile image, @CookieValue(value = "userId", defaultValue = "") String userId) {
+    public String updateUser(Model model, @PathVariable long id, @RequestParam String username, @RequestParam String prevPassword, @RequestParam String newPassword, MultipartFile image, @CookieValue(value = "userId", defaultValue = "") String userId) {
 
         String redirect = "/login";
         if(userId.isEmpty()) {
@@ -107,29 +107,26 @@ public class UserController {
         if(currentUser.getRole() == 0 && id != Long.parseLong(userId)) {
 
             userId = Long.toString(id);
+            currentUser = userManager.getUser(Long.parseLong(userId));
             redirect = "/admin";
         }
 
-        if(!username.isEmpty()) {
+        if(!username.equals(currentUser.getUserName())) {
 
-            if(userManager.updateUsername(Long.parseLong(userId), username)) {
+            if(!userManager.updateUsername(Long.parseLong(userId), username)) {
 
-                return "redirect:" + redirect;
-            }else {
-
-                return "redirect:/profile/error";
+                model.addAttribute("message", "Error al actualizar el usuario");
+                return "error";
             }
         }
 
         redirect = "/logout";
         if(!newPassword.isEmpty()) {
 
-            if(userManager.updatePassword(Long.parseLong(userId), prevPassword, newPassword)) {
+            if(!userManager.updatePassword(Long.parseLong(userId), prevPassword, newPassword)) {
 
-                return "redirect:" + redirect;
-            }else {
-
-                return "redirect:/profile/error";
+                model.addAttribute("message", "Error al actualizar la contraseña");
+                return "error";
             }
         }
 
@@ -138,7 +135,7 @@ public class UserController {
             userManager.saveImage("user-" + Long.parseLong(userId), Long.parseLong(userId), image);
         }
 
-        return "redirect:/profile";
+        return "redirect:/profile/" + userId;
     }
 
     @GetMapping("/user_pfp/{id}")
