@@ -142,4 +142,9 @@ public class Course {
 
         submissions.remove(submission);
     }
+
+    public boolean addStudent(long studentId) {
+
+        return userIds.add(studentId);
+    }
 }

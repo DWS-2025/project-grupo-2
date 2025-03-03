@@ -252,4 +252,10 @@ public class CourseManager {
         Submission submission = course.getSubmission(studentId);
         course.removeSubmission(submission);
     }
+
+    public boolean addStudent(long courseId, long studentId) {
+
+        Course course = courseList.get(courseId);
+        return course.addStudent(studentId);
+    }
 }

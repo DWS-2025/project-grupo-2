@@ -323,4 +323,43 @@ public class CourseManagementController {
             return ResponseEntity.notFound().build();
         }
     }
+
+    @PostMapping("/admin/courses/{courseId}/addStudent")
+    public String addStudent(@PathVariable long courseId, @RequestParam long studentId, Model model, @CookieValue(value = "userId", defaultValue = "") String userId) {
+
+        if(userId.isEmpty()) {
+
+            return "redirect:/login";
+        }
+        User user = userManager.getUser(Long.parseLong(userId));
+        if(user == null) {
+
+            model.addAttribute("message", "Usuario no encontrado");
+            return "error";
+        }
+        if(user.getRole() != 0) {
+
+            return "redirect:/";
+        }
+        User student = userManager.getUser(studentId);
+        if(student == null) {
+
+            model.addAttribute("message", "Estudiante no encontrado");
+            return "error";
+        }
+        if(courseManager.userInCourse(courseId, studentId)) {
+
+            model.addAttribute("message", "El estudiante ya está en el curso");
+            return "error";
+        }
+
+        if(courseManager.addStudent(courseId, studentId)) {
+
+            return "redirect:/admin/courses";
+        }else {
+
+            model.addAttribute("message", "Error al añadir el estudiante");
+            return "error";
+        }
+    }
 }

@@ -31,6 +31,9 @@
                     }
                 </script>
             </div>
+            {{#courses}}
+            <form action="/admin/courses/{{id}}/addStudent" method="post" id="add-student-form-{{id}}"></form>
+            {{/courses}}
             <table id="usersTable">
                 <thead>
                 <tr>
@@ -38,6 +41,7 @@
                     <th>Curso</th>
                     <th>Profesor responsable</th>
                     <th>Acciones</th>
+                    <th>Añadir Alumno</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -49,6 +53,10 @@
                     <td class="center">
                         <a href="/admin/courses/{{id}}/modules">Ver</a>
                         <a href="/admin/courses/{{id}}/delete">Eliminar curso</a>
+                    </td>
+                    <td>
+                        <input type="text" id="studentId" name="studentId" form="add-student-form-{{id}}" required>
+                        <button type="submit" form="add-student-form-{{id}}">Añadir</button>
                     </td>
                 </tr>
                 {{/courses}}
