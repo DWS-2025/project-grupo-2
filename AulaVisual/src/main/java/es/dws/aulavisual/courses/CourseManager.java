@@ -45,7 +45,7 @@ public class CourseManager {
         List <Long> padelUserIds = new ArrayList <>();
         padelUserIds.add(Long.parseLong("3"));
         padelUserIds.add(Long.parseLong("4"));
-        Course padelCourse = new Course(1, "Paddle", "Star having fun while exercising", 1, padelUserIds, new ArrayList <>(), "Explica las reglas del padel");
+        Course padelCourse = new Course(1, "Padel", "Start having fun while exercising", 1, padelUserIds, new ArrayList <>(), "Explica las reglas del padel");
         courseList.put(1L, padelCourse);
 
         List <Long> cookingUserIds = new ArrayList <>();
@@ -79,7 +79,7 @@ public class CourseManager {
             return true;
         }catch (Exception e) {
 
-            System.out.println("Error saving madule: " + e.getMessage());
+            System.out.println("Error saving module: " + e.getMessage());
         }
         return false;
     }
