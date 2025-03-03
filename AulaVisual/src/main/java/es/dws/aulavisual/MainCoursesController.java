@@ -27,6 +27,10 @@ public class MainCoursesController {
     @GetMapping("/courses")
     public String coursesview(Model model, @CookieValue(value = "userId", defaultValue = "") String userId) {
 
+        if(userId.isEmpty()) {
+
+            return "redirect:/login";
+        }
         User user = userManager.getUser(Long.parseLong(userId));
         if(user == null){
             return "redirect:/login";
