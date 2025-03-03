@@ -45,13 +45,13 @@ public class CourseManager {
         List <Long> padelUserIds = new ArrayList <>();
         padelUserIds.add(Long.parseLong("3"));
         padelUserIds.add(Long.parseLong("4"));
-        Course padelCourse = new Course(1, "Padel", "Start having fun while exercising", 1, padelUserIds, new ArrayList <>(), "Explica las reglas del padel");
+        Course padelCourse = new Course(1, "Padel", "Comienza a disfrutar de hacer ejercicio", 1, padelUserIds, new ArrayList <>(), "Explica las reglas del padel");
         courseList.put(1L, padelCourse);
 
         List <Long> cookingUserIds = new ArrayList <>();
         cookingUserIds.add(Long.parseLong("2"));
         cookingUserIds.add(Long.parseLong("4"));
-        Course cookingCourse = new Course(2, "Cooking", "Learn how to prepare easy yet delicious meals", 1, cookingUserIds, new ArrayList <>(), "Haz una receta que incluya huevos, pasta y tomate");
+        Course cookingCourse = new Course(2, "Recetas de Cocina", "Aprende a cocinar recetas increíblemente sabrosas", 1, cookingUserIds, new ArrayList <>(), "Haz una receta que incluya huevos, pasta y tomate");
         courseList.put(2L, cookingCourse);
         this.nextId = 3;
     }
