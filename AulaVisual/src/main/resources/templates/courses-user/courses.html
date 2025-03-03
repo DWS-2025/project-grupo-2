@@ -12,32 +12,32 @@
 <div class="myCourses">
     <h1>Mis Cursos</h1>
     <div class="CoursesContainer">
-        {{#userCourses}} <!-- Plantilla Mustache de cómo será el modelo de un curso para generar dinámicamente el resto -->
+        {{#userCourses}} <!-- Mustache screen showing the course model to dynamically generate the rest -->
         <div class="course" onclick='redirect("/courses/{{id}}")'>
             <div class="course-title">
-                <h3>{{name}}</h3>   <!-- Usamos Mustache para cargar el nombre del curso (solicitado de Victor), que en el controlador es dado a través del ArrayList del objeto curso -->
+                <h3>{{name}}</h3>   <!-- We use Mustache to load the course name, int the controller it's given by the Course Object ArrayList -->
             </div>
             <div class="course-image">
-                <img src="/courses/{{id}}/getImage" alt="League of Legends"> <!-- Victor debe pasarme la imagen que estará guardada como una propoiedad en la clase Course, para que fuese dinámica sería del estilo de: img src="{imageUrl}" alt="{name}" -->
+                <img src="/courses/{{id}}/getImage" alt="League of Legends">
             </div>
             <div class="course-description">
-                <p>{{description}}</p> <!-- Usamos Mustache para cargar la descripción del curso (solicitado de Victor), que en el controlador es dado a través del ArrayList del objeto curso -->
+                <p>{{description}}</p>
             </div>
         </div>
         {{/userCourses}}
     </div>
-    <h1 class="AvailableCourses">Cursos No Disponibles</h1>  <!-- Hacerlo mediante checkbox -->
+    <h1 class="AvailableCourses">Cursos No Disponibles</h1>
     <div class="CoursesContainer">
-        {{#availableCourses}} <!-- Plantilla Mustache de cómo será el modelo de un curso para generar dinámicamente el resto -->
+        {{#availableCourses}} <!-- Mustache screen showing the course model to dynamically generate the rest -->
         <div class="course">
             <div class="course-title">
-                <h3>{{name}}</h3>   <!-- Usamos Mustache para cargar el nombre del curso (solicitado de Victor), que en el controlador es dado a través del ArrayList del objeto curso -->
+                <h3>{{name}}</h3>
             </div>
             <div class="course-image">
-                <img src="/courses/{{id}}/getImage" alt="League of Legends"> <!-- Victor debe pasarme la imagen que estará guardada como una propoiedad en la clase Course, para que fuese dinámica sería del estilo de: img src="{imageUrl}" alt="{name}" -->
+                <img src="/courses/{{id}}/getImage" alt="League of Legends">
             </div>
             <div class="course-description">
-                <p>{{description}}</p> <!-- Usamos Mustache para cargar la descripción del curso (solicitado de Victor), que en el controlador es dado a través del ArrayList del objeto curso -->
+                <p>{{description}}</p>
             </div>
         </div>
         {{/availableCourses}}

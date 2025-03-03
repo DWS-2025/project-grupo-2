@@ -115,7 +115,7 @@ public class CourseManagementController {
 
             model.addAttribute("courseId", course.getId());
             model.addAttribute("userId", Long.parseLong(userId));
-            return "courses-management/test";
+            return "courses-management/modulePreview";
         }
         return "redirect:/";
     }
