@@ -248,10 +248,11 @@ public class CourseManagementController {
             model.addAttribute("message", "Faltan campos por rellenar");
             return "error";
         }
-        List <Module> modules = new ArrayList <>();
-        courseManager.createCourse(name, description, teacherId, modules, task);
+
         if(image != null && !image.isEmpty()) {
 
+            List <Module> modules = new ArrayList <>();
+            courseManager.createCourse(name, description, teacherId, modules, task);
             courseManager.addImage(image);
         }
         return "redirect:/admin/courses";
