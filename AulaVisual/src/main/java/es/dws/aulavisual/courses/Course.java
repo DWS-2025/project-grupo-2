@@ -2,20 +2,35 @@ package es.dws.aulavisual.courses;
 
 import es.dws.aulavisual.submissions.Submission;
 import es.dws.aulavisual.users.User;
+import jakarta.persistence.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Entity
 public class Course {
 
-    private final long id;
-    private final String name;
-    private final String description;
-    private final String task;
-    private final long teacherId;
-    private final List <Long> userIds;
-    private final List <Module> modules;
-    private final List<Submission> submissions;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private long id;
+
+    private  String name;
+    private  String description;
+    private  String task;
+    private  long teacherId;
+
+    @ManyToMany()
+    private  List <User> userIds;
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "course")
+    private  List <Module> modules;
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "course")
+    private  List<Submission> submissions;
+
+    protected Course() {
+
+    }
 
     public Course(long id, String name, String description, long teacherId, List <Long> userIds, List<Module> modules, String task) {
 

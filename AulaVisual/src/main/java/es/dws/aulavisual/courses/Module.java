@@ -1,8 +1,17 @@
 package es.dws.aulavisual.courses;
 
+import jakarta.persistence.*;
+
+@Entity
 public class Module {
 
-    private final long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private long id;
+
+    @ManyToOne
+    private Course course;
+
     private final String name;
 
     public Module(long id, String name) {
