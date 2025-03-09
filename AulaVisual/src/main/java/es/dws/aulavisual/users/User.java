@@ -1,13 +1,29 @@
 package es.dws.aulavisual.users;
 
+import es.dws.aulavisual.courses.Course;
+import java.util.List;
+import es.dws.aulavisual.submissions.Submission;
+import jakarta.persistence.*;
+
+@Entity
 public class User {
 
-    private final String realName;
-    private final String surname;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private long id;
+
+    @ManyToMany(mappedBy = "userIds")
+    private List<Course> courses;
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "userId")
+    private List<Submission> submissions;
+
+
+    private String realName;
+    private String surname;
     private String userName;
     private String passwordHash;
     private int role; //0 for admin, 1 for teacher, 2 for student
-    private final long id;
 
     public User(String realName, String surname, String userName, String passwordHash, int role, long id) {
         this.realName = realName;
@@ -16,6 +32,10 @@ public class User {
         this.passwordHash = passwordHash;
         this.role = role;
         this.id = id;
+    }
+
+    protected User() {
+
     }
 
     public String getRealName() {

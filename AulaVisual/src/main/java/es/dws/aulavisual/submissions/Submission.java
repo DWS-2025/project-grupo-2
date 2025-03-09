@@ -1,17 +1,35 @@
 package es.dws.aulavisual.submissions;
 
+import es.dws.aulavisual.courses.Course;
 import es.dws.aulavisual.users.User;
+import jakarta.persistence.*;
 
+@Entity
 public class Submission {
 
-    private final User user;
-    private final long courseId;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private long id;
+
+    @ManyToOne
+    private User userId;
+
+    @ManyToOne()
+    private Course course;
+
+
+    private long courseId;
     private boolean graded = false;
     private float grade = -1;
 
+    protected Submission() {
+
+
+    }
+
     public Submission(long courseId, User user) {
         this.courseId = courseId;
-        this.user = user;
+        this.userId = user;
     }
 
     public long getcourseId() {
@@ -20,7 +38,7 @@ public class Submission {
 
     public User getUser() {
 
-        return user;
+        return userId;
     }
 
     public void setGrade(float grade) {
