@@ -4,19 +4,31 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import jakarta.annotation.PostConstruct;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import es.dws.aulavisual.users.UserManager;
+import es.dws.aulavisual.users.UserService;
 import org.springframework.web.multipart.MultipartFile;
 import es.dws.aulavisual.users.User;
+import java.util.Optional;
 
 @Controller
 public class UserController {
 
-    private final UserManager userManager;
-    public UserController(UserManager userManager) {
+    private final UserService userService;
+    public UserController(UserService userService) {
 
-        this.userManager = userManager;
+        this.userService = userService;
+    }
+
+    @PostConstruct
+    public void init() {
+
+        userService.save("asd", "asd", "asd", "asd", 0);
+        userService.save("test1", "test1", "test1", "test1", 1);
+        userService.save("test2", "test2", "test2", "test2", 2);
+        userService.save("test3", "test3", "test3", "test3", 2);
+        userService.save("test4", "test4", "test4", "test4", 2);
     }
 
     @GetMapping("/login")
@@ -37,9 +49,10 @@ public class UserController {
 
         if(!(username.isEmpty() && password.isEmpty())) {
 
-            if(userManager.login(username, password)) {
+            if(userService.login(username, password)) {
 
-                long userId = userManager.getUserId(username);
+                User currentUser = userService.findByUserName(username).get();
+                long userId = currentUser.getId();
                 // create a cookie
                 Cookie cookie = new Cookie("userId", Long.toString(userId));
                 cookie.setMaxAge(24 * 60 * 60); //1 day
@@ -47,21 +60,22 @@ public class UserController {
                 //add cookie to response
                 response.addCookie(cookie);
                 model.addAttribute("userName", username);
-                if(userManager.getUser(userId).getRole() == 0) {
+                if(currentUser.getRole() == 0) {
 
                     return "redirect:/admin";
                 }else {
 
                     return "redirect:/courses";
                 }
-            }else {
-
-                model.addAttribute("message", "Nombre de usuario o contraseña incorrectos");
-                return "error";
             }
-        }
 
-        return "redirect:/login";
+            model.addAttribute("message", "Nombre de usuario o contraseña incorrectos");
+
+        }else {
+
+            model.addAttribute("message", "Todos los campos son obligatorios");
+        }
+        return "error";
     }
 
     @GetMapping("/register")
@@ -75,8 +89,15 @@ public class UserController {
 
         if(!(name.isEmpty() && surname.isEmpty() && username.isEmpty() && password.isEmpty())) {
 
-            userManager.addUser(name, surname, username, password, 2);
-            return "redirect:/login";
+            if(userService.findByUserName(username).isPresent()){
+
+                model.addAttribute("message", "El usuario ya existe");
+                return "error";
+            }else {
+
+                userService.save(name, surname, username, password, 2);
+                return "redirect:/login";
+            }
         }else{
 
             model.addAttribute("message", "Todos los campos son obligatorios");
@@ -102,40 +123,45 @@ public class UserController {
 
             return "redirect:" + redirect;
         }
+        redirect = "/logout";
 
-        User currentUser = userManager.getUser(Long.parseLong(userId));
+        Optional<User> searchUser = userService.findById(Long.parseLong(userId));
+        if(searchUser.isEmpty()) {
+
+            model.addAttribute("message", "El usuario de la cookie no existe");
+            return "error";
+        }
+
+        User currentUser = searchUser.get();
         if(currentUser.getRole() == 0 && id != Long.parseLong(userId)) {
 
             userId = Long.toString(id);
-            currentUser = userManager.getUser(Long.parseLong(userId));
+            Optional<User> searchUser2 = userService.findById(Long.parseLong(userId));
+            if(searchUser2.isEmpty()) {
+
+                model.addAttribute("message", "El usuario no existe");
+                return "error";
+            }
+            currentUser = searchUser2.get();
             redirect = "/admin";
         }
 
-        if(!username.equals(currentUser.getUserName())) {
+        if(!username.equals(currentUser.getUserName())){
 
-            if(!userManager.updateUsername(Long.parseLong(userId), username)) {
-
-                model.addAttribute("message", "Error al actualizar el usuario");
-                return "error";
-            }
+            userService.editUsername(currentUser.getId(), username);
         }
 
-        redirect = "/logout";
-        if(!newPassword.isEmpty()) {
+        if(!(newPassword.isEmpty() && prevPassword.isEmpty())) {
 
-            if(!userManager.updatePassword(Long.parseLong(userId), prevPassword, newPassword)) {
-
-                model.addAttribute("message", "Error al actualizar la contraseña");
-                return "error";
-            }
+            userService.editPassword(currentUser.getId(), newPassword, prevPassword);
         }
 
         if(image != null && !image.isEmpty()) {
 
-            userManager.saveImage("user-" + Long.parseLong(userId), Long.parseLong(userId), image);
+            userService.saveImage("user-" + Long.parseLong(userId), Long.parseLong(userId), image);
         }
 
-        return "redirect:/profile/" + userId;
+        return redirect;
     }
 
     @GetMapping("/user_pfp/{id}")
@@ -145,12 +171,17 @@ public class UserController {
 
             return ResponseEntity.status(401).body("Unauthorized");
         }
-        User currentUser = userManager.getUser(Long.parseLong(userId));
+        Optional<User> searchUser = userService.findById(Long.parseLong(userId));
+        if(searchUser.isEmpty()) {
+
+            return ResponseEntity.status(401).body("Unauthorized");
+        }
+        User currentUser = searchUser.get();
         if(currentUser.getRole() == 0 && id != Long.parseLong(userId)) {
 
             userId = Long.toString(id);
         }
-        return userManager.loadImage("user-" + Long.parseLong(userId), Long.parseLong(userId));
+        return userService.loadImage("user-" + Long.parseLong(userId), Long.parseLong(userId));
 
     }
 
@@ -161,7 +192,7 @@ public class UserController {
 
             return "redirect:/login";
         }
-        User currentUser = userManager.getUser(Long.parseLong(userId));
+        User currentUser = userService.getUser(Long.parseLong(userId));
         if(currentUser == null){
 
             model.addAttribute("message", "Usuario no encontrado");
@@ -170,7 +201,7 @@ public class UserController {
         if(currentUser.getRole() == 0 && id != Long.parseLong(userId)) {
 
             userId = Long.toString(id);
-            currentUser = userManager.getUser(Long.parseLong(userId));
+            currentUser = userService.getUser(Long.parseLong(userId));
             model.addAttribute("id", userId);
         }
         model.addAttribute("userName", currentUser.getUserName());
@@ -186,11 +217,11 @@ public class UserController {
             return "redirect:/login";
         }else {
 
-            User currentUser = userManager.getUser(Long.parseLong(userId));
+            User currentUser = userService.getUser(Long.parseLong(userId));
             if(currentUser.getRole() == 0) {
 
                 model.addAttribute("admin", currentUser.getUserName());
-                model.addAttribute("users", userManager.getAllUsers(currentUser));
+                model.addAttribute("users", userService.getAllUsers(currentUser));
                 model.addAttribute("userId", Long.parseLong(userId));
                 return "/users/adminPanel";
             }else {
@@ -209,10 +240,10 @@ public class UserController {
             return "redirect:/login";
         }else {
 
-            User currentUser = userManager.getUser(Long.parseLong(userId));
+            User currentUser = userService.getUser(Long.parseLong(userId));
             if(currentUser.getRole() == 0) {
 
-                if(userManager.removeUser(id)){
+                if(userService.removeUser(id)){
 
                     return "redirect:/admin";
                 }else {
@@ -236,10 +267,10 @@ public class UserController {
             return "redirect:/login";
         }else {
 
-            User currentUser = userManager.getUser(Long.parseLong(userId));
+            User currentUser = userService.getUser(Long.parseLong(userId));
             if(currentUser.getRole() == 0) {
 
-                User user = userManager.getUser(id);
+                User user = userService.getUser(id);
                 if(user == null) {
 
                     model.addAttribute("message", "Usuario no encontrado");
@@ -263,10 +294,10 @@ public class UserController {
             return "redirect:/login";
         }else {
 
-            User currentUser = userManager.getUser(Long.parseLong(userId));
+            User currentUser = userService.getUser(Long.parseLong(userId));
             if(currentUser.getRole() == 0) {
 
-                User user = userManager.getUser(id);
+                User user = userService.getUser(id);
                 if(user == null) {
 
                     model.addAttribute("message", "Usuario no encontrado");
@@ -291,10 +322,10 @@ public class UserController {
             return "redirect:/login";
         }else {
 
-            User currentUser = userManager.getUser(Long.parseLong(userId));
+            User currentUser = userService.getUser(Long.parseLong(userId));
             if(currentUser.getRole() == 0) {
 
-                if(userManager.updateRole(id, role)){
+                if(userService.updateRole(id, role)){
 
                     return "redirect:/admin";
                 }else {

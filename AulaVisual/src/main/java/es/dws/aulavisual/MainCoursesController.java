@@ -3,7 +3,7 @@ package es.dws.aulavisual;
 import es.dws.aulavisual.courses.Course;
 import es.dws.aulavisual.courses.CourseManager;
 import es.dws.aulavisual.users.User;
-import es.dws.aulavisual.users.UserManager;
+import es.dws.aulavisual.users.UserService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CookieValue;
@@ -17,11 +17,11 @@ import java.util.List;
 public class MainCoursesController {
 
     private final CourseManager courseManager;
-    private final UserManager userManager;
+    private final UserService userService;
 
-    public MainCoursesController(CourseManager courseManager, UserManager userManager) {
+    public MainCoursesController(CourseManager courseManager, UserService userService) {
         this.courseManager = courseManager;
-        this.userManager = userManager;
+        this.userService = userService;
     }
 
     @GetMapping("/courses")
@@ -31,7 +31,7 @@ public class MainCoursesController {
 
             return "redirect:/login";
         }
-        User user = userManager.getUser(Long.parseLong(userId));
+        User user = userService.getUser(Long.parseLong(userId));
         if(user == null){
             return "redirect:/login";
         }

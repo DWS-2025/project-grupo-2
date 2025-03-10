@@ -25,13 +25,12 @@ public class User {
     private String passwordHash;
     private int role; //0 for admin, 1 for teacher, 2 for student
 
-    public User(String realName, String surname, String userName, String passwordHash, int role, long id) {
+    public User(String realName, String surname, String userName, String passwordHash, int role) {
         this.realName = realName;
         this.surname = surname;
         this.userName = userName;
         this.passwordHash = passwordHash;
         this.role = role;
-        this.id = id;
     }
 
     protected User() {
