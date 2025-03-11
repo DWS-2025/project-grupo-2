@@ -1,6 +1,8 @@
 package es.dws.aulavisual.users;
 
 import es.dws.aulavisual.courses.Course;
+
+import java.sql.Blob;
 import java.util.List;
 import es.dws.aulavisual.submissions.Submission;
 import jakarta.persistence.*;
@@ -12,12 +14,14 @@ public class User {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
-    @ManyToMany(mappedBy = "userIds")
+    @ManyToMany(mappedBy = "students")
     private List<Course> courses;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "userId")
     private List<Submission> submissions;
 
+    @Lob
+    private Blob image;
 
     private String realName;
     private String surname;
@@ -31,6 +35,7 @@ public class User {
         this.userName = userName;
         this.passwordHash = passwordHash;
         this.role = role;
+        this.image = null;
     }
 
     protected User() {
@@ -80,5 +85,15 @@ public class User {
     public void setRole(int role) {
 
         this.role = role;
+    }
+
+    public Blob getImage() {
+
+        return this.image;
+    }
+
+    public void setImage(Blob blob) {
+
+        this.image = blob;
     }
 }

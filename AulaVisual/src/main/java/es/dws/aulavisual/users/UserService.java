@@ -1,12 +1,17 @@
 package es.dws.aulavisual.users;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.NoSuchAlgorithmException;
 import java.security.MessageDigest;
+import java.sql.Blob;
+import java.util.List;
 import java.util.Optional;
 
 import es.dws.aulavisual.Paths;
+import org.hibernate.engine.jdbc.BlobProxy;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
@@ -20,6 +25,7 @@ public class UserService {
     private final UserRepository userRepository;
 
     public UserService(UserRepository userRepository) {
+
         this.userRepository = userRepository;
     }
 
@@ -73,6 +79,7 @@ public class UserService {
             return;
         }
         userToEdit.setPasswordHash(hashPassword(newPassword));
+        userRepository.save(userToEdit);
     }
 
     public String hashPassword(String password) {
@@ -111,39 +118,51 @@ public class UserService {
         return false;
     }
 
-    public void saveImage(String folderName, long userId, MultipartFile image) {
+    public void saveImage(User user, MultipartFile image) {
 
         try {
-            Path folder = Paths.USERIMGS.resolve(folderName);
-            Files.createDirectories(folder); // Create the directory if it does not exist
+            user.setImage(BlobProxy.generateProxy(image.getInputStream(), image.getSize()));
+            userRepository.save(user);
+        }catch (IOException e) {
 
-            Path newImg = folder.resolve("image-" + userId + ".png");
-            image.transferTo(newImg);
-        } catch (Exception e) {
-
-            System.out.println("Error saving image: " + e.getMessage());
+            throw new RuntimeException("Error processing image", e);
         }
     }
 
-    public ResponseEntity <Object> loadImage(String folderName, long userId) {
+    public ResponseEntity <Object> loadImage(long userId) {
+
+        Optional<User> searchUser = userRepository.findById(userId);
+        if(searchUser.isEmpty()) {
+
+            System.out.println("User not found");
+            return null;
+        }
+        User user = searchUser.get();
 
         try {
-            Path folder = Paths.USERIMGS.resolve(folderName);
-            Path imgPath = folder.resolve("image-" + userId + ".png");
 
-            Resource img = new UrlResource(imgPath.toUri());
+            Blob image = user.getImage();
+            if(image == null) {
 
-            if (!Files.exists(imgPath)) {
+                System.out.println("User has no image");
+                return null;
+            }else{
 
-                folder = Paths.USERDEFAULTIMGFOLDER;
-                imgPath = folder.resolve(Paths.USERDEFAULTIMGPATH);
-                img = new UrlResource(imgPath.toUri());
+                Resource file = new InputStreamResource(image.getBinaryStream());
+                return ResponseEntity.ok().header(HttpHeaders.CONTENT_TYPE, "image/png")
+                        .contentLength(image.length()).body(file);
             }
-            return ResponseEntity.ok().header(HttpHeaders.CONTENT_TYPE, "image/png").body(img);
         } catch (Exception e) {
 
             System.out.println("Error loading image: " + e.getMessage());
-            return ResponseEntity.notFound().build();
+            return null;
         }
+    }
+
+    public List <User> getAllUsersExceptSelf(User currentUser) {
+
+        List<User> users = userRepository.findAll();
+        users.remove(currentUser);
+        return users;
     }
 }

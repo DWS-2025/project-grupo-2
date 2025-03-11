@@ -96,7 +96,7 @@ public class CourseManager {
 
     public boolean userInCourse(long courseId, long userId) {
         Course course = courseList.get(courseId);
-        return course.getUserIds().contains(userId) || course.getTeacherId() == userId;
+        return course.getStudents().contains(userId) || course.getTeacherId() == userId;
     }
 
     public void removeModule(long courseId, long moduleId) {

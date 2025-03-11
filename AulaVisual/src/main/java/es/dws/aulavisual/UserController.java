@@ -2,6 +2,8 @@ package es.dws.aulavisual;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import jakarta.annotation.PostConstruct;
@@ -10,6 +12,8 @@ import org.springframework.web.bind.annotation.*;
 import es.dws.aulavisual.users.UserService;
 import org.springframework.web.multipart.MultipartFile;
 import es.dws.aulavisual.users.User;
+
+import java.io.IOException;
 import java.util.Optional;
 
 @Controller
@@ -158,7 +162,7 @@ public class UserController {
 
         if(image != null && !image.isEmpty()) {
 
-            userService.saveImage("user-" + Long.parseLong(userId), Long.parseLong(userId), image);
+            userService.saveImage(currentUser, image);
         }
 
         return redirect;
@@ -181,7 +185,22 @@ public class UserController {
 
             userId = Long.toString(id);
         }
-        return userService.loadImage("user-" + Long.parseLong(userId), Long.parseLong(userId));
+        ResponseEntity <Object> image = userService.loadImage(Long.parseLong(userId));
+
+        if(image == null) {
+
+            try {
+                ClassPathResource resource = new ClassPathResource("static/img/user-default.png");
+                byte [] imageBytes = resource.getInputStream().readAllBytes();
+                return ResponseEntity.ok().header(HttpHeaders.CONTENT_TYPE, "image/png").body(imageBytes);
+            } catch (IOException e) {
+
+                return ResponseEntity.status(500).body("Internal Server Error");
+            }
+        }else {
+
+            return image;
+        }
 
     }
 
@@ -192,16 +211,23 @@ public class UserController {
 
             return "redirect:/login";
         }
-        User currentUser = userService.getUser(Long.parseLong(userId));
-        if(currentUser == null){
+        Optional<User> searchUser = userService.findById(Long.parseLong(userId));
+        if(searchUser.isEmpty()) {
 
-            model.addAttribute("message", "Usuario no encontrado");
+            model.addAttribute("message", "El usuario de la cookie no existe");
             return "error";
         }
+        User currentUser = searchUser.get();
         if(currentUser.getRole() == 0 && id != Long.parseLong(userId)) {
 
             userId = Long.toString(id);
-            currentUser = userService.getUser(Long.parseLong(userId));
+            searchUser = userService.findById(Long.parseLong(userId));
+            if(searchUser.isEmpty()) {
+
+                model.addAttribute("message", "El usuario no existe");
+                return "error";
+            }
+            currentUser = searchUser.get();
             model.addAttribute("id", userId);
         }
         model.addAttribute("userName", currentUser.getUserName());
@@ -217,11 +243,17 @@ public class UserController {
             return "redirect:/login";
         }else {
 
-            User currentUser = userService.getUser(Long.parseLong(userId));
+            Optional <User> searchUser = userService.findById(Long.parseLong(userId));
+            if(searchUser.isEmpty()) {
+
+                model.addAttribute("message", "El usuario de la cookie no existe");
+                return "error";
+            }
+            User currentUser = searchUser.get();
             if(currentUser.getRole() == 0) {
 
                 model.addAttribute("admin", currentUser.getUserName());
-                model.addAttribute("users", userService.getAllUsers(currentUser));
+                model.addAttribute("users", userService.getAllUsersExceptSelf(currentUser));
                 model.addAttribute("userId", Long.parseLong(userId));
                 return "/users/adminPanel";
             }else {
@@ -267,15 +299,22 @@ public class UserController {
             return "redirect:/login";
         }else {
 
-            User currentUser = userService.getUser(Long.parseLong(userId));
+            Optional <User> searchUser = userService.findById(Long.parseLong(userId));
+            if(searchUser.isEmpty()) {
+
+                model.addAttribute("message", "El usuario de la cookie no existe");
+                return "error";
+            }
+            User currentUser = searchUser.get();
             if(currentUser.getRole() == 0) {
 
-                User user = userService.getUser(id);
-                if(user == null) {
+                searchUser = userService.findById(id);
+                if(searchUser.isEmpty()) {
 
                     model.addAttribute("message", "Usuario no encontrado");
                     return "error";
                 }
+                User user = searchUser.get();
                 model.addAttribute("user", user);
                 model.addAttribute("userId", Long.parseLong(userId));
                 return "redirect:/profile/" + id;
