@@ -5,7 +5,7 @@ import es.dws.aulavisual.courses.CourseManager;
 import es.dws.aulavisual.submissions.Submission;
 import es.dws.aulavisual.submissions.SubmissionManager;
 import org.springframework.web.bind.annotation.*;
-import es.dws.aulavisual.users.UserManager;
+import es.dws.aulavisual.users.UserService;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.http.ResponseEntity;
 import es.dws.aulavisual.users.User;
@@ -16,12 +16,12 @@ import java.util.List;
 @Controller
 public class SubmissionController {
 
-    private final UserManager userManager;
+    private final UserService userService;
     private final SubmissionManager submissionManager;
     private final CourseManager courseManager;
 
-    public SubmissionController(UserManager userManager, SubmissionManager submissionManager, CourseManager courseManager) {
-        this.userManager = userManager;
+    public SubmissionController(UserService userService, SubmissionManager submissionManager, CourseManager courseManager) {
+        this.userService = userService;
         this.submissionManager = submissionManager;
         this.courseManager = courseManager;
     }
@@ -32,7 +32,7 @@ public class SubmissionController {
         if(userId.isEmpty()){
             return "redirect:/login";
         }
-        User user = userManager.getUser(Long.parseLong(userId));
+        User user = userService.getUser(Long.parseLong(userId));
         if(user == null){
 
             model.addAttribute("message", "Usuario no encontrado");
@@ -87,7 +87,7 @@ public class SubmissionController {
         if(userId.isEmpty()){
             return "redirect:/login";
         }
-        User user = userManager.getUser(Long.parseLong(userId));
+        User user = userService.getUser(Long.parseLong(userId));
         if(user == null){
 
             model.addAttribute("message", "Usuario no encontrado");
@@ -118,7 +118,7 @@ public class SubmissionController {
         if(userId.isEmpty()){
             return "redirect:/login";
         }
-        User user = userManager.getUser(Long.parseLong(userId));
+        User user = userService.getUser(Long.parseLong(userId));
         if(user == null){
 
             model.addAttribute("message", "Usuario no encontrado");
@@ -130,7 +130,7 @@ public class SubmissionController {
             model.addAttribute("message", "Curso no encontrado");
             return "error";
         }
-        User student = userManager.getUser(studentId);
+        User student = userService.getUser(studentId);
         if(student == null){
 
             model.addAttribute("message", "Estudiante no encontrado");
@@ -150,7 +150,7 @@ public class SubmissionController {
         if(userId.isEmpty()){
             return ResponseEntity.status(401).body("Unauthorized");
         }
-        User user = userManager.getUser(Long.parseLong(userId));
+        User user = userService.getUser(Long.parseLong(userId));
         if(user == null){
 
             return ResponseEntity.status(401).body("Unauthorized");
@@ -168,7 +168,7 @@ public class SubmissionController {
         if(userId.isEmpty()){
             return "redirect:/login";
         }
-        User user = userManager.getUser(Long.parseLong(userId));
+        User user = userService.getUser(Long.parseLong(userId));
         if(user == null){
 
             model.addAttribute("message", "Usuario no encontrado");
@@ -190,7 +190,7 @@ public class SubmissionController {
             if(!courseManager.userMadeSubmission(courseId, Long.parseLong(userId))) {
 
                 if(submissionManager.submitCourseSubmission(Long.parseLong(userId), courseId, submission)) {
-                    course.saveSubmission(userManager.getUser(Long.parseLong(userId)));
+                    course.saveSubmission(userService.getUser(Long.parseLong(userId)));
                     return "redirect:/courses";
                 }else {
 
@@ -207,7 +207,7 @@ public class SubmissionController {
         if(userId.isEmpty()){
             return "redirect:/login";
         }
-        User user = userManager.getUser(Long.parseLong(userId));
+        User user = userService.getUser(Long.parseLong(userId));
         if(user == null){
 
             model.addAttribute("message", "Usuario no encontrado");

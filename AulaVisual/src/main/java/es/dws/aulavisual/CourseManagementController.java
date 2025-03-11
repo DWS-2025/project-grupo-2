@@ -1,7 +1,7 @@
 package es.dws.aulavisual;
 
 import es.dws.aulavisual.users.User;
-import es.dws.aulavisual.users.UserManager;
+import es.dws.aulavisual.users.UserService;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
@@ -22,12 +22,12 @@ import java.util.List;
 public class CourseManagementController {
 
     private final CourseManager courseManager;
-    private final UserManager userManager;
+    private final UserService userService;
 
-    public CourseManagementController(CourseManager courseManager, UserManager userManager) {
+    public CourseManagementController(CourseManager courseManager, UserService userService) {
 
         this.courseManager = courseManager;
-        this.userManager = userManager;
+        this.userService = userService;
     }
 
     @GetMapping("/admin/courses")
@@ -37,7 +37,7 @@ public class CourseManagementController {
 
             return "redirect:/login";
         }
-        User user = userManager.getUser(Long.parseLong(userId));
+        User user = userService.getUser(Long.parseLong(userId));
         if(user == null) {
 
             model.addAttribute("message", "Usuario no encontrado");
@@ -67,7 +67,7 @@ public class CourseManagementController {
             model.addAttribute("message", "Curso no encontrado");
             return "error";
         }
-        User user = userManager.getUser(Long.parseLong(userId));
+        User user = userService.getUser(Long.parseLong(userId));
         if(user == null) {
 
             model.addAttribute("message", "Usuario no encontrado");
@@ -98,7 +98,7 @@ public class CourseManagementController {
             model.addAttribute("message", "Curso no encontrado");
             return "error";
         }
-        User user = userManager.getUser(Long.parseLong(userId));
+        User user = userService.getUser(Long.parseLong(userId));
         if(user == null) {
 
             model.addAttribute("message", "Usuario no encontrado");
@@ -144,7 +144,7 @@ public class CourseManagementController {
 
             return "redirect:/login";
         }
-        User user = userManager.getUser(Long.parseLong(userId));
+        User user = userService.getUser(Long.parseLong(userId));
         if(user == null) {
 
             model.addAttribute("message", "Usuario no encontrado");
@@ -169,7 +169,7 @@ public class CourseManagementController {
 
             return "redirect:/login";
         }
-        User user = userManager.getUser(Long.parseLong(userId));
+        User user = userService.getUser(Long.parseLong(userId));
         if(user == null) {
 
             model.addAttribute("message", "Usuario no encontrado");
@@ -202,7 +202,7 @@ public class CourseManagementController {
 
             return "redirect:/login";
         }
-        User user = userManager.getUser(Long.parseLong(userId));
+        User user = userService.getUser(Long.parseLong(userId));
         if(user == null) {
 
             model.addAttribute("message", "Usuario no encontrado");
@@ -223,7 +223,7 @@ public class CourseManagementController {
 
             return "redirect:/login";
         }
-        User user = userManager.getUser(Long.parseLong(userId));
+        User user = userService.getUser(Long.parseLong(userId));
         if(user == null) {
 
             model.addAttribute("message", "Usuario no encontrado");
@@ -233,7 +233,7 @@ public class CourseManagementController {
 
             return "redirect:/";
         }
-        User techer = userManager.getUser(teacherId);
+        User techer = userService.getUser(teacherId);
         if(techer == null) {
 
             model.addAttribute("message", "Profesor no encontrado");
@@ -265,7 +265,7 @@ public class CourseManagementController {
 
             return "redirect:/login";
         }
-        User user = userManager.getUser(Long.parseLong(userId));
+        User user = userService.getUser(Long.parseLong(userId));
         if(user == null) {
 
             model.addAttribute("message", "Usuario no encontrado");
@@ -287,7 +287,7 @@ public class CourseManagementController {
 
             return "redirect:/login";
         }
-        User user = userManager.getUser(Long.parseLong(userId));
+        User user = userService.getUser(Long.parseLong(userId));
         if(user == null) {
 
             model.addAttribute("message", "Usuario no encontrado");
@@ -332,7 +332,7 @@ public class CourseManagementController {
 
             return "redirect:/login";
         }
-        User user = userManager.getUser(Long.parseLong(userId));
+        User user = userService.getUser(Long.parseLong(userId));
         if(user == null) {
 
             model.addAttribute("message", "Usuario no encontrado");
@@ -342,7 +342,7 @@ public class CourseManagementController {
 
             return "redirect:/";
         }
-        User student = userManager.getUser(studentId);
+        User student = userService.getUser(studentId);
         if(student == null) {
 
             model.addAttribute("message", "Estudiante no encontrado");

@@ -20,7 +20,7 @@ public class Course {
     private  long teacherId;
 
     @ManyToMany()
-    private  List <User> userIds;
+    private  List <User> students;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "course")
     private  List <Module> modules;
@@ -32,13 +32,13 @@ public class Course {
 
     }
 
-    public Course(long id, String name, String description, long teacherId, List <Long> userIds, List<Module> modules, String task) {
+    public Course(long id, String name, String description, long teacherId, List <Long> students, List<Module> modules, String task) {
 
         this.id = id;
         this.name = name;
         this.description = description;
         this.teacherId = teacherId;
-        this.userIds = userIds;
+        this.students = students;
         this.modules = modules;
         this.submissions = new ArrayList<>();
         this.task = task;
@@ -69,9 +69,9 @@ public class Course {
         modules.remove(module);
     }
 
-    public List <Long> getUserIds(){
+    public List <Long> getStudents(){
 
-        return userIds;
+        return students;
     }
 
     public long getNumberModules() {
@@ -160,6 +160,6 @@ public class Course {
 
     public boolean addStudent(long studentId) {
 
-        return userIds.add(studentId);
+        return students.add(studentId);
     }
 }
