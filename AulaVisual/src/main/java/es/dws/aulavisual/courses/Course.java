@@ -1,5 +1,6 @@
 package es.dws.aulavisual.courses;
 
+import es.dws.aulavisual.modules.Module;
 import es.dws.aulavisual.submissions.Submission;
 import es.dws.aulavisual.users.User;
 import jakarta.persistence.*;
@@ -23,7 +24,7 @@ public class Course {
     private  List <User> students;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "course")
-    private  List <Module> modules;
+    private  List <es.dws.aulavisual.modules.Module> modules;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "course")
     private  List<Submission> submissions;
@@ -32,7 +33,7 @@ public class Course {
 
     }
 
-    public Course(long id, String name, String description, long teacherId, List <Long> students, List<Module> modules, String task) {
+    public Course(long id, String name, String description, long teacherId, List <Long> students, List<es.dws.aulavisual.modules.Module> modules, String task) {
 
         this.id = id;
         this.name = name;
@@ -54,17 +55,17 @@ public class Course {
         return name;
     }
 
-    public List <Module> getModules() {
+    public List <es.dws.aulavisual.modules.Module> getModules() {
 
         return modules;
     }
 
-    public void addModule(Module module) {
+    public void addModule(es.dws.aulavisual.modules.Module module) {
 
         modules.add(module);
     }
 
-    public void removeModule(Module module) {
+    public void removeModule(es.dws.aulavisual.modules.Module module) {
 
         modules.remove(module);
     }
@@ -79,7 +80,7 @@ public class Course {
         return modules.size();
     }
 
-    public Module getModuleById(long moduleId) {
+    public es.dws.aulavisual.modules.Module getModuleById(long moduleId) {
         for (Module module : modules) {
             if (module.getId() == moduleId) {
                 return module;

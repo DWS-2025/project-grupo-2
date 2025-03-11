@@ -1,6 +1,7 @@
 package es.dws.aulavisual.courses;
 
 import es.dws.aulavisual.Paths;
+import es.dws.aulavisual.modules.Module;
 import es.dws.aulavisual.submissions.Submission;
 import es.dws.aulavisual.users.User;
 import org.springframework.core.io.Resource;
@@ -29,14 +30,14 @@ public class CourseManager {
         loluserIds.add(Long.parseLong("2"));
         loluserIds.add(Long.parseLong("3"));
 
-        List <Module> lolModules = new ArrayList <>();
-        Module lolModule1 = new Module(0, "Intro");
+        List <es.dws.aulavisual.modules.Module> lolModules = new ArrayList <>();
+        es.dws.aulavisual.modules.Module lolModule1 = new es.dws.aulavisual.modules.Module(0, "Intro");
         lolModules.add(lolModule1);
 
-        Module lolModule2 = new Module(1, "Champions");
+        es.dws.aulavisual.modules.Module lolModule2 = new es.dws.aulavisual.modules.Module(1, "Champions");
         lolModules.add(lolModule2);
 
-        Module lolModule3 = new Module(2, "Delete_me");
+        es.dws.aulavisual.modules.Module lolModule3 = new es.dws.aulavisual.modules.Module(2, "Delete_me");
         lolModules.add(lolModule3);
 
         Course lolCourse = new Course(0, "League of Legends", "Aprende a jugar al LOL", 1, loluserIds, lolModules, "Haz una redacción sobre el control de oleadas");
@@ -56,7 +57,7 @@ public class CourseManager {
         this.nextId = 3;
     }
 
-    public void createCourse(String name, String description, long teacherId, List <Module> modules, String task) {
+    public void createCourse(String name, String description, long teacherId, List <es.dws.aulavisual.modules.Module> modules, String task) {
 
         long id = nextId;
         this.nextId++;
@@ -75,7 +76,7 @@ public class CourseManager {
             Path modulePath = coursePath.resolve("module" + course.getNumberModules() + "-" + name + ".md");
             Files.createFile(modulePath);
             module.transferTo(modulePath);
-            course.addModule(new Module(course.getNumberModules(), name));
+            course.addModule(new es.dws.aulavisual.modules.Module(course.getNumberModules(), name));
             return true;
         }catch (Exception e) {
 
@@ -101,7 +102,7 @@ public class CourseManager {
 
     public void removeModule(long courseId, long moduleId) {
         Course course = courseList.get(courseId);
-        Module module = course.getModuleById(moduleId);
+        es.dws.aulavisual.modules.Module module = course.getModuleById(moduleId);
         if (module != null) {
 
             try {
@@ -117,7 +118,7 @@ public class CourseManager {
 
     public ResponseEntity<Object> viewCourse(long courseId, long id) {
         Course course = courseList.get(courseId);
-        Module module = course.getModuleById(id);
+        es.dws.aulavisual.modules.Module module = course.getModuleById(id);
 
         try {
 
@@ -150,7 +151,7 @@ public class CourseManager {
 
     public void deleteAllModules(Long courseId) {
         Course course = courseList.get(courseId);
-        List <Module> modules = course.getModules();
+        List <es.dws.aulavisual.modules.Module> modules = course.getModules();
         for (Module module : modules) {
             try {
                 Path coursePath = Paths.COURSEMODULESPATH.resolve("course-" + courseId);

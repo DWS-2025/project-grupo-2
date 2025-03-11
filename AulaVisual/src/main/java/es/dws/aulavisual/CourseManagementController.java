@@ -8,7 +8,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import es.dws.aulavisual.courses.Course;
-import es.dws.aulavisual.courses.Module;
+import es.dws.aulavisual.modules.Module;
 import es.dws.aulavisual.courses.CourseManager;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
