@@ -1,19 +1,19 @@
-package es.dws.aulavisual.users;
+package es.dws.aulavisual.service;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.security.NoSuchAlgorithmException;
 import java.security.MessageDigest;
 import java.sql.Blob;
 import java.util.List;
 import java.util.Optional;
 
-import es.dws.aulavisual.Paths;
+import es.dws.aulavisual.model.Course;
+import es.dws.aulavisual.repository.CourseRepository;
+import es.dws.aulavisual.model.User;
+import es.dws.aulavisual.repository.UserRepository;
 import org.hibernate.engine.jdbc.BlobProxy;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -23,16 +23,23 @@ import org.springframework.web.multipart.MultipartFile;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final CourseRepository courseService;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, CourseRepository courseService) {
 
         this.userRepository = userRepository;
+        this.courseService = courseService;
     }
 
     public void save(String name, String surname, String userName, String password, int role) {
 
         String passwordHash = hashPassword(password);
         User user = new User(name, surname, userName, passwordHash, role);
+        userRepository.save(user);
+    }
+
+    public void save(User user) {
+
         userRepository.save(user);
     }
 
@@ -48,6 +55,19 @@ public class UserService {
 
     public void deleteById(long id) {
 
+        Optional<User> user = userRepository.findById(id);
+        if(user.isEmpty()) {
+
+            System.out.println("User not found");
+            return;
+        }
+        User userToDelete = user.get();
+        List<Course> courses = userToDelete.getCourses();
+        for (Course course : courses) {
+
+            course.getStudents().remove(userToDelete);
+            courseService.save(course);
+        }
         userRepository.deleteById(id);
     }
 
@@ -175,5 +195,16 @@ public class UserService {
             return true;
         }
         return false;
+    }
+
+    public void removeAllUsersFromCourse(Course course) {
+
+        List<User> users = userRepository.findAll();
+
+        for (User user : users) {
+
+            user.getCourses().remove(course);
+            userRepository.save(user);
+        }
     }
 }

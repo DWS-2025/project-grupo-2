@@ -1,7 +1,7 @@
-package es.dws.aulavisual.submissions;
+package es.dws.aulavisual.model;
 
-import es.dws.aulavisual.courses.Course;
-import es.dws.aulavisual.users.User;
+import java.sql.Blob;
+
 import jakarta.persistence.*;
 
 @Entity
@@ -17,6 +17,8 @@ public class Submission {
     @ManyToOne()
     private Course course;
 
+    @Lob
+    private Blob submission;
 
     private boolean graded = false;
     private float grade = -1;
@@ -26,9 +28,10 @@ public class Submission {
 
     }
 
-    public Submission(Course course, User user) {
+    public Submission(Course course, User user, Blob submission) {
         this.course = course;
         this.student = user;
+        this.submission = submission;
     }
 
     public User getUser() {
@@ -50,5 +53,10 @@ public class Submission {
     public float getGrade() {
 
         return this.grade;
+    }
+
+    public Blob getSubmission() {
+
+        return submission;
     }
 }

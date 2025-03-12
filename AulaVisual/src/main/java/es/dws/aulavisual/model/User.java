@@ -1,11 +1,9 @@
-package es.dws.aulavisual.users;
-
-import es.dws.aulavisual.courses.Course;
+package es.dws.aulavisual.model;
 
 import java.sql.Blob;
 import java.util.ArrayList;
 import java.util.List;
-import es.dws.aulavisual.submissions.Submission;
+
 import jakarta.persistence.*;
 
 @Entity(name = "UserTable")
@@ -96,5 +94,10 @@ public class User {
     public void setImage(Blob blob) {
 
         this.image = blob;
+    }
+
+    public List<Course> getCourses() {
+
+        return courses;
     }
 }

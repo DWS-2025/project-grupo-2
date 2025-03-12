@@ -1,33 +1,34 @@
-package es.dws.aulavisual;
+package es.dws.aulavisual.controller;
 
-import es.dws.aulavisual.users.User;
-import es.dws.aulavisual.users.UserService;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
-import org.springframework.http.HttpHeaders;
+import es.dws.aulavisual.service.ModuleService;
+import es.dws.aulavisual.model.User;
+import es.dws.aulavisual.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
-import es.dws.aulavisual.courses.Course;
-import es.dws.aulavisual.modules.Module;
-import es.dws.aulavisual.courses.CourseManager;
+import es.dws.aulavisual.model.Course;
+import es.dws.aulavisual.model.Module;
+import es.dws.aulavisual.service.CourseService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import java.nio.file.Path;
-import java.util.ArrayList;
+
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 
 @Controller
 public class CourseManagementController {
 
-    private final CourseManager courseManager;
+    private final CourseService courseService;
     private final UserService userService;
+    private final ModuleService moduleService;
 
-    public CourseManagementController(CourseManager courseManager, UserService userService) {
+    public CourseManagementController(CourseService courseService, UserService userService, ModuleService moduleService) {
 
-        this.courseManager = courseManager;
+        this.courseService = courseService;
         this.userService = userService;
+        this.moduleService = moduleService;
     }
 
     @GetMapping("/admin/courses")
@@ -37,17 +38,18 @@ public class CourseManagementController {
 
             return "redirect:/login";
         }
-        User user = userService.getUser(Long.parseLong(userId));
-        if(user == null) {
+        Optional <User> userSearch = userService.findById(Long.parseLong(userId));
+        if(userSearch.isEmpty()) {
 
-            model.addAttribute("message", "Usuario no encontrado");
-            return "error";
+            return "redirect:/login";
         }
+
+        User user = userSearch.get();
         if(user.getRole() == 0) {
 
             model.addAttribute("admin", user.getRealName());
             model.addAttribute("userId", Long.parseLong(userId));
-            List <Course> courses = courseManager.getCourses();
+            List <Course> courses = courseService.getCourses();
             model.addAttribute("courses", courses);
             return "courses-management/manageCourses";
         }
@@ -61,25 +63,27 @@ public class CourseManagementController {
 
             return "redirect:/login";
         }
-        Course course = courseManager.getCourse(id);
-        if(course == null) {
+        Optional <Course> searchCourse = courseService.findById(id);
+        if(searchCourse.isEmpty()) {
 
             model.addAttribute("message", "Curso no encontrado");
             return "error";
         }
-        User user = userService.getUser(Long.parseLong(userId));
-        if(user == null) {
+        Course course = searchCourse.get();
+        Optional <User> searchUser = userService.findById(Long.parseLong(userId));
+        if(searchUser.isEmpty()) {
 
             model.addAttribute("message", "Usuario no encontrado");
             return "error";
         }
+        User user = searchUser.get();
         if(user.getRole() == 0) {
 
             model.addAttribute("courseName", course.getName());
             model.addAttribute("courseId", id);
             model.addAttribute("userId", Long.parseLong(userId));
             model.addAttribute("admin", user.getRealName());
-            model.addAttribute("modules", course.getModules());
+            model.addAttribute("modules", moduleService.getModulesByCourse(course));
             return "courses-management/modules";
         }
         return "redirect:/";
@@ -92,29 +96,32 @@ public class CourseManagementController {
 
             return "redirect:/login";
         }
-        Course course = courseManager.getCourse(courseId);
-        if(course == null) {
+        Optional <Course> searchCourse = courseService.findById(courseId);
+        if(searchCourse.isEmpty()) {
 
             model.addAttribute("message", "Curso no encontrado");
             return "error";
         }
-        User user = userService.getUser(Long.parseLong(userId));
-        if(user == null) {
+        Course course = searchCourse.get();
+
+        Optional <User> searchUser = userService.findById(Long.parseLong(userId));
+        if(searchUser.isEmpty()) {
 
             model.addAttribute("message", "Usuario no encontrado");
             return "error";
         }
+        User user = searchUser.get();
         if(user.getRole() == 0) {
 
-            Module module = course.getModuleById(id);
-            if(module == null) {
+            Optional<Module> searchModule = moduleService.findById(id);
+            if(searchModule.isEmpty()) {
 
                 model.addAttribute("message", "Módulo no encontrado");
                 return "error";
             }
-
-            model.addAttribute("courseId", course.getId());
-            model.addAttribute("userId", Long.parseLong(userId));
+            Module module = searchModule.get();
+            model.addAttribute("courseId", courseId);
+            model.addAttribute("module", module);
             return "courses-management/modulePreview";
         }
         return "redirect:/";
@@ -128,70 +135,100 @@ public class CourseManagementController {
             return ResponseEntity.status(401).body("Unauthorized");
         }
 
-        Course course = courseManager.getCourse(courseId);
-        Module module = course.getModuleById(id);
-        if(module == null) {
+        Optional<User> searchUser = userService.findById(Long.parseLong(userId));
+        if(searchUser.isEmpty()) {
 
-            return ResponseEntity.status(404).body("Module not found1");
+            return ResponseEntity.status(404).body("User not found");
         }
-        return courseManager.viewCourse(courseId, id);
+        User user = searchUser.get();
+
+        Optional <Course> searchCourse = courseService.findById(courseId);
+        if(searchCourse.isEmpty()) {
+
+            return ResponseEntity.status(404).body("Course not found");
+        }
+        Course course = searchCourse.get();
+
+        Optional <Module> searchModule = moduleService.findById(id);
+        if(searchModule.isEmpty()) {
+
+            return ResponseEntity.status(404).body("Module not found");
+        }
+        Module module = searchModule.get();
+
+        if(user.getRole() == 0 || course.getTeacherId() == user.getId() || courseService.userIsInCourse(user, course)) {
+
+            return moduleService.viewModule(module);
+        }else{
+
+            return ResponseEntity.status(403).body("Unauthorized");
+        }
     }
 
-    @GetMapping("/admin/courses/{courseId}/delete")
+    @PostMapping("/admin/courses/{courseId}/delete") //Cambiar a POST
     public String deleteCourse(@PathVariable long courseId, @CookieValue(value = "userId", defaultValue = "") String userId, Model model) {
 
         if(userId.isEmpty()) {
 
             return "redirect:/login";
         }
-        User user = userService.getUser(Long.parseLong(userId));
-        if(user == null) {
+        Optional <User> searchUser = userService.findById(Long.parseLong(userId));
+        if(searchUser.isEmpty()) {
 
             model.addAttribute("message", "Usuario no encontrado");
             return "error";
         }
+        User user = searchUser.get();
         if(user.getRole() != 0) {
 
             return "redirect:/";
         }
-        if(courseManager.removeCourse(courseId) == null) {
+        Optional <Course> searchCourse = courseService.findById(courseId);
+        if(searchCourse.isEmpty()) {
 
             model.addAttribute("message", "Curso no encontrado");
             return "error";
         }
+        Course course = searchCourse.get();
+        courseService.deleteCourse(course); //Mirar submisssions
         return "redirect:/admin/courses";
     }
 
-    @GetMapping("/admin/courses/{courseId}/module/{id}/delete")
+    @PostMapping("/admin/courses/{courseId}/module/{id}/delete") //Cambiar a POST
     public String deleteModule(Model model, @PathVariable long courseId, @PathVariable long id, @CookieValue(value = "userId", defaultValue = "") String userId) {
 
         if(userId.isEmpty()) {
 
             return "redirect:/login";
         }
-        User user = userService.getUser(Long.parseLong(userId));
-        if(user == null) {
+        Optional <User> searchUser = userService.findById(Long.parseLong(userId));
+        if(searchUser.isEmpty()) {
 
             model.addAttribute("message", "Usuario no encontrado");
             return "error";
         }
+        User user = searchUser.get();
         if(user.getRole() != 0) {
 
             return "redirect:/";
         }
-        Course course = courseManager.getCourse(courseId);
-        if(course == null) {
+        Optional <Course> searchCourse = courseService.findById(courseId);
+        if(searchCourse.isEmpty()) {
 
             model.addAttribute("message", "Curso no encontrado");
             return "error";
         }
-        Module module = course.getModuleById(id);
-        if(module == null) {
+        Course course = searchCourse.get();
+
+        Optional <Module> searchModule = moduleService.findById(id);
+        if(searchModule.isEmpty()) {
 
             model.addAttribute("message", "Módulo no encontrado");
             return "error";
         }
-        courseManager.removeModule(courseId, id);
+        Module module = searchModule.get();
+
+        moduleService.delete(module);
         return "redirect:/admin/courses/{courseId}/modules";
     }
 
@@ -202,12 +239,12 @@ public class CourseManagementController {
 
             return "redirect:/login";
         }
-        User user = userService.getUser(Long.parseLong(userId));
-        if(user == null) {
+        Optional <User> searchUser = userService.findById(Long.parseLong(userId));
+        if(searchUser.isEmpty()) {
 
-            model.addAttribute("message", "Usuario no encontrado");
-            return "error";
+            return "redirect:/login";
         }
+        User user = searchUser.get();
         if(user.getRole() != 0) {
 
             return "redirect:/";
@@ -223,25 +260,28 @@ public class CourseManagementController {
 
             return "redirect:/login";
         }
-        User user = userService.getUser(Long.parseLong(userId));
-        if(user == null) {
+        Optional <User> searchUser = userService.findById(Long.parseLong(userId));
+        if(searchUser.isEmpty()) {
 
             model.addAttribute("message", "Usuario no encontrado");
             return "error";
         }
+        User user = searchUser.get();
         if(user.getRole() != 0) {
 
             return "redirect:/";
         }
-        User techer = userService.getUser(teacherId);
-        if(techer == null) {
+        Optional <User> searchTecher = userService.findById(teacherId);
+        if(searchTecher.isEmpty()) {
 
-            model.addAttribute("message", "Profesor no encontrado");
+            model.addAttribute("message", "Usuario profesor no encontrado");
             return "error";
         }
+        User techer = searchTecher.get();
         if (techer.getRole() != 1) {
 
-            return "redirect:/";    //Should inform the user that a teacher is required
+            model.addAttribute("message", "El usuario seleccionado no es un profesor");
+            return "error";
         }
         if(name.isEmpty() || description == null || description.isEmpty() || task.isEmpty()) {
 
@@ -251,9 +291,12 @@ public class CourseManagementController {
 
         if(image != null && !image.isEmpty()) {
 
-            List <Module> modules = new ArrayList <>();
-            courseManager.createCourse(name, description, teacherId, modules, task);
-            courseManager.addImage(image);
+            Course course = new Course(name, description, teacherId, task, image);
+            courseService.save(course);
+        }else{
+
+            model.addAttribute("message", "La imagen es obligatoria");
+            return "error";
         }
         return "redirect:/admin/courses";
     }
@@ -265,12 +308,13 @@ public class CourseManagementController {
 
             return "redirect:/login";
         }
-        User user = userService.getUser(Long.parseLong(userId));
-        if(user == null) {
+        Optional <User> searchUser = userService.findById(Long.parseLong(userId));
+        if(searchUser.isEmpty()) {
 
             model.addAttribute("message", "Usuario no encontrado");
             return "error";
         }
+        User user = searchUser.get();
         if(user.getRole() != 0) {
 
             return "redirect:/";
@@ -287,12 +331,13 @@ public class CourseManagementController {
 
             return "redirect:/login";
         }
-        User user = userService.getUser(Long.parseLong(userId));
-        if(user == null) {
+        Optional <User> searchUser = userService.findById(Long.parseLong(userId));
+        if(searchUser.isEmpty()) {
 
             model.addAttribute("message", "Usuario no encontrado");
             return "error";
         }
+        User user = searchUser.get();
         if(user.getRole() != 0) {
 
             return "redirect:/";
@@ -302,27 +347,31 @@ public class CourseManagementController {
             model.addAttribute("message", "Faltan campos por rellenar");
             return "error";
         }
-        if(courseManager.addModule(courseId, name, module)){
 
-            return "redirect:/admin/courses/{courseId}/modules";
-        }else {
+        Optional <Course> searchCourse = courseService.findById(courseId);
+        if(searchCourse.isEmpty()) {
 
-            model.addAttribute("message", "Error al añadir el módulo");
+            model.addAttribute("message", "Curso no encontrado");
             return "error";
         }
+        Course course = searchCourse.get();
+        moduleService.save(course, name, module);
+        return "redirect:/admin/courses/{courseId}/modules";
     }
 
     @GetMapping("/courses/{courseId}/getImage")
-    public ResponseEntity <Resource> getImage(@PathVariable Long courseId) {
+    public ResponseEntity <Object> getImage(@PathVariable Long courseId) {
 
-        try {
-            Path path = courseManager.getImage(courseId);
-            Resource resource = new UrlResource(path.toUri());
-            return ResponseEntity.ok().header(HttpHeaders.CONTENT_TYPE, "image/jpeg").body(resource);
-        } catch (Exception e) {
+        Optional<Course> searchCourse = courseService.findById(courseId);
+        if(searchCourse.isEmpty()) {
 
             return ResponseEntity.notFound().build();
         }
+        Course course = searchCourse.get();
+
+        ResponseEntity <Object> response = courseService.loadImage(course);
+
+        return Objects.requireNonNullElseGet(response, () -> ResponseEntity.notFound().build());
     }
 
     @PostMapping("/admin/courses/{courseId}/addStudent")
@@ -332,35 +381,39 @@ public class CourseManagementController {
 
             return "redirect:/login";
         }
-        User user = userService.getUser(Long.parseLong(userId));
-        if(user == null) {
+        Optional <User> searchUser = userService.findById(Long.parseLong(userId));
+        if(searchUser.isEmpty()) {
 
             model.addAttribute("message", "Usuario no encontrado");
             return "error";
         }
+        User user = searchUser.get();
         if(user.getRole() != 0) {
 
             return "redirect:/";
         }
-        User student = userService.getUser(studentId);
-        if(student == null) {
+        Optional <User> seatchStudent = userService.findById(studentId);
+        if(seatchStudent.isEmpty()) {
 
             model.addAttribute("message", "Estudiante no encontrado");
             return "error";
         }
-        if(courseManager.userInCourse(courseId, studentId)) {
+        User student = seatchStudent.get();
+
+        Optional <Course> searchCourse = courseService.findById(courseId);
+        if(searchCourse.isEmpty()) {
+
+            model.addAttribute("message", "Curso no encontrado");
+            return "error";
+        }
+        Course course = searchCourse.get();
+        if(courseService.userIsInCourse(student, course)) {
 
             model.addAttribute("message", "El estudiante ya está en el curso");
             return "error";
         }
+        courseService.addUserToCourse(course, student);
 
-        if(courseManager.addStudent(courseId, studentId)) {
-
-            return "redirect:/admin/courses";
-        }else {
-
-            model.addAttribute("message", "Error al añadir el estudiante");
-            return "error";
-        }
+        return "redirect:/admin/courses/{courseId}/";
     }
 }

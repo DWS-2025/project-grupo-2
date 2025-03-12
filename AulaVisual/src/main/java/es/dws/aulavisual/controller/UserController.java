@@ -1,4 +1,4 @@
-package es.dws.aulavisual;
+package es.dws.aulavisual.controller;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
@@ -6,12 +6,11 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import jakarta.annotation.PostConstruct;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import es.dws.aulavisual.users.UserService;
+import es.dws.aulavisual.service.UserService;
 import org.springframework.web.multipart.MultipartFile;
-import es.dws.aulavisual.users.User;
+import es.dws.aulavisual.model.User;
 
 import java.io.IOException;
 import java.util.Optional;
@@ -23,16 +22,6 @@ public class UserController {
     public UserController(UserService userService) {
 
         this.userService = userService;
-    }
-
-    @PostConstruct
-    public void init() {
-
-        userService.save("asd", "asd", "asd", "asd", 0);
-        userService.save("test1", "test1", "test1", "test1", 1);
-        userService.save("test2", "test2", "test2", "test2", 2);
-        userService.save("test3", "test3", "test3", "test3", 2);
-        userService.save("test4", "test4", "test4", "test4", 2);
     }
 
     @GetMapping("/login")
