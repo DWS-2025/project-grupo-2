@@ -2,6 +2,7 @@ package es.dws.aulavisual.modules;
 
 import es.dws.aulavisual.courses.Course;
 import jakarta.persistence.*;
+import java.sql.Blob;
 
 @Entity
 public class Module {
@@ -15,9 +16,13 @@ public class Module {
 
     private String name;
 
-    public Module(Course course, String name) {
+    @Lob
+    private Blob content;
+
+    public Module(Course course, String name, Blob content) {
         this.course = course;
         this.name = name;
+        this.content = content;
     }
 
     protected Module() {
@@ -36,5 +41,10 @@ public class Module {
     public String getName() {
 
         return name;
+    }
+
+    public Blob getContent() {
+
+        return content;
     }
 }

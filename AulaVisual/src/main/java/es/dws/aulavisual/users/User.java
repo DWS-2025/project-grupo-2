@@ -97,4 +97,9 @@ public class User {
 
         this.image = blob;
     }
+
+    public List<Course> getCourses() {
+
+        return courses;
+    }
 }

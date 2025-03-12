@@ -1,9 +1,13 @@
 package es.dws.aulavisual.courses;
 
+import java.io.IOException;
+import java.sql.Blob;
 import es.dws.aulavisual.modules.Module;
 import es.dws.aulavisual.submissions.Submission;
 import es.dws.aulavisual.users.User;
 import jakarta.persistence.*;
+import org.hibernate.engine.jdbc.BlobProxy;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +24,9 @@ public class Course {
     private  String task;
     private  long teacherId;
 
+    @Lob
+    private Blob imageCourse;
+
     @ManyToMany()
     private  List <User> students = new ArrayList<>();
 
@@ -29,20 +36,20 @@ public class Course {
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "course")
     private  List<Submission> submissions = new ArrayList<>();
 
+
+
     protected Course() {
 
     }
 
-    public Course(long id, String name, String description, long teacherId, List <Long> students, List<Module> modules, String task) {
+    public Course(String name, String description, long teacherId, String task, MultipartFile imageCourse) {
 
-        this.id = id;
         this.name = name;
         this.description = description;
         this.teacherId = teacherId;
-        this.students = students;
-        this.modules = modules;
         this.submissions = new ArrayList<>();
         this.task = task;
+        this.imageCourse = transformImage(imageCourse);
     }
 
     public long getId() {
@@ -55,63 +62,9 @@ public class Course {
         return name;
     }
 
-    public List <Module> getModules() {
+    public String getDescription() {
 
-        return modules;
-    }
-
-    public void addModule(Module module) {
-
-        modules.add(module);
-    }
-
-    public void removeModule(Module module) {
-
-        modules.remove(module);
-    }
-
-    public List <Long> getStudents(){
-
-        return students;
-    }
-
-    public long getNumberModules() {
-
-        return modules.size();
-    }
-
-    public Module getModuleById(long moduleId) {
-        for (Module module : modules) {
-            if (module.getId() == moduleId) {
-                return module;
-            }
-        }
-        return null;
-    }
-
-    public boolean userMadeSubmission(long userId) {
-        for (Submission submission : submissions) {
-            if (submission.getUser().getId() == userId) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public void saveSubmission(User user) {
-
-        Submission submission = new Submission(this.id, user);
-        submissions.add(submission);
-    }
-
-    public void addSubmission(Submission submission) {
-
-        submissions.add(submission);
-    }
-
-    public List<Submission> getSubmissions() {
-
-        return submissions;
+        return description;
     }
 
     public String getTask() {
@@ -119,48 +72,28 @@ public class Course {
         return task;
     }
 
-    public List <Submission> getUngradedSubmission() {
-        List <Submission> ungraded = new ArrayList <>();
-        for (Submission submission : submissions) {
-            if (!submission.isGraded()) {
-                ungraded.add(submission);
-            }
-        }
-        return ungraded;
-    }
-
-    public List<Submission> getGradedSubmissions() {
-        List <Submission> graded = new ArrayList <>();
-        for (Submission submission : submissions) {
-            if (submission.isGraded()) {
-                graded.add(submission);
-            }
-        }
-        return graded;
-    }
-
     public long getTeacherId() {
 
         return teacherId;
     }
 
-    public Submission getSubmission(long studentId) {
+    private Blob transformImage(MultipartFile imageCourse) {
 
-        for (Submission submission : submissions) {
-            if (submission.getUser().getId() == studentId) {
-                return submission;
-            }
+        try {
+            return BlobProxy.generateProxy(imageCourse.getInputStream(), imageCourse.getSize());
+        }catch (IOException e) {
+
+            throw new RuntimeException("Error processing image", e);
         }
-        return null;
     }
 
-    public void removeSubmission(Submission submission) {
+    public List<User> getStudents() {
 
-        submissions.remove(submission);
+        return students;
     }
 
-    public boolean addStudent(long studentId) {
+    public Blob getImage() {
 
-        return students.add(studentId);
+        return imageCourse;
     }
 }

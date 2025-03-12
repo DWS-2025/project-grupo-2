@@ -1,9 +1,17 @@
 package es.dws.aulavisual.modules;
 
+import java.sql.Blob;
 import es.dws.aulavisual.courses.Course;
+import org.hibernate.engine.jdbc.BlobProxy;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.http.ResponseEntity;
 
 @Service
 public class ModuleService {
@@ -14,13 +22,23 @@ public class ModuleService {
         this.moduleRepository = moduleRepository;
     }
 
-    public void save(Course course, String name) {
+    public void save(Course course, String name, MultipartFile content) {
 
-        Module module = new Module(course, name);
+        Module module = new Module(course, name, transformImage(content));
         moduleRepository.save(module);
     }
 
-    public Optional<Module> getModule(long id) {
+    private Blob transformImage(MultipartFile image) {
+
+        try {
+           return BlobProxy.generateProxy(image.getInputStream(), image.getSize());
+        }catch (IOException e) {
+
+            throw new RuntimeException("Error processing image", e);
+        }
+    }
+
+    public Optional<Module> findById(long id) {
 
         return moduleRepository.findById(id);
     }
@@ -30,26 +48,29 @@ public class ModuleService {
         return moduleRepository.findAll();
     }
 
-    public void deleteModule(long id) {
-
-        moduleRepository.deleteById(id);
-    }
-
-    public void editModuleName(long id, String newName) {
-
-        Optional<Module> searchModule = moduleRepository.findById(id);
-        if(searchModule.isEmpty()) {
-
-            System.out.println("Module not found");
-            return;
-        }
-        Module moduleToEdit = searchModule.get();
-        moduleToEdit.setName(newName);
-        moduleRepository.save(moduleToEdit);
-    }
-
     public List<Module> getModulesByCourse(Course course) {
 
         return moduleRepository.findByCourse(course);
+    }
+
+    public ResponseEntity<Object> viewModule(Module module) {
+
+        try {
+
+            Blob content = module.getContent();
+            Resource file = new InputStreamResource(content.getBinaryStream());
+            return ResponseEntity.ok().header(HttpHeaders.CONTENT_TYPE, "text/markdown")
+                    .contentLength(content.length()).body(file);
+
+        } catch (Exception e) {
+
+            System.out.println("Error loading content: " + e.getMessage());
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    public void delete(Module module) {
+
+        moduleRepository.delete(module);
     }
 }

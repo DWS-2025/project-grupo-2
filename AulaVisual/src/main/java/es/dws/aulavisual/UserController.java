@@ -25,16 +25,6 @@ public class UserController {
         this.userService = userService;
     }
 
-    @PostConstruct
-    public void init() {
-
-        userService.save("asd", "asd", "asd", "asd", 0);
-        userService.save("test1", "test1", "test1", "test1", 1);
-        userService.save("test2", "test2", "test2", "test2", 2);
-        userService.save("test3", "test3", "test3", "test3", 2);
-        userService.save("test4", "test4", "test4", "test4", 2);
-    }
-
     @GetMapping("/login")
     public String login(@CookieValue(value = "userId", defaultValue = "") String userId) {
 

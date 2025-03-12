@@ -1,9 +1,9 @@
 package es.dws.aulavisual;
 
 import es.dws.aulavisual.courses.Course;
-import es.dws.aulavisual.courses.CourseManager;
+import es.dws.aulavisual.courses.CourseService;
 import es.dws.aulavisual.submissions.Submission;
-import es.dws.aulavisual.submissions.SubmissionManager;
+import es.dws.aulavisual.submissions.SubmissionService;
 import org.springframework.web.bind.annotation.*;
 import es.dws.aulavisual.users.UserService;
 import org.springframework.web.multipart.MultipartFile;
@@ -12,18 +12,19 @@ import es.dws.aulavisual.users.User;
 import org.springframework.ui.Model;
 import org.springframework.stereotype.Controller;
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 public class SubmissionController {
 
     private final UserService userService;
-    private final SubmissionManager submissionManager;
-    private final CourseManager courseManager;
+    private final SubmissionService submissionService;
+    private final CourseService courseService;
 
-    public SubmissionController(UserService userService, SubmissionManager submissionManager, CourseManager courseManager) {
+    public SubmissionController(UserService userService, SubmissionService submissionService, CourseService courseService) {
         this.userService = userService;
-        this.submissionManager = submissionManager;
-        this.courseManager = courseManager;
+        this.submissionService = submissionService;
+        this.courseService = courseService;
     }
 
     @GetMapping("/courses/{courseId}/submission")
@@ -32,18 +33,21 @@ public class SubmissionController {
         if(userId.isEmpty()){
             return "redirect:/login";
         }
-        User user = userService.getUser(Long.parseLong(userId));
-        if(user == null){
+        Optional <User> searchUser = userService.findById(Long.parseLong(userId));
+        if(searchUser.isEmpty()){
 
-            model.addAttribute("message", "Usuario no encontrado");
-            return "error";
+            return "redirect:/login";
         }
-        Course course = courseManager.getCourse(courseId);
-        if(course == null){
+        User user = searchUser.get();
+
+        Optional <Course> searchCourse = courseService.findById(courseId);
+        if(searchCourse.isEmpty()){
 
             model.addAttribute("message", "Curso no encontrado");
             return "error";
         }
+        Course course = searchCourse.get();
+
         if(user.getRole() == 1){
 
             return "redirect:/courses/" + courseId + "/grade";
@@ -51,20 +55,21 @@ public class SubmissionController {
 
         if(user.getRole() == 2){
 
-            if(courseManager.userInCourse(courseId, Long.parseLong(userId))){
+            if(courseService.userIsInCourse(user, course)){
 
                 model.addAttribute("courseId", courseId);
-                model.addAttribute("courseName", courseManager.getCourse(courseId).getName());
-                if(!courseManager.userMadeSubmission(courseId, Long.parseLong(userId))){
+                model.addAttribute("courseName", course.getName());
+                if(!submissionService.userMadeSubmission(user, course)){
 
                     model.addAttribute("submitted", false);
-                    model.addAttribute("task", courseManager.getTask(courseId));
+                    model.addAttribute("task", course.getTask());
                 }else {
 
+                    Submission submission = submissionService.findByUserAndCourse(user, course).get();
                     model.addAttribute("submitted", true);
-                    if(courseManager.isgraded(courseId, Long.parseLong(userId))) {
+                    if(submission.isGraded()) {
 
-                        model.addAttribute("grade", courseManager.getGrade(courseId, Long.parseLong(userId)));
+                        model.addAttribute("grade", submission.getGrade());
                     }else{
 
                         model.addAttribute("grade", "No Disponible");
@@ -87,22 +92,25 @@ public class SubmissionController {
         if(userId.isEmpty()){
             return "redirect:/login";
         }
-        User user = userService.getUser(Long.parseLong(userId));
-        if(user == null){
+        Optional <User> searchUser = userService.findById(Long.parseLong(userId));
+        if(searchUser.isEmpty()){
 
-            model.addAttribute("message", "Usuario no encontrado");
-            return "error";
+            return "redirect:/login";
         }
-        Course course = courseManager.getCourse(courseId);
-        if(course == null){
+        User user = searchUser.get();
+
+        Optional <Course> searchCourse = courseService.findById(courseId);
+        if(searchCourse.isEmpty()){
 
             model.addAttribute("message", "Curso no encontrado");
             return "error";
         }
+        Course course = searchCourse.get();
+
         if(user.getRole() == 1){
 
-            List<Submission> submissions = course.getUngradedSubmission();
-            List<Submission> graded = course.getGradedSubmissions();
+            List<Submission> submissions = submissionService.getSubmissions(course, false);
+            List<Submission> graded = submissionService.getSubmissions(course, true);
             model.addAttribute("gradedSubmissions", graded);
             model.addAttribute("submissions", submissions);
             model.addAttribute("courseId", courseId);
@@ -118,28 +126,47 @@ public class SubmissionController {
         if(userId.isEmpty()){
             return "redirect:/login";
         }
-        User user = userService.getUser(Long.parseLong(userId));
-        if(user == null){
+        Optional <User> searchUser = userService.findById(Long.parseLong(userId));
+        if(searchUser.isEmpty()){
 
-            model.addAttribute("message", "Usuario no encontrado");
-            return "error";
+            return "redirect:/login";
         }
-        Course course = courseManager.getCourse(courseId);
-        if(course == null){
+        User user = searchUser.get();
+
+        Optional <Course> searchCourse = courseService.findById(courseId);
+        if(searchCourse.isEmpty()){
 
             model.addAttribute("message", "Curso no encontrado");
             return "error";
         }
-        User student = userService.getUser(studentId);
-        if(student == null){
+        Course course = searchCourse.get();
+
+        Optional <User> searchStudent = userService.findById(studentId);
+        if(searchStudent.isEmpty()){
 
             model.addAttribute("message", "Estudiante no encontrado");
             return "error";
         }
-        if(user.getRole() == 1 && courseManager.getTeacherId(courseId) == Long.parseLong(userId)){
+        User student = searchStudent.get();
 
-            courseManager.gradeSubmission(courseId, studentId, grade);
-            return "redirect:/courses/" + courseId + "/grade";
+        if(user.getRole() == 1 && course.getTeacherId() == Long.parseLong(userId)){
+
+            if(courseService.userIsInCourse(student, course)){
+
+                if(submissionService.userMadeSubmission(student, course)){
+
+                    submissionService.gradeSubmission(course, student, grade);
+                    return "redirect:/courses/" + courseId + "/grade";
+                }else{
+
+                    model.addAttribute("message", "Estudiante no ha entregado la tarea");
+                    return "error";
+                }
+            }else{
+
+                model.addAttribute("message", "Estudiante no cursando el curso");
+                return "error";
+            }
         }
         return "redirect:/courses";
     }
@@ -150,14 +177,41 @@ public class SubmissionController {
         if(userId.isEmpty()){
             return ResponseEntity.status(401).body("Unauthorized");
         }
-        User user = userService.getUser(Long.parseLong(userId));
-        if(user == null){
+        Optional <User> searchUser = userService.findById(Long.parseLong(userId));
+        if(searchUser.isEmpty()){
 
             return ResponseEntity.status(401).body("Unauthorized");
         }
-        if(user.getRole() == 1 && courseManager.getTeacherId(courseId) == Long.parseLong(userId)){
+        User user = searchUser.get();
 
-            return submissionManager.getSubmission(studentId, courseId);
+        Optional <Course> searchCourse = courseService.findById(courseId);
+        if(searchCourse.isEmpty()){
+
+            return ResponseEntity.status(404).body("Course not found");
+        }
+        Course course = searchCourse.get();
+
+        Optional <User> searchStudent = userService.findById(studentId);
+        if(searchStudent.isEmpty()){
+
+            return ResponseEntity.status(404).body("Student not found");
+        }
+        User student = searchStudent.get();
+        if(user.getRole() == 1 && course.getTeacherId() == Long.parseLong(userId)){
+
+            if(courseService.userIsInCourse(student, course)) {
+
+                if(submissionService.userMadeSubmission(student, course)) {
+
+                    return submissionService.getSubmission(course, student);
+                }else {
+
+                    return ResponseEntity.status(404).body("Submission not found");
+                }
+            }else{
+
+                return ResponseEntity.status(404).body("User is not inm course");
+            }
         }
         return ResponseEntity.status(401).body("Unauthorized");
     }
@@ -168,34 +222,31 @@ public class SubmissionController {
         if(userId.isEmpty()){
             return "redirect:/login";
         }
-        User user = userService.getUser(Long.parseLong(userId));
-        if(user == null){
+        Optional <User> searchUser = userService.findById(Long.parseLong(userId));
+        if(searchUser.isEmpty()){
 
-            model.addAttribute("message", "Usuario no encontrado");
-            return "error";
+            return "redirect:/login";
         }
-        Course course = courseManager.getCourse(courseId);
-        if(course == null){
+        User user = searchUser.get();
+
+        Optional <Course> searchCourse = courseService.findById(courseId);
+        if(searchCourse.isEmpty()){
 
             model.addAttribute("message", "Curso no encontrado");
             return "error";
         }
+        Course course = searchCourse.get();
+
         if(submission.isEmpty()){
 
             model.addAttribute("message", "No se ha seleccionado un archivo");
-            return "redirect:/courses/" + courseId + "/submission";
+            return "error";
         }
-        if(courseManager.userInCourse(courseId, Long.parseLong(userId))) {
+        if(courseService.userIsInCourse(user, course)) {
 
-            if(!courseManager.userMadeSubmission(courseId, Long.parseLong(userId))) {
+            if(!submissionService.userMadeSubmission(user, course)) {
 
-                if(submissionManager.submitCourseSubmission(Long.parseLong(userId), courseId, submission)) {
-                    course.saveSubmission(userService.getUser(Long.parseLong(userId)));
-                    return "redirect:/courses";
-                }else {
-
-                    return "redirect:/courses/" + courseId + "/submission";
-                }
+                submissionService.save(course, user, submission);
             }
         }
         return "redirect:/courses";
@@ -207,26 +258,36 @@ public class SubmissionController {
         if(userId.isEmpty()){
             return "redirect:/login";
         }
-        User user = userService.getUser(Long.parseLong(userId));
-        if(user == null){
+        Optional <User> searchUser = userService.findById(Long.parseLong(userId));
+        if(searchUser.isEmpty()){
 
-            model.addAttribute("message", "Usuario no encontrado");
-            return "error";
+            return "redirect:/login";
         }
-        Course course = courseManager.getCourse(courseId);
-        if(course == null){
+        User user = searchUser.get();
+
+        Optional <Course> searchCourse = courseService.findById(courseId);
+        if(searchCourse.isEmpty()){
 
             model.addAttribute("message", "Curso no encontrado");
             return "error";
         }
-        if(courseManager.userInCourse(courseId, Long.parseLong(userId))) {
+        Course course = searchCourse.get();
 
-            if(courseManager.userMadeSubmission(courseId, studentId)) {
+        Optional <User> searchStudent = userService.findById(studentId);
+        if(searchStudent.isEmpty()){
 
-                if(courseManager.getTeacherId(courseId) == Long.parseLong(userId)) {
+            model.addAttribute("message", "Estudiante no encontrado");
+            return "error";
+        }
+        User student = searchStudent.get();
 
-                    courseManager.deleteSubmission(courseId, studentId);
-                    submissionManager.deleteSubmission(studentId, courseId);
+        if(courseService.userIsInCourse(student, course)) {
+
+            if(submissionService.userMadeSubmission(student, course)) {
+
+                if(course.getTeacherId() == Long.parseLong(userId)) {
+
+                    submissionService.deleteSubmission(student, course);
                     return "redirect:/courses/" + courseId + "/grade";
                 }
             }
