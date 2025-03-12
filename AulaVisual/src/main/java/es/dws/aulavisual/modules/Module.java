@@ -1,5 +1,6 @@
-package es.dws.aulavisual.courses;
+package es.dws.aulavisual.modules;
 
+import es.dws.aulavisual.courses.Course;
 import jakarta.persistence.*;
 
 @Entity
@@ -12,16 +13,24 @@ public class Module {
     @ManyToOne
     private Course course;
 
-    private final String name;
+    private String name;
 
-    public Module(long id, String name) {
-        this.id = id;
+    public Module(Course course, String name) {
+        this.course = course;
         this.name = name;
+    }
+
+    protected Module() {
+
     }
 
     public long getId() {
 
         return id;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getName() {
