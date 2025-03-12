@@ -21,6 +21,7 @@
         <div id="Welcome">
             <p>Bienvenido, {{admin}}</p>
         </div>
+        <form action="/admin/users/{{id}}/delete" method="post" id="delete-user-{{id}}"></form>
         <div id="users">
             <h2>Usuarios</h2>
             <table id="usersTable">
@@ -30,7 +31,8 @@
                     <th>Apellido</th>
                     <th>Nombre Usuario</th>
                     <th>Rol</th>
-                    <th>Acciones</th>
+                    <th>Editar</th>
+                    <th>Eliminar</th>
                     <th>Gestionar Roles</th>
                 </tr>
                 </thead>
@@ -43,7 +45,9 @@
                     <td class="center">{{role}}</td>
                     <td class="center">
                         <a href="/admin/users/{{id}}">Editar</a>
-                        <a href="/admin/users/{{id}}/delete">Eliminar</a>
+                    </td>
+                    <td>
+                        <input type="submit" value="Eliminar" form="delete-user-{{id}}">
                     </td>
                     <td class="center">
                         <a href="/admin/users/{{id}}/roles">Gestionar Roles</a>
