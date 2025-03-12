@@ -165,4 +165,15 @@ public class UserService {
         users.remove(currentUser);
         return users;
     }
+
+    public boolean updateRole(User user, int newRole) {
+
+        if(newRole >= 0 && newRole <= 2) {
+
+            user.setRole(newRole);
+            userRepository.save(user);
+            return true;
+        }
+        return false;
+    }
 }

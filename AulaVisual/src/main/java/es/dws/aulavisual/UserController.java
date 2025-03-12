@@ -264,7 +264,7 @@ public class UserController {
         }
     }
 
-    @GetMapping("/admin/users/{id}/delete")
+    @PostMapping("/admin/users/{id}/delete") //Cambiar HTLML a POST
     public String deleteUser(Model model, @CookieValue(value = "userId", defaultValue = "") String userId, @PathVariable long id) {
 
         if(userId.isEmpty()) {
@@ -272,19 +272,19 @@ public class UserController {
             return "redirect:/login";
         }else {
 
-            User currentUser = userService.getUser(Long.parseLong(userId));
+            Optional<User> searchUser = userService.findById(Long.parseLong(userId));
+            if(searchUser.isEmpty()) {
+
+                model.addAttribute("message", "El usuario de la cookie no existe");
+                return "error";
+            }
+            User currentUser = searchUser.get();
             if(currentUser.getRole() == 0) {
 
-                if(userService.removeUser(id)){
+                userService.deleteById(id);
+                return "redirect:/admin";
 
-                    return "redirect:/admin";
-                }else {
-
-                    model.addAttribute("message", "Usuario no encontrado");
-                    return "error";
-                }
-
-            }else {
+            }else{
 
                 return "redirect:/";
             }
@@ -333,15 +333,22 @@ public class UserController {
             return "redirect:/login";
         }else {
 
-            User currentUser = userService.getUser(Long.parseLong(userId));
+            Optional <User> searchUser = userService.findById(Long.parseLong(userId));
+            if(searchUser.isEmpty()) {
+
+                model.addAttribute("message", "El usuario de la cookie no existe");
+                return "error";
+            }
+            User currentUser = searchUser.get();
             if(currentUser.getRole() == 0) {
 
-                User user = userService.getUser(id);
-                if(user == null) {
+                searchUser= userService.findById(id);
+                if(searchUser.isEmpty()) {
 
                     model.addAttribute("message", "Usuario no encontrado");
                     return "error";
                 }
+                User user = searchUser.get();
                 model.addAttribute("userId", Long.parseLong(userId));
                 model.addAttribute("user", user.getRealName() + " " + user.getSurname());
                 model.addAttribute("id", user.getId());
@@ -353,7 +360,7 @@ public class UserController {
         }
     }
 
-    @GetMapping("/admin/users/{id}/roles/{role}")
+    @GetMapping("/admin/users/{id}/roles/{role}") //Cambiar HTLML a POST
     public String updateUserRole(Model model, @CookieValue(value = "userId", defaultValue = "") String userId, @PathVariable long id, @PathVariable int role) {
 
         if(userId.isEmpty()) {
@@ -361,10 +368,16 @@ public class UserController {
             return "redirect:/login";
         }else {
 
-            User currentUser = userService.getUser(Long.parseLong(userId));
+            Optional <User> searchUser = userService.findById(Long.parseLong(userId));
+            if(searchUser.isEmpty()) {
+
+                model.addAttribute("message", "El usuario de la cookie no existe");
+                return "error";
+            }
+            User currentUser = searchUser.get();
             if(currentUser.getRole() == 0) {
 
-                if(userService.updateRole(id, role)){
+                if(userService.updateRole(currentUser, role)){
 
                     return "redirect:/admin";
                 }else {
