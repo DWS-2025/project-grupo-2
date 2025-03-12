@@ -3,11 +3,12 @@ package es.dws.aulavisual.users;
 import es.dws.aulavisual.courses.Course;
 
 import java.sql.Blob;
+import java.util.ArrayList;
 import java.util.List;
 import es.dws.aulavisual.submissions.Submission;
 import jakarta.persistence.*;
 
-@Entity
+@Entity(name = "UserTable")
 public class User {
 
     @Id
@@ -15,9 +16,9 @@ public class User {
     private long id;
 
     @ManyToMany(mappedBy = "students")
-    private List<Course> courses;
+    private List<Course> courses = new ArrayList <>();
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "userId")
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "student")
     private List<Submission> submissions;
 
     @Lob
