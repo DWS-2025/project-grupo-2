@@ -12,13 +12,12 @@ public class Submission {
     private long id;
 
     @ManyToOne
-    private User userId;
+    private User student;
 
     @ManyToOne()
     private Course course;
 
 
-    private long courseId;
     private boolean graded = false;
     private float grade = -1;
 
@@ -27,18 +26,14 @@ public class Submission {
 
     }
 
-    public Submission(long courseId, User user) {
-        this.courseId = courseId;
-        this.userId = user;
-    }
-
-    public long getcourseId() {
-        return courseId;
+    public Submission(Course course, User user) {
+        this.course = course;
+        this.student = user;
     }
 
     public User getUser() {
 
-        return userId;
+        return student;
     }
 
     public void setGrade(float grade) {

@@ -21,19 +21,19 @@ public class Course {
     private  long teacherId;
 
     @ManyToMany()
-    private  List <User> students;
+    private  List <User> students = new ArrayList<>();
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "course")
-    private  List <es.dws.aulavisual.modules.Module> modules;
+    private  List <Module> modules = new ArrayList<>();
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "course")
-    private  List<Submission> submissions;
+    private  List<Submission> submissions = new ArrayList<>();
 
     protected Course() {
 
     }
 
-    public Course(long id, String name, String description, long teacherId, List <Long> students, List<es.dws.aulavisual.modules.Module> modules, String task) {
+    public Course(long id, String name, String description, long teacherId, List <Long> students, List<Module> modules, String task) {
 
         this.id = id;
         this.name = name;
@@ -55,17 +55,17 @@ public class Course {
         return name;
     }
 
-    public List <es.dws.aulavisual.modules.Module> getModules() {
+    public List <Module> getModules() {
 
         return modules;
     }
 
-    public void addModule(es.dws.aulavisual.modules.Module module) {
+    public void addModule(Module module) {
 
         modules.add(module);
     }
 
-    public void removeModule(es.dws.aulavisual.modules.Module module) {
+    public void removeModule(Module module) {
 
         modules.remove(module);
     }
@@ -80,7 +80,7 @@ public class Course {
         return modules.size();
     }
 
-    public es.dws.aulavisual.modules.Module getModuleById(long moduleId) {
+    public Module getModuleById(long moduleId) {
         for (Module module : modules) {
             if (module.getId() == moduleId) {
                 return module;
