@@ -1,11 +1,9 @@
-package es.dws.aulavisual.users;
-
-import es.dws.aulavisual.courses.Course;
+package es.dws.aulavisual.model;
 
 import java.sql.Blob;
 import java.util.ArrayList;
 import java.util.List;
-import es.dws.aulavisual.submissions.Submission;
+
 import jakarta.persistence.*;
 
 @Entity(name = "UserTable")

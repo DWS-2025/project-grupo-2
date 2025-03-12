@@ -1,7 +1,7 @@
-package es.dws.aulavisual;
+package es.dws.aulavisual.controller;
 
-import es.dws.aulavisual.users.User;
-import es.dws.aulavisual.users.UserService;
+import es.dws.aulavisual.model.User;
+import es.dws.aulavisual.service.UserService;
 import org.springframework.ui.Model;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CookieValue;

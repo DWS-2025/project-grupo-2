@@ -1,6 +1,7 @@
-package es.dws.aulavisual.courses;
+package es.dws.aulavisual.repository;
 
-import es.dws.aulavisual.users.User;
+import es.dws.aulavisual.model.Course;
+import es.dws.aulavisual.model.User;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;

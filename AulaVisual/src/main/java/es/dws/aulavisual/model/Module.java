@@ -1,6 +1,5 @@
-package es.dws.aulavisual.modules;
+package es.dws.aulavisual.model;
 
-import es.dws.aulavisual.courses.Course;
 import jakarta.persistence.*;
 import java.sql.Blob;
 

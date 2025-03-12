@@ -1,13 +1,13 @@
-package es.dws.aulavisual;
+package es.dws.aulavisual.controller;
 
-import es.dws.aulavisual.courses.Course;
-import es.dws.aulavisual.courses.CourseService;
+import es.dws.aulavisual.model.Course;
+import es.dws.aulavisual.service.CourseService;
 import java.util.Optional;
 
-import es.dws.aulavisual.modules.ModuleService;
-import es.dws.aulavisual.modules.Module;
-import es.dws.aulavisual.users.User;
-import es.dws.aulavisual.users.UserService;
+import es.dws.aulavisual.service.ModuleService;
+import es.dws.aulavisual.model.Module;
+import es.dws.aulavisual.model.User;
+import es.dws.aulavisual.service.UserService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CookieValue;

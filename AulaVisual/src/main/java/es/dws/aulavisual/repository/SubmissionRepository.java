@@ -1,7 +1,8 @@
-package es.dws.aulavisual.submissions;
+package es.dws.aulavisual.repository;
 
-import es.dws.aulavisual.courses.Course;
-import es.dws.aulavisual.users.User;
+import es.dws.aulavisual.model.Course;
+import es.dws.aulavisual.model.Submission;
+import es.dws.aulavisual.model.User;
 import java.util.List;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Service;

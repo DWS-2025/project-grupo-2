@@ -1,7 +1,9 @@
-package es.dws.aulavisual.modules;
+package es.dws.aulavisual.service;
 
 import java.sql.Blob;
-import es.dws.aulavisual.courses.Course;
+import es.dws.aulavisual.model.Course;
+import es.dws.aulavisual.model.Module;
+import es.dws.aulavisual.repository.ModuleRepository;
 import org.hibernate.engine.jdbc.BlobProxy;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;

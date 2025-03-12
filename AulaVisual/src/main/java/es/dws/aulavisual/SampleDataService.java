@@ -1,10 +1,10 @@
 package es.dws.aulavisual;
 
-import es.dws.aulavisual.courses.Course;
-import es.dws.aulavisual.courses.CourseService;
-import es.dws.aulavisual.modules.ModuleService;
+import es.dws.aulavisual.model.Course;
+import es.dws.aulavisual.service.CourseService;
+import es.dws.aulavisual.service.ModuleService;
 import org.springframework.web.multipart.MultipartFile;
-import es.dws.aulavisual.users.UserService;
+import es.dws.aulavisual.service.UserService;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.PostConstruct;
 import java.io.File;
@@ -86,5 +86,4 @@ public class SampleDataService {
             throw new RuntimeException("Error converting file to Multipart", e);
         }
     }
-
 }

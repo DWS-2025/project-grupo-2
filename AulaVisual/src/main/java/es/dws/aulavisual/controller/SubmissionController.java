@@ -1,14 +1,14 @@
-package es.dws.aulavisual;
+package es.dws.aulavisual.controller;
 
-import es.dws.aulavisual.courses.Course;
-import es.dws.aulavisual.courses.CourseService;
-import es.dws.aulavisual.submissions.Submission;
-import es.dws.aulavisual.submissions.SubmissionService;
+import es.dws.aulavisual.model.Course;
+import es.dws.aulavisual.service.CourseService;
+import es.dws.aulavisual.model.Submission;
+import es.dws.aulavisual.service.SubmissionService;
 import org.springframework.web.bind.annotation.*;
-import es.dws.aulavisual.users.UserService;
+import es.dws.aulavisual.service.UserService;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.http.ResponseEntity;
-import es.dws.aulavisual.users.User;
+import es.dws.aulavisual.model.User;
 import org.springframework.ui.Model;
 import org.springframework.stereotype.Controller;
 import java.util.List;

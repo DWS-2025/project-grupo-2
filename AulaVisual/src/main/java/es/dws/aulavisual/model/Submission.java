@@ -1,8 +1,7 @@
-package es.dws.aulavisual.submissions;
+package es.dws.aulavisual.model;
 
 import java.sql.Blob;
-import es.dws.aulavisual.courses.Course;
-import es.dws.aulavisual.users.User;
+
 import jakarta.persistence.*;
 
 @Entity

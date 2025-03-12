@@ -1,21 +1,17 @@
-package es.dws.aulavisual;
+package es.dws.aulavisual.controller;
 
-import es.dws.aulavisual.modules.ModuleService;
-import es.dws.aulavisual.users.User;
-import es.dws.aulavisual.users.UserService;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
-import org.springframework.http.HttpHeaders;
+import es.dws.aulavisual.service.ModuleService;
+import es.dws.aulavisual.model.User;
+import es.dws.aulavisual.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
-import es.dws.aulavisual.courses.Course;
-import es.dws.aulavisual.modules.Module;
-import es.dws.aulavisual.courses.CourseService;
+import es.dws.aulavisual.model.Course;
+import es.dws.aulavisual.model.Module;
+import es.dws.aulavisual.service.CourseService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import java.nio.file.Path;
-import java.util.ArrayList;
+
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;

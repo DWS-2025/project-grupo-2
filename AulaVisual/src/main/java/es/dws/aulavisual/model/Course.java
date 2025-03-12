@@ -1,10 +1,8 @@
-package es.dws.aulavisual.courses;
+package es.dws.aulavisual.model;
 
 import java.io.IOException;
 import java.sql.Blob;
-import es.dws.aulavisual.modules.Module;
-import es.dws.aulavisual.submissions.Submission;
-import es.dws.aulavisual.users.User;
+
 import jakarta.persistence.*;
 import org.hibernate.engine.jdbc.BlobProxy;
 import org.springframework.web.multipart.MultipartFile;

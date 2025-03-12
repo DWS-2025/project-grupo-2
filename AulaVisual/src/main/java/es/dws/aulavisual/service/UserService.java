@@ -1,4 +1,4 @@
-package es.dws.aulavisual.users;
+package es.dws.aulavisual.service;
 
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
@@ -7,8 +7,10 @@ import java.sql.Blob;
 import java.util.List;
 import java.util.Optional;
 
-import es.dws.aulavisual.courses.Course;
-import es.dws.aulavisual.courses.CourseRepository;
+import es.dws.aulavisual.model.Course;
+import es.dws.aulavisual.repository.CourseRepository;
+import es.dws.aulavisual.model.User;
+import es.dws.aulavisual.repository.UserRepository;
 import org.hibernate.engine.jdbc.BlobProxy;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;

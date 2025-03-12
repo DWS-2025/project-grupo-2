@@ -1,7 +1,8 @@
-package es.dws.aulavisual.courses;
+package es.dws.aulavisual.service;
 
-import es.dws.aulavisual.users.User;
-import es.dws.aulavisual.users.UserService;
+import es.dws.aulavisual.model.Course;
+import es.dws.aulavisual.repository.CourseRepository;
+import es.dws.aulavisual.model.User;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -9,7 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Blob;
 import java.util.Optional;
-import es.dws.aulavisual.users.UserService;
+
 import org.springframework.http.ResponseEntity;
 import java.util.List;
 
