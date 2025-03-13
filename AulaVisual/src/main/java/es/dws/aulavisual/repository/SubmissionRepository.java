@@ -13,7 +13,7 @@ import java.util.Optional;
 public interface SubmissionRepository extends CrudRepository <Submission, Long> {
 
 
-    Optional<Submission> findByUserAndCourse(User user, Course course);
+    Optional<Submission> findByStudentAndCourse(User student, Course course);
 
     List <Submission> findSubmissionByCourseAndGraded(Course course, boolean graded);
 }

@@ -179,7 +179,7 @@ public class UserController {
         if(image == null) {
 
             try {
-                ClassPathResource resource = new ClassPathResource("static/img/user-default.png");
+                ClassPathResource resource = new ClassPathResource("static/images/user-default.png");
                 byte [] imageBytes = resource.getInputStream().readAllBytes();
                 return ResponseEntity.ok().header(HttpHeaders.CONTENT_TYPE, "image/png").body(imageBytes);
             } catch (IOException e) {

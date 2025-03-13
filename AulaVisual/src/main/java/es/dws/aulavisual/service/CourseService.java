@@ -36,7 +36,7 @@ public class CourseService {
 
         course.getStudents().add(user);
         courseRepository.save(course);
-        user.getCourses().add(course);
+        //user.getCourses().add(course);
         userService.save(user);
     }
 

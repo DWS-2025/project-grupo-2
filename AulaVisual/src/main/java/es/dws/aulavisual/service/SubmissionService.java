@@ -43,17 +43,17 @@ public class SubmissionService {
 
     public Optional<Submission> findByUserAndCourse(User user, Course course) {
 
-        return submissionRepository.findByUserAndCourse(user, course);
+        return submissionRepository.findByStudentAndCourse(user, course);
     }
 
     public boolean userMadeSubmission(User user, Course course) {
 
-        Optional <Submission> submission = submissionRepository.findByUserAndCourse(user, course);
+        Optional <Submission> submission = submissionRepository.findByStudentAndCourse(user, course);
         return submission.isPresent();
     }
 
     public boolean isgraded(User user, Course course) {
-        Optional <Submission> submission = submissionRepository.findByUserAndCourse(user, course);
+        Optional <Submission> submission = submissionRepository.findByStudentAndCourse(user, course);
 
         return submission.map(Submission::isGraded).orElse(false);
 
@@ -66,7 +66,7 @@ public class SubmissionService {
 
     public void gradeSubmission(Course course, User student, float grade) {
 
-        Optional <Submission> searchSubmission = submissionRepository.findByUserAndCourse(student, course);
+        Optional <Submission> searchSubmission = submissionRepository.findByStudentAndCourse(student, course);
         if(searchSubmission.isPresent()) {
 
             Submission submission = searchSubmission.get();
@@ -77,7 +77,7 @@ public class SubmissionService {
 
     public ResponseEntity <Object> getSubmission(Course course, User student) {
 
-        Optional <Submission> searchSubmission = submissionRepository.findByUserAndCourse(student, course);
+        Optional <Submission> searchSubmission = submissionRepository.findByStudentAndCourse(student, course);
         if(searchSubmission.isPresent()) {
 
             Submission submission = searchSubmission.get();
@@ -95,7 +95,7 @@ public class SubmissionService {
 
     public void deleteSubmission(User student, Course course) {
 
-        Optional <Submission> searchSubmission = submissionRepository.findByUserAndCourse(student, course);
+        Optional <Submission> searchSubmission = submissionRepository.findByStudentAndCourse(student, course);
         searchSubmission.ifPresent(submissionRepository::delete);
     }
 }
