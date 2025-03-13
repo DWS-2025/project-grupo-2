@@ -366,7 +366,14 @@ public class UserController {
             User currentUser = searchUser.get();
             if(currentUser.getRole() == 0) {
 
-                if(userService.updateRole(currentUser, role)){
+                Optional <User> searchUser2 = userService.findById(id);
+                if(searchUser2.isEmpty()) {
+
+                    model.addAttribute("message", "Usuario no encontrado");
+                    return "error";
+                }
+                User user = searchUser2.get();
+                if(userService.updateRole(user, role)){
 
                     return "redirect:/admin";
                 }else {

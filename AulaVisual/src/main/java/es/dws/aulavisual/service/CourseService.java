@@ -52,7 +52,7 @@ public class CourseService {
 
     public boolean userIsInCourse(User user, Course course) {
 
-        return course.getStudents().contains(user);
+        return  course.getTeacherId() == user.getId()|| course.getStudents().contains(user);
     }
 
     public void deleteCourse(Course course) {
