@@ -14,13 +14,15 @@ public class Module {
     private Course course;
 
     private String name;
+    private int position;
 
     @Lob
     private Blob content;
 
-    public Module(Course course, String name, Blob content) {
+    public Module(Course course, String name/*, int position*/,  Blob content) {
         this.course = course;
         this.name = name;
+//        this.position = position;
         this.content = content;
     }
 

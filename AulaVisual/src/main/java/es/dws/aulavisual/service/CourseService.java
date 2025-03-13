@@ -92,4 +92,9 @@ public class CourseService {
 
         return courseRepository.searchCoursesByStudentsNotContaining(user);
     }
+
+//    public Module getFirstModule(Course course) {
+//
+//        return
+//    }
 }
