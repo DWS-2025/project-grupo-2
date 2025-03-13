@@ -95,15 +95,8 @@ public class CourseService {
         return courseRepository.searchCoursesByStudentsNotContaining(user);
     }
 
-<<<<<<< Updated upstream
-//    public Module getFirstModule(Course course) {
-//
-//        return
-//    }
-=======
     public List<Course> courseOfTeacher(User user) {
 
         return courseRepository.searchCoursesByTeacherId(user.getId());
     }
->>>>>>> Stashed changes
 }
