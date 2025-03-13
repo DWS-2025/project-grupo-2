@@ -12,4 +12,6 @@ public interface CourseRepository extends JpaRepository<Course, Long> {
     List<Course> searchCoursesByStudentsContaining(User user);
 
     List<Course> searchCoursesByStudentsNotContaining(User user);
+
+    List<Course> searchCoursesByTeacherId(long id);
 }

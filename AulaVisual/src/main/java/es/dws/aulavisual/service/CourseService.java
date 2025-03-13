@@ -85,7 +85,9 @@ public class CourseService {
 
     public List<Course> courseOfUser(User user) {
 
-        return courseRepository.searchCoursesByStudentsContaining(user);
+        List<Course> normalCourses = courseRepository.searchCoursesByStudentsNotContaining(user);
+        normalCourses.addAll(courseOfTeacher(user));
+        return normalCourses;
     }
 
     public List<Course> notCourseOfUser(User user) {
@@ -93,8 +95,15 @@ public class CourseService {
         return courseRepository.searchCoursesByStudentsNotContaining(user);
     }
 
+<<<<<<< Updated upstream
 //    public Module getFirstModule(Course course) {
 //
 //        return
 //    }
+=======
+    public List<Course> courseOfTeacher(User user) {
+
+        return courseRepository.searchCoursesByTeacherId(user.getId());
+    }
+>>>>>>> Stashed changes
 }

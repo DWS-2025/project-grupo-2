@@ -35,12 +35,12 @@ public class MainCoursesController {
 
             return "redirect:/login";
         }
-        Optional <User> serachUser = userService.findById(Long.parseLong(userId));
-        if(serachUser.isEmpty()) {
+        Optional <User> searchUser = userService.findById(Long.parseLong(userId));
+        if(searchUser.isEmpty()) {
 
             return "redirect:/login";
         }
-        User user = serachUser.get();
+        User user = searchUser.get();
         List <Course> userCourses = courseService.courseOfUser(user);
         List <Course> availableCourses = courseService.notCourseOfUser(user);
 

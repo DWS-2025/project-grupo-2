@@ -34,11 +34,11 @@ public class SampleDataService {
         userService.save("test3", "test3", "test3", "test3", 2);
         userService.save("test4", "test4", "test4", "test4", 2);
 
-        Course course1 = new Course("League of Legends", "Aprende a jugar al LOL",1, "Haz una redacción sobre el control de oleadas", convertPNGToMultipart("files/courses/course-0/img.png"));
+        Course course1 = new Course("League of Legends", "Aprende a jugar al LOL",2, "Haz una redacción sobre el control de oleadas", convertPNGToMultipart("files/courses/course-0/img.png"));
         courseService.save(course1);
-        Course course2 = new Course("Padel", "Comienza a disfrutar de hacer ejercicio", 1, "Explica las reglas del padel", convertPNGToMultipart("files/courses/course-1/img.png"));
+        Course course2 = new Course("Padel", "Comienza a disfrutar de hacer ejercicio", 2, "Explica las reglas del padel", convertPNGToMultipart("files/courses/course-1/img.png"));
         courseService.save(course2);
-        Course course3 = new Course("Recetas de Cocina", "Aprende a cocinar recetas increíblemente sabrosas", 1, "Haz una receta que incluya huevos, pasta y tomate", convertPNGToMultipart("files/courses/course-2/img.png"));
+        Course course3 = new Course("Recetas de Cocina", "Aprende a cocinar recetas increíblemente sabrosas", 2, "Haz una receta que incluya huevos, pasta y tomate", convertPNGToMultipart("files/courses/course-2/img.png"));
         courseService.save(course3);
 
         courseService.addUserToCourse(course1, userService.findByUserName("test2").get());
