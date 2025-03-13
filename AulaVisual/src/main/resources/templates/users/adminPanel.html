@@ -21,12 +21,15 @@
         <div id="Welcome">
             <p>Bienvenido, {{admin}}</p>
         </div>
+        {{#users}}
         <form action="/admin/users/{{id}}/delete" method="post" id="delete-user-{{id}}"></form>
+        {{/users}}
         <div id="users">
             <h2>Usuarios</h2>
             <table id="usersTable">
                 <thead>
                 <tr>
+                    <th>ID</th>
                     <th>Nombre</th>
                     <th>Apellido</th>
                     <th>Nombre Usuario</th>
@@ -39,6 +42,7 @@
                 <tbody>
                 {{#users}}
                 <tr class="tableItems">
+                    <td class="center">{{id}}</td>
                     <td class="center">{{realName}}</td>
                     <td class="center">{{surname}}</td>
                     <td class="center">{{userName}}</td>

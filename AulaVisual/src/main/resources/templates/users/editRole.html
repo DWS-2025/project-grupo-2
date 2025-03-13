@@ -19,9 +19,15 @@
   <div id="container">
     <h1>{{user}}</h1>
     <div class="centerRoles">
-      <a class="roleButton" href="/admin/users/{{id}}/roles/0">Convertir en Admin</a>
-      <a class="roleButton" href="/admin/users/{{id}}/roles/1">Convertir en Profesor</a>
-      <a class="roleButton" href="/admin/users/{{id}}/roles/2">Convertir en Alumno</a>
+      <form action="/admin/users/{{id}}/roles/0">
+      <input type="submit" class="roleButton" value="Convertir en administrador">
+      </form>
+      <form action="/admin/users/{{id}}/roles/1">
+        <input type="submit" class="roleButton" value="Convertir en profesor">
+      </form>
+      <form action="/admin/users/{{id}}/roles/2">
+        <input type="submit" class="roleButton" value="Convertir en alumno">
+      </form>
     </div>
   </div>
 </section>
