@@ -83,7 +83,8 @@ public class MainCoursesController {
         }
         if(courseService.userIsInCourse(user, course)) {
 
-            model.addAttribute("module", moduleService.findById(moduleId));
+            List <Module> modules = moduleService.getModulesByCourse(course);
+            model.addAttribute("modules", modules);
             model.addAttribute("courseId", id);
             model.addAttribute("id", moduleId);
             return "courses-user/singleCourse";

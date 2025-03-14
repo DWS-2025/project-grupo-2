@@ -7,6 +7,7 @@ import es.dws.aulavisual.repository.ModuleRepository;
 import org.hibernate.engine.jdbc.BlobProxy;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import java.io.IOException;
@@ -45,14 +46,9 @@ public class ModuleService {
         return moduleRepository.findById(id);
     }
 
-    public List <Module> getAllModules() {
-
-        return moduleRepository.findAll();
-    }
-
     public List<Module> getModulesByCourse(Course course) {
 
-        return moduleRepository.findByCourse(course);
+        return moduleRepository.findByCourse(course, Sort.by(Sort.Direction.ASC, "position"));
     }
 
     public ResponseEntity<Object> viewModule(Module module) {
