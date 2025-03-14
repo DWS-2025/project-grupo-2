@@ -325,7 +325,7 @@ public class CourseManagementController {
     }
 
     @PostMapping("/admin/courses/{courseId}/addModule")
-    public String addModule(Model model, @PathVariable long courseId, @RequestParam String name, MultipartFile module, @CookieValue(value = "userId", defaultValue = "") String userId) {
+    public String addModule(Model model, @PathVariable long courseId, @RequestParam String name, @RequestParam String position, MultipartFile module, @CookieValue(value = "userId", defaultValue = "") String userId) {
 
         if(userId.isEmpty()) {
 
@@ -342,7 +342,7 @@ public class CourseManagementController {
 
             return "redirect:/";
         }
-        if(name.isEmpty() || module == null || module.isEmpty()) {
+        if(name.isEmpty() || module == null || module.isEmpty() || position.isEmpty()) {
 
             model.addAttribute("message", "Faltan campos por rellenar");
             return "error";
@@ -355,7 +355,18 @@ public class CourseManagementController {
             return "error";
         }
         Course course = searchCourse.get();
-        moduleService.save(course, name, module);
+        int numPosition = Integer.parseInt(position);
+        if(moduleService.positionExists(course, numPosition)) {
+
+            model.addAttribute("message", "Ya existe un módulo en esa posición");
+            return "error";
+        }
+        if (numPosition < 0) {
+
+            model.addAttribute("message", "La posición no puede ser negativa");
+            return "error";
+        }
+        moduleService.save(course, name, numPosition, module);
         return "redirect:/admin/courses/{courseId}/modules";
     }
 

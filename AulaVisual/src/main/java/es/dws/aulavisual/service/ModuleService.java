@@ -24,9 +24,9 @@ public class ModuleService {
         this.moduleRepository = moduleRepository;
     }
 
-    public void save(Course course, String name, MultipartFile content) {
+    public void save(Course course, String name, int position, MultipartFile content) {
 
-        Module module = new Module(course, name, transformImage(content));
+        Module module = new Module(course, name, position, transformImage(content));
         moduleRepository.save(module);
     }
 
@@ -74,5 +74,10 @@ public class ModuleService {
     public void delete(Module module) {
 
         moduleRepository.delete(module);
+    }
+
+    public boolean positionExists(Course course, int position) {
+
+        return moduleRepository.existsByCourseAndPosition(course, position);
     }
 }

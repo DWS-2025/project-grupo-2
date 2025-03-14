@@ -11,4 +11,6 @@ import java.util.List;
 public interface ModuleRepository extends JpaRepository <Module, Long> {
 
     List <Module> findByCourse(Course course);
+
+    boolean existsByCourseAndPosition(Course course, int position);
 }
