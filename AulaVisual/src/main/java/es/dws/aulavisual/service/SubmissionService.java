@@ -6,6 +6,9 @@ import es.dws.aulavisual.repository.SubmissionRepository;
 import es.dws.aulavisual.model.User;
 import java.util.List;
 
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -81,9 +84,11 @@ public class SubmissionService {
         if(searchSubmission.isPresent()) {
 
             Submission submission = searchSubmission.get();
+            Blob content = submission.getSubmission();
             try {
-                return ResponseEntity.ok().header("Content-Type", "application/pdf")
-                        .contentLength(submission.getSubmission().length()).body(submission.getSubmission());
+                Resource file = new InputStreamResource(content.getBinaryStream());
+                return ResponseEntity.ok().header(HttpHeaders.CONTENT_TYPE, "application/pdf")
+                        .contentLength(content.length()).body(file);
 
             }catch (Exception e) {
                 System.out.println("Error loading submission: " + e.getMessage());

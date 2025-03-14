@@ -85,14 +85,16 @@ public class CourseService {
 
     public List<Course> courseOfUser(User user) {
 
-        List<Course> normalCourses = courseRepository.searchCoursesByStudentsNotContaining(user);
+        List<Course> normalCourses = courseRepository.searchCoursesByStudentsContaining(user);
         normalCourses.addAll(courseOfTeacher(user));
         return normalCourses;
     }
 
     public List<Course> notCourseOfUser(User user) {
 
-        return courseRepository.searchCoursesByStudentsNotContaining(user);
+        List<Course> notCourses = courseRepository.searchCoursesByStudentsNotContaining(user);
+        notCourses.removeAll(courseOfTeacher(user));
+        return notCourses;
     }
 
     public List<Course> courseOfTeacher(User user) {
