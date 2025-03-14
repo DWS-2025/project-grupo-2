@@ -46,7 +46,9 @@
           <td class="center">{{name}}</td>
           <td class="center">
             <a href="/admin/courses/{{courseId}}/modules/{{id}}">Ver</a>
-            <a href="/admin/courses/{{courseId}}/module/{{id}}/delete">Eliminar módulo</a>
+            <form method="post" action="/admin/courses/{{courseId}}/module/{{id}}/delete">
+              <input type="submit" value="Eliminar módulo">
+            </form>
           </td>
         </tr>
         {{/modules}}
