@@ -28,11 +28,11 @@ public class SampleDataService {
     @PostConstruct
     public void init() {
 
-        userService.save("asd", "asd", "asd", "asd", 0);
-        userService.save("test1", "test1", "test1", "test1", 1);
-        userService.save("test2", "test2", "test2", "test2", 2);
-        userService.save("test3", "test3", "test3", "test3", 2);
-        userService.save("test4", "test4", "test4", "test4", 2);
+        userService.save("asd", "asd", "asd", "asd", "Noxus", 0);
+        userService.save("test1", "test1", "test1", "test1", "Piltover", 1);
+        userService.save("test2", "test2", "test2", "test2", "Zaun", 2);
+        userService.save("test3", "test3", "test3", "test3", "Noxus", 2);
+        userService.save("test4", "test4", "test4", "test4", "Piltover", 2);
 
         Course course1 = new Course("League of Legends", "Aprende a jugar al LOL",2, "Haz una redacción sobre el control de oleadas", convertPNGToMultipart("files/courses/course-0/img.png"));
         courseService.save(course1);

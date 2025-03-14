@@ -78,18 +78,25 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public String register(Model model, @RequestParam String name, @RequestParam String surname, @RequestParam String username, @RequestParam String password) {
+    public String register(Model model, @RequestParam String name, @RequestParam String surname, @RequestParam String username, @RequestParam String password, @RequestParam String campus) {
 
-        if(!(name.isEmpty() && surname.isEmpty() && username.isEmpty() && password.isEmpty())) {
+        if(!(name.isEmpty() && surname.isEmpty() && username.isEmpty() && password.isEmpty() && campus.isEmpty())) {
 
-            if(userService.findByUserName(username).isPresent()){
+            if(!(campus.equals("Noxus") || campus.equals("Piltover") || campus.equals("Zaun"))) {
 
-                model.addAttribute("message", "El usuario ya existe");
+                model.addAttribute("message", "Campus inválido");
                 return "error";
-            }else {
+            }else{
 
-                userService.save(name, surname, username, password, 2);
-                return "redirect:/login";
+                if(userService.findByUserName(username).isPresent()){
+
+                    model.addAttribute("message", "El usuario ya existe");
+                    return "error";
+                }else {
+
+                    userService.save(name, surname, username, password, campus, 2);
+                    return "redirect:/login";
+                }
             }
         }else{
 

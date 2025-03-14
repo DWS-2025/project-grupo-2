@@ -31,10 +31,10 @@ public class UserService {
         this.courseService = courseService;
     }
 
-    public void save(String name, String surname, String userName, String password, int role) {
+    public void save(String name, String surname, String userName, String password, String campus, int role) {
 
         String passwordHash = hashPassword(password);
-        User user = new User(name, surname, userName, passwordHash, role);
+        User user = new User(name, surname, userName, passwordHash, campus, role);
         userRepository.save(user);
     }
 
