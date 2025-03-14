@@ -1,3 +1,3 @@
 function redirect(url) {
-    window.location.href = url + "/module/0";
+    window.location.href = url;
 }

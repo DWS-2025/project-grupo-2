@@ -11,6 +11,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.web.multipart.MultipartFile;
@@ -75,5 +76,36 @@ public class ModuleService {
     public boolean positionExists(Course course, int position) {
 
         return moduleRepository.existsByCourseAndPosition(course, position);
+    }
+
+    public Optional<Module> findFirstModule(Course course) {
+
+        return moduleRepository.findFirstModule(course.getId());
+    }
+
+    public List<Integer> getAvailablePositions(Course course) {
+
+        int maxPosition = moduleRepository.findlastModuleId(course.getId());
+        List<Integer> positions = new ArrayList<>();
+        List<Module> modules = moduleRepository.findByCourse(course);
+        boolean found = false;
+
+        for (int i = 1; i <= maxPosition; i++) {
+
+            for (Module module : modules) {
+                if (module.getPosition() == i) {
+                    found = true;
+                    break; // Exit the loop early if found
+                }
+            }
+
+            if (!found) {
+                positions.add(i);
+            } else {
+                found = false;
+            }
+        }
+        positions.add(maxPosition+1);
+        return positions;
     }
 }

@@ -26,7 +26,11 @@
                 </div>
                 <div>
                     <label for="position">Posición del módulo:</label>
-                    <input type="number" id="position" name="position" required>
+                    <select id="position" name="position">
+                    {{#availablePositions}}
+                        <option value="{{.}}">{{.}}</option>
+                    {{/availablePositions}}
+                    </select>
                 </div>
                 <input type="file" id="module" name="module" accept="text/markdown">
                 <div>

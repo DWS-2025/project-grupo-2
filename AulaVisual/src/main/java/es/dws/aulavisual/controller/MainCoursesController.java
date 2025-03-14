@@ -52,7 +52,23 @@ public class MainCoursesController {
         return "courses-user/courses";
     }
 
+    @GetMapping("/courses/{id}")
+    public String singleCourse(@PathVariable long id) {
 
+        Optional<Course> searchCourse = courseService.findById(id);
+        if(searchCourse.isEmpty()) {
+
+            return "redirect:/courses";
+        }
+        Course course = searchCourse.get();
+        Optional <Module> searchFirstModule = moduleService.findFirstModule(course);
+        if(searchFirstModule.isEmpty()) {
+
+            return "redirect:/courses";
+        }
+        Module module = searchFirstModule.get();
+        return "redirect:/courses/" + id + "/module/" + module.getId();
+    }
 
     @GetMapping("/courses/{id}/module/{moduleId}")
     public String usersCoursePanel(Model model, @CookieValue(value = "userId", defaultValue = "") String userId, @PathVariable long id, @PathVariable long moduleId) {

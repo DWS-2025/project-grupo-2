@@ -229,7 +229,7 @@ public class CourseManagementController {
         Module module = searchModule.get();
 
         moduleService.delete(module);
-        return "redirect:/admin/courses/{courseId}/modules";
+            return "redirect:/admin/courses/{courseId}/modules";
     }
 
     @GetMapping("/admin/courses/addCourse")
@@ -319,6 +319,14 @@ public class CourseManagementController {
 
             return "redirect:/";
         }
+        Optional <Course> searchCourse = courseService.findById(courseId);
+        if(searchCourse.isEmpty()) {
+
+            model.addAttribute("message", "Curso no encontrado");
+            return "error";
+        }
+        Course course = searchCourse.get();
+        model.addAttribute("availablePositions", moduleService.getAvailablePositions(course));
         model.addAttribute("userId", Long.parseLong(userId));
         model.addAttribute("courseId", courseId);
         return "courses-management/addModule";
