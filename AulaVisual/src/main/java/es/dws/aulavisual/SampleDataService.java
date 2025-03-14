@@ -45,9 +45,9 @@ public class SampleDataService {
         courseService.addUserToCourse(course1, userService.findByUserName("test3").get());
         courseService.addUserToCourse(course2, userService.findByUserName("test4").get());
 
-        moduleService.save(course1, "Intro", convertMDToMultipart("files/courses/course-0/module0-Intro.md"));
-        moduleService.save(course1, "Campeones", convertMDToMultipart("files/courses/course-0/module1-Champions.md"));
-        moduleService.save(course1, "Delete Me", convertMDToMultipart("files/courses/course-0/module2-Delete_me.md"));
+        moduleService.save(course1, "Intro", 1, convertMDToMultipart("files/courses/course-0/module0-Intro.md"));
+        moduleService.save(course1, "Campeones", 2, convertMDToMultipart("files/courses/course-0/module1-Champions.md"));
+        moduleService.save(course1, "Delete Me", 3, convertMDToMultipart("files/courses/course-0/module2-Delete_me.md"));
 
     }
 

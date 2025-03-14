@@ -19,10 +19,10 @@ public class Module {
     @Lob
     private Blob content;
 
-    public Module(Course course, String name/*, int position*/,  Blob content) {
+    public Module(Course course, String name, int position,  Blob content) {
         this.course = course;
         this.name = name;
-//        this.position = position;
+        this.position = position;
         this.content = content;
     }
 
@@ -47,5 +47,9 @@ public class Module {
     public Blob getContent() {
 
         return content;
+    }
+    public int getPosition() {
+
+        return position;
     }
 }

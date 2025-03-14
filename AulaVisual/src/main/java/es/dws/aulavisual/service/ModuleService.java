@@ -7,9 +7,11 @@ import es.dws.aulavisual.repository.ModuleRepository;
 import org.hibernate.engine.jdbc.BlobProxy;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.web.multipart.MultipartFile;
@@ -24,9 +26,9 @@ public class ModuleService {
         this.moduleRepository = moduleRepository;
     }
 
-    public void save(Course course, String name, MultipartFile content) {
+    public void save(Course course, String name, int position, MultipartFile content) {
 
-        Module module = new Module(course, name, transformImage(content));
+        Module module = new Module(course, name, position, transformImage(content));
         moduleRepository.save(module);
     }
 
@@ -45,14 +47,9 @@ public class ModuleService {
         return moduleRepository.findById(id);
     }
 
-    public List <Module> getAllModules() {
-
-        return moduleRepository.findAll();
-    }
-
     public List<Module> getModulesByCourse(Course course) {
 
-        return moduleRepository.findByCourse(course);
+        return moduleRepository.findByCourse(course, Sort.by(Sort.Direction.ASC, "position"));
     }
 
     public ResponseEntity<Object> viewModule(Module module) {
@@ -74,5 +71,41 @@ public class ModuleService {
     public void delete(Module module) {
 
         moduleRepository.delete(module);
+    }
+
+    public boolean positionExists(Course course, int position) {
+
+        return moduleRepository.existsByCourseAndPosition(course, position);
+    }
+
+    public Optional<Module> findFirstModule(Course course) {
+
+        return moduleRepository.findFirstModule(course.getId());
+    }
+
+    public List<Integer> getAvailablePositions(Course course) {
+
+        int maxPosition = moduleRepository.findlastModuleId(course.getId());
+        List<Integer> positions = new ArrayList<>();
+        List<Module> modules = moduleRepository.findByCourse(course);
+        boolean found = false;
+
+        for (int i = 1; i <= maxPosition; i++) {
+
+            for (Module module : modules) {
+                if (module.getPosition() == i) {
+                    found = true;
+                    break; // Exit the loop early if found
+                }
+            }
+
+            if (!found) {
+                positions.add(i);
+            } else {
+                found = false;
+            }
+        }
+        positions.add(maxPosition+1);
+        return positions;
     }
 }
