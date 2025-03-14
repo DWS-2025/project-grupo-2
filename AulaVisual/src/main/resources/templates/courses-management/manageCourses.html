@@ -52,7 +52,9 @@
                     <td class="center">{{teacherId}}</td>
                     <td class="center">
                         <a href="/admin/courses/{{id}}/modules">Ver</a>
-                        <a href="/admin/courses/{{id}}/delete">Eliminar curso</a>
+                        <form method="post" action="/admin/courses/{{id}}/delete">
+                            <input type="submit" value= "Eliminar curso">
+                        </form>
                     </td>
                     <td>
                         <input type="text" id="studentId" name="studentId" form="add-student-form-{{id}}" required>
