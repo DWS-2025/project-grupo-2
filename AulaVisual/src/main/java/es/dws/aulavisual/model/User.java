@@ -14,10 +14,13 @@ public class User {
     private long id;
 
     @ManyToMany(mappedBy = "students")
-    private List<Course> courses = new ArrayList <>();
+    private final List<Course> courses = new ArrayList <>();
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "student")
     private List<Submission> submissions;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    private Course courseTeaching = null;
 
     @Lob
     private Blob image;
@@ -41,6 +44,14 @@ public class User {
 
     protected User() {
 
+    }
+
+    public void setCourseTeaching(Course course) {
+        this.courseTeaching = course;
+    }
+
+    public Course getCourseTeaching() {
+        return courseTeaching;
     }
 
     public String getRealName() {

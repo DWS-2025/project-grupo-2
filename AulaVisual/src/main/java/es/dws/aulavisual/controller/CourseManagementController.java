@@ -156,7 +156,7 @@ public class CourseManagementController {
         }
         Module module = searchModule.get();
 
-        if(user.getRole() == 0 || course.getTeacherId() == user.getId() || courseService.userIsInCourse(user, course)) {
+        if(user.getRole() == 0 || course.getTeacher() == user || courseService.userIsInCourse(user, course)) {
 
             return moduleService.viewModule(module);
         }else{
@@ -249,6 +249,12 @@ public class CourseManagementController {
 
             return "redirect:/";
         }
+        if(userService.getAvaliableTeachers().isEmpty()) {
+
+            model.addAttribute("message", "No hay profesores disponibles");
+            return "error";
+        }
+        model.addAttribute("availableTeachers", userService.getAvaliableTeachers());
         model.addAttribute("userId", Long.parseLong(userId));
         return "courses-management/addCourse";
     }
@@ -283,6 +289,7 @@ public class CourseManagementController {
             model.addAttribute("message", "El usuario seleccionado no es un profesor");
             return "error";
         }
+
         if(name.isEmpty() || description == null || description.isEmpty() || task.isEmpty()) {
 
             model.addAttribute("message", "Faltan campos por rellenar");
@@ -291,7 +298,19 @@ public class CourseManagementController {
 
         if(image != null && !image.isEmpty()) {
 
-            Course course = new Course(name, description, teacherId, task, image);
+            Optional <User> searchteacher = userService.findById(teacherId);
+            if(searchteacher.isEmpty()) {
+
+                model.addAttribute("message", "Profesor no encontrado");
+                return "error";
+            }
+            User teacher = searchteacher.get();
+            if(teacher.getCourseTeaching() != null) {
+
+                model.addAttribute("message", "El profesor ya tiene un curso asignado");
+                return "error";
+            }
+            Course course = new Course(name, description, teacher, task, image);
             courseService.save(course);
         }else{
 

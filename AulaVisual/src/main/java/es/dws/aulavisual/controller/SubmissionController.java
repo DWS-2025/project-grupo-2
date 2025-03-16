@@ -149,7 +149,7 @@ public class SubmissionController {
         }
         User student = searchStudent.get();
 
-        if(user.getRole() == 1 && course.getTeacherId() == Long.parseLong(userId)){
+        if(user.getRole() == 1 && course.getTeacher() == user){
 
             if(courseService.userIsInCourse(student, course)){
 
@@ -197,7 +197,7 @@ public class SubmissionController {
             return ResponseEntity.status(404).body("Student not found");
         }
         User student = searchStudent.get();
-        if(user.getRole() == 1 && course.getTeacherId() == Long.parseLong(userId)){
+        if(user.getRole() == 1 && course.getTeacher() == user){
 
             if(courseService.userIsInCourse(student, course)) {
 
@@ -285,7 +285,7 @@ public class SubmissionController {
 
             if(submissionService.userMadeSubmission(student, course)) {
 
-                if(course.getTeacherId() == Long.parseLong(userId)) {
+                if(course.getTeacher() == user) {
 
                     submissionService.deleteSubmission(student, course);
                     return "redirect:/courses/" + courseId + "/grade";

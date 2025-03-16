@@ -207,4 +207,15 @@ public class UserService {
             userRepository.save(user);
         }
     }
+
+    public void addCourseToTeacher(User user, Course course) {
+
+        user.setCourseTeaching(course);
+        userRepository.save(user);
+    }
+
+    public List<User> getAvaliableTeachers() {
+
+        return userRepository.findAllByRoleAndCourseTeachingNull(1);
+    }
 }
