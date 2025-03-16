@@ -29,8 +29,12 @@
                     <textarea id="description" name="description" required></textarea>
                 </div>
                 <div>
-                    <label for="teacherId">ID del profesor:</label>
-                    <input type="text" id="teacherId" name="teacherId" required>
+                    <label for="teacher">Profesor:</label>
+                    <select id="teacher" name="teacherId">
+                        {{#availableTeachers}}
+                        <option value="{{id}}">{{userName}}</option>
+                        {{/availableTeachers}}
+                    </select>
                 </div>
                 <div>
                     <label for="task">Tarea a completar por los alumnos:</label>

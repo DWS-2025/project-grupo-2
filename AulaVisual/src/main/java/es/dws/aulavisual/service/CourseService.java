@@ -30,6 +30,7 @@ public class CourseService {
     public void save(Course course) {
 
         courseRepository.save(course);
+        userService.addCourseToTeacher(course.getTeacher(), course);
     }
 
     public void addUserToCourse(Course course, User user) {
@@ -52,7 +53,7 @@ public class CourseService {
 
     public boolean userIsInCourse(User user, Course course) {
 
-        return  course.getTeacherId() == user.getId()|| course.getStudents().contains(user);
+        return  course.getTeacher() == user|| course.getStudents().contains(user);
     }
 
     public void deleteCourse(Course course) {

@@ -20,19 +20,21 @@ public class Course {
     private  String name;
     private  String description;
     private  String task;
-    private  long teacherId;
+
+    @OneToOne()
+    private User teacher;
 
     @Lob
     private Blob imageCourse;
 
     @ManyToMany()
-    private  List <User> students = new ArrayList<>();
+    private final List <User> students = new ArrayList<>();
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "course")
-    private  List <Module> modules = new ArrayList<>();
+    private final List <Module> modules = new ArrayList<>();
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "course")
-    private  List<Submission> submissions = new ArrayList<>();
+    private final List<Submission> submissions = new ArrayList<>();
 
 
 
@@ -40,12 +42,11 @@ public class Course {
 
     }
 
-    public Course(String name, String description, long teacherId, String task, MultipartFile imageCourse) {
+    public Course(String name, String description, User teacher, String task, MultipartFile imageCourse) {
 
         this.name = name;
         this.description = description;
-        this.teacherId = teacherId;
-        this.submissions = new ArrayList<>();
+        this.teacher = teacher;
         this.task = task;
         this.imageCourse = transformImage(imageCourse);
     }
@@ -70,9 +71,9 @@ public class Course {
         return task;
     }
 
-    public long getTeacherId() {
+    public User getTeacher() {
 
-        return teacherId;
+        return teacher;
     }
 
     private Blob transformImage(MultipartFile imageCourse) {
