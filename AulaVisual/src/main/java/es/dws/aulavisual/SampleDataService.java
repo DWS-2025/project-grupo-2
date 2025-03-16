@@ -29,16 +29,16 @@ public class SampleDataService {
     @PostConstruct
     public void init() {
 
-        User teachcer1 = new User("teacher1", "teacher1", "teacher1", "teacher1", 1);
-        User teachcer2 = new User("teacher2", "teacher2", "teacher2", "teacher2", 1);
-        User teachcer3 = new User("teacher3", "teacher3", "teacher3", "teacher3", 1);
-        userService.save("asd", "asd", "asd", "asd", 0);
+        User teachcer1 = new User("teacher1", "teacher1", "teacher1", "teacher1", "Noxus", 1);
+        User teachcer2 = new User("teacher2", "teacher2", "teacher2", "teacher2", "Piltover", 1);
+        User teachcer3 = new User("teacher3", "teacher3", "teacher3", "teacher3", "Zaun", 1);
+        userService.save("asd", "asd", "asd", "asd", "Zaun", 0);
         userService.save(teachcer1);
         userService.save(teachcer2);
         userService.save(teachcer3);
-        userService.save("test2", "test2", "test2", "test2", 2);
-        userService.save("test3", "test3", "test3", "test3", 2);
-        userService.save("test4", "test4", "test4", "test4", 2);
+        userService.save("test2", "test2", "test2", "test2", "Zaun", 2);
+        userService.save("test3", "test3", "test3", "test3", "Zaun", 2);
+        userService.save("test4", "test4", "test4", "test4", "Zaun", 2);
 
         Course course1 = new Course("League of Legends", "Aprende a jugar al LOL", teachcer1, "Haz una redacción sobre el control de oleadas", convertPNGToMultipart("files/courses/course-0/img.png"));
         courseService.save(course1);
