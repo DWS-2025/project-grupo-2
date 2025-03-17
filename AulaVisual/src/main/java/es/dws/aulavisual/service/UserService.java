@@ -14,6 +14,7 @@ import es.dws.aulavisual.repository.UserRepository;
 import org.hibernate.engine.jdbc.BlobProxy;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
+import org.springframework.data.domain.Example;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -66,6 +67,13 @@ public class UserService {
         for (Course course : courses) {
 
             course.getStudents().remove(userToDelete);
+            courseService.save(course);
+        }
+
+        if(userToDelete.getRole() == 1) {
+
+            Course course = userToDelete.getCourseTeaching();
+            course.setTeacher(null);
             courseService.save(course);
         }
         userRepository.deleteById(id);
@@ -179,9 +187,9 @@ public class UserService {
         }
     }
 
-    public List <User> getAllUsersExceptSelf(User currentUser) {
+    public List <User> getAllUsersExceptSelfFiltered(User currentUser, Example <User> example) {
 
-        List<User> users = userRepository.findAll();
+        List<User> users = userRepository.findAll(example);
         users.remove(currentUser);
         return users;
     }

@@ -19,7 +19,7 @@ public class User {
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "student")
     private List<Submission> submissions;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne()
     private Course courseTeaching = null;
 
     @Lob
@@ -42,7 +42,7 @@ public class User {
         this.image = null;
     }
 
-    protected User() {
+    public User() {
 
     }
 
@@ -112,5 +112,10 @@ public class User {
     public List<Course> getCourses() {
 
         return courses;
+    }
+
+    public void setCampus(String campus) {
+
+        this.campus = campus;
     }
 }

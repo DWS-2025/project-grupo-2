@@ -49,6 +49,7 @@ public class CourseManagementController {
 
             model.addAttribute("admin", user.getRealName());
             model.addAttribute("userId", Long.parseLong(userId));
+            model.addAttribute("availableTeachers", userService.getAvaliableTeachers());
             List <Course> courses = courseService.getCourses();
             model.addAttribute("courses", courses);
             return "courses-management/manageCourses";
@@ -257,6 +258,48 @@ public class CourseManagementController {
         model.addAttribute("availableTeachers", userService.getAvaliableTeachers());
         model.addAttribute("userId", Long.parseLong(userId));
         return "courses-management/addCourse";
+    }
+
+    @PostMapping("/admin/courses/{id}/assignTeacher")
+    public String assignTeacher(@PathVariable long id, @RequestParam long teacherId, Model model, @CookieValue(value = "userId", defaultValue = "") String userId) {
+
+        if(userId.isEmpty()) {
+
+            return "redirect:/login";
+        }
+        Optional <User> searchUser = userService.findById(Long.parseLong(userId));
+        if(searchUser.isEmpty()) {
+
+            model.addAttribute("message", "Usuario no encontrado");
+            return "error";
+        }
+        User user = searchUser.get();
+        if(user.getRole() != 0) {
+
+            return "redirect:/";
+        }
+        Optional <Course> searchCourse = courseService.findById(id);
+        if(searchCourse.isEmpty()) {
+
+            model.addAttribute("message", "Curso no encontrado");
+            return "error";
+        }
+        Course course = searchCourse.get();
+        Optional <User> searchTeacher = userService.findById(teacherId);
+        if(searchTeacher.isEmpty()) {
+
+            model.addAttribute("message", "Profesor no encontrado");
+            return "error";
+        }
+        User teacher = searchTeacher.get();
+        if(teacher.getRole() != 1) {
+
+            model.addAttribute("message", "El usuario seleccionado no es un profesor");
+            return "error";
+        }
+        course.setTeacher(teacher);
+        courseService.save(course);
+        return "redirect:/admin/courses";
     }
 
     @PostMapping("/admin/courses/addCourse")

@@ -42,6 +42,7 @@
                     <th>Profesor responsable</th>
                     <th>Acciones</th>
                     <th>Añadir Alumno</th>
+                    <th>Asignar Profesor</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -49,7 +50,12 @@
                 <tr class="tableItems">
                     <td class="center">{{id}}</td>
                     <td class="center">{{name}}</td>
+                    {{#teacher}}
                     <td class="center">{{teacher.userName}}</td>
+                    {{/teacher}}
+                    {{^teacher}}
+                    <td class="center">Sin profesor asignado</td>
+                    {{/teacher}}
                     <td class="center">
                         <a href="/admin/courses/{{id}}/modules">Ver</a>
                         <form method="post" action="/admin/courses/{{id}}/delete">
@@ -60,6 +66,19 @@
                         <input type="text" id="studentId" name="studentId" form="add-student-form-{{id}}" required>
                         <button type="submit" form="add-student-form-{{id}}">Añadir</button>
                     </td>
+                    {{^teacher}}
+                    <td>
+                        <form action="/admin/courses/{{id}}/assignTeacher" method="post">
+                            <label for="teacherId">Asignar Profesor</label>
+                            <select id="teacherId" name="teacherId">
+                                {{#availableTeachers}}
+                                <option value="{{id}}">{{userName}}</option>
+                                {{/availableTeachers}}
+                            </select>
+                            <button type="submit">Asignar</button>
+                        </form>
+                    </td>
+                    {{/teacher}}
                 </tr>
                 {{/courses}}
                 </tbody>
