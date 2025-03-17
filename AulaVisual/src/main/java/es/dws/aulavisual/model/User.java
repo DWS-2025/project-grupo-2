@@ -19,28 +19,30 @@ public class User {
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "student")
     private List<Submission> submissions;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne()
     private Course courseTeaching = null;
 
     @Lob
     private Blob image;
 
+    private String campus;
     private String realName;
     private String surname;
     private String userName;
     private String passwordHash;
     private int role; //0 for admin, 1 for teacher, 2 for student
 
-    public User(String realName, String surname, String userName, String passwordHash, int role) {
+    public User(String realName, String surname, String userName, String passwordHash, String campus, int role) {
         this.realName = realName;
         this.surname = surname;
         this.userName = userName;
         this.passwordHash = passwordHash;
         this.role = role;
+        this.campus = campus;
         this.image = null;
     }
 
-    protected User() {
+    public User() {
 
     }
 
@@ -110,5 +112,10 @@ public class User {
     public List<Course> getCourses() {
 
         return courses;
+    }
+
+    public void setCampus(String campus) {
+
+        this.campus = campus;
     }
 }

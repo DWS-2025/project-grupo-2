@@ -3,6 +3,8 @@ package es.dws.aulavisual.controller;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -78,18 +80,25 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public String register(Model model, @RequestParam String name, @RequestParam String surname, @RequestParam String username, @RequestParam String password) {
+    public String register(Model model, @RequestParam String name, @RequestParam String surname, @RequestParam String username, @RequestParam String password, @RequestParam String campus) {
 
-        if(!(name.isEmpty() && surname.isEmpty() && username.isEmpty() && password.isEmpty())) {
+        if(!(name.isEmpty() && surname.isEmpty() && username.isEmpty() && password.isEmpty() && campus.isEmpty())) {
 
-            if(userService.findByUserName(username).isPresent()){
+            if(!(campus.equals("Noxus") || campus.equals("Piltover") || campus.equals("Zaun"))) {
 
-                model.addAttribute("message", "El usuario ya existe");
+                model.addAttribute("message", "Campus inválido");
                 return "error";
-            }else {
+            }else{
 
-                userService.save(name, surname, username, password, 2);
-                return "redirect:/login";
+                if(userService.findByUserName(username).isPresent()){
+
+                    model.addAttribute("message", "El usuario ya existe");
+                    return "error";
+                }else {
+
+                    userService.save(name, surname, username, password, campus, 2);
+                    return "redirect:/login";
+                }
             }
         }else{
 
@@ -225,7 +234,7 @@ public class UserController {
     }
 
     @GetMapping("/admin")
-    public String getAdmin(Model model, @CookieValue(value = "userId", defaultValue = "") String userId) {
+    public String getAdmin(Model model, @CookieValue(value = "userId", defaultValue = "") String userId, @RequestParam(required = false) Optional<String> campus, @RequestParam(required = false) Optional<Integer> role) {
 
         if(userId.isEmpty()) {
 
@@ -241,8 +250,28 @@ public class UserController {
             User currentUser = searchUser.get();
             if(currentUser.getRole() == 0) {
 
+                User exampleUser = new User();
+                Example <User> example;
+                if(role.isEmpty()){
+
+                    if(campus.isPresent() && !campus.get().isEmpty()) {
+
+                        exampleUser.setCampus(campus.get());
+                    }
+                    ExampleMatcher matcher = ExampleMatcher.matching().withIgnorePaths("id", "role");
+                    example = Example.of(exampleUser, matcher);
+                }else{
+
+                    exampleUser.setRole(role.get());
+                    if(campus.isPresent() && !campus.get().isEmpty()) {
+
+                        exampleUser.setCampus(campus.get());
+                    }
+                    ExampleMatcher matcher = ExampleMatcher.matching().withIgnorePaths("id");
+                    example = Example.of(exampleUser, matcher);
+                }
                 model.addAttribute("admin", currentUser.getUserName());
-                model.addAttribute("users", userService.getAllUsersExceptSelf(currentUser));
+                model.addAttribute("users", userService.getAllUsersExceptSelfFiltered(currentUser, example));
                 model.addAttribute("userId", Long.parseLong(userId));
                 return "/users/adminPanel";
             }else {

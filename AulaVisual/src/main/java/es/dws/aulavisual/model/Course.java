@@ -95,4 +95,9 @@ public class Course {
 
         return imageCourse;
     }
+
+    public void setTeacher(User teacher) {
+
+        this.teacher = teacher;
+    }
 }

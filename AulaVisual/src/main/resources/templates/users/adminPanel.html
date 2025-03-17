@@ -24,6 +24,28 @@
         {{#users}}
         <form action="/admin/users/{{id}}/delete" method="post" id="delete-user-{{id}}"></form>
         {{/users}}
+        <form action="/admin" method="get">
+            <!-- Add two dropdowns to ilter by role and campus allowing multiple aoptions-->
+            <div>
+                <label for="role">Filtrar por rol:</label>
+                <select id="role" name="role">
+                    <option value="">Todos</option>
+                    <option value="0">Administrador</option>
+                    <option value="1">Profesor</option>
+                    <option value="2">Alumno</option>
+                </select>
+            </div>
+            <div>
+                <label for="campus">Filtrar por campus:</label>
+                <select id="campus" name="campus">
+                    <option value="">Todos</option>
+                    <option value="Noxus">Noxus</option>
+                    <option value="Piltover">Piltover</option>
+                    <option value="Zaun">Zaun</option>
+                </select>
+            </div>
+            <input type="submit" value="Filtrar">
+        </form>
         <div id="users">
             <h2>Usuarios</h2>
             <table id="usersTable">
@@ -33,6 +55,7 @@
                     <th>Nombre</th>
                     <th>Apellido</th>
                     <th>Nombre Usuario</th>
+                    <th>Campus</th>
                     <th>Rol</th>
                     <th>Editar</th>
                     <th>Eliminar</th>
@@ -46,6 +69,7 @@
                     <td class="center">{{realName}}</td>
                     <td class="center">{{surname}}</td>
                     <td class="center">{{userName}}</td>
+                    <td class="center">{{campus}}</td>
                     <td class="center">{{role}}</td>
                     <td class="center">
                         <a href="/admin/users/{{id}}">Editar</a>
