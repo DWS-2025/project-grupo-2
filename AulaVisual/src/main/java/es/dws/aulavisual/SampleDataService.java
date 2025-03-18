@@ -29,13 +29,13 @@ public class SampleDataService {
     @PostConstruct
     public void init() {
 
-        User teachcer1 = new User("teacher1", "teacher1", "teacher1", "teacher1", "Noxus", 1);
-        User teachcer2 = new User("teacher2", "teacher2", "teacher2", "teacher2", "Piltover", 1);
-        User teachcer3 = new User("teacher3", "teacher3", "teacher3", "teacher3", "Zaun", 1);
+        userService.save("teacher1", "teacher1", "teacher1", "teacher1", "Noxus", 1);
+        User teachcer1 = userService.findByUserName("teacher1").get();
+        userService.save("teacher2", "teacher2", "teacher2", "teacher2", "Piltover", 1);
+        User teachcer2 = userService.findByUserName("teacher2").get();
+        userService.save("teacher3", "teacher3", "teacher3", "teacher3", "Zaun", 1);
+        User teachcer3 = userService.findByUserName("teacher3").get();
         userService.save("asd", "asd", "asd", "asd", "Zaun", 0);
-        userService.save(teachcer1);
-        userService.save(teachcer2);
-        userService.save(teachcer3);
         userService.save("test2", "test2", "test2", "test2", "Zaun", 2);
         userService.save("test3", "test3", "test3", "test3", "Zaun", 2);
         userService.save("test4", "test4", "test4", "test4", "Zaun", 2);
