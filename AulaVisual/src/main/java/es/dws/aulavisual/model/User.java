@@ -118,4 +118,9 @@ public class User {
 
         this.campus = campus;
     }
+
+    public String getCampus() {
+
+        return campus;
+    }
 }

@@ -7,11 +7,14 @@ import java.sql.Blob;
 import java.util.List;
 import java.util.Optional;
 
+import es.dws.aulavisual.DTO.UserDTO;
+import es.dws.aulavisual.Mapper.UserMapper;
 import es.dws.aulavisual.model.Course;
 import es.dws.aulavisual.repository.CourseRepository;
 import es.dws.aulavisual.model.User;
 import es.dws.aulavisual.repository.UserRepository;
 import org.hibernate.engine.jdbc.BlobProxy;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Example;
@@ -25,11 +28,13 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final CourseRepository courseService;
+    private final UserMapper userMapper;
 
-    public UserService(UserRepository userRepository, CourseRepository courseService) {
+    public UserService(UserRepository userRepository, CourseRepository courseService, UserMapper userMapper) {
 
         this.userRepository = userRepository;
         this.courseService = courseService;
+        this.userMapper = userMapper;
     }
 
     public void save(String name, String surname, String userName, String password, String campus, int role) {
@@ -225,5 +230,15 @@ public class UserService {
     public List<User> getAvaliableTeachers() {
 
         return userRepository.findAllByRoleAndCourseTeachingNull(1);
+    }
+///////////////////////////////////////////////////////////////////////////////////
+    public List<UserDTO> getAllUsers() {
+
+        return userMapper.toDTOs(userRepository.findAll());
+    }
+
+    public UserDTO findbyId(long id) {
+
+        return userMapper.toDTO(userRepository.findById(id).orElseThrow());
     }
 }
