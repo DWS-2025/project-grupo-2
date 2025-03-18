@@ -6,7 +6,6 @@ import java.security.MessageDigest;
 import java.sql.Blob;
 import java.util.List;
 import java.util.Optional;
-
 import es.dws.aulavisual.DTO.UserDTO;
 import es.dws.aulavisual.Mapper.UserMapper;
 import es.dws.aulavisual.model.Course;
@@ -14,7 +13,6 @@ import es.dws.aulavisual.repository.CourseRepository;
 import es.dws.aulavisual.model.User;
 import es.dws.aulavisual.repository.UserRepository;
 import org.hibernate.engine.jdbc.BlobProxy;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Example;
@@ -52,11 +50,6 @@ public class UserService {
     public Optional<User> findByUserName(String userName) {
 
         return userRepository.findByUserName(userName);
-    }
-
-    public Optional<User> findById(long id) {
-
-        return userRepository.findById(id);
     }
 
     public void deleteById(long id) {
@@ -237,7 +230,7 @@ public class UserService {
         return userMapper.toDTOs(userRepository.findAll());
     }
 
-    public UserDTO findbyId(long id) {
+    public UserDTO findById(long id) {
 
         return userMapper.toDTO(userRepository.findById(id).orElseThrow());
     }
