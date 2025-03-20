@@ -16,8 +16,11 @@ import org.springframework.web.multipart.MultipartFile;
 import es.dws.aulavisual.model.User;
 
 import java.io.IOException;
+import java.net.URI;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+
+import static org.springframework.web.servlet.support.ServletUriComponentsBuilder.fromCurrentRequest;
 
 @Controller
 public class UserController {
@@ -44,35 +47,41 @@ public class UserController {
     public String userLogin(Model model, @RequestParam String username, @RequestParam String password, HttpServletResponse response) {
 
 
-        if(!(username.isEmpty() && password.isEmpty())) {
+        try {
+            if(!(username.isEmpty() && password.isEmpty())) {
 
-            if(userService.login(username, password)) {
+                if(userService.login(username, password)) {
 
-                User currentUser = userService.findByUserName(username).get();
-                long userId = currentUser.getId();
-                // create a cookie
-                Cookie cookie = new Cookie("userId", Long.toString(userId));
-                cookie.setMaxAge(24 * 60 * 60); //1 day
+                    UserDTO currentUser = userService.findByUserName(username);
+                    long userId = currentUser.id();
+                    // create a cookie
+                    Cookie cookie = new Cookie("userId", Long.toString(userId));
+                    cookie.setMaxAge(24 * 60 * 60); //1 day
 
-                //add cookie to response
-                response.addCookie(cookie);
-                model.addAttribute("userName", username);
-                if(currentUser.getRole() == 0) {
+                    //add cookie to response
+                    response.addCookie(cookie);
+                    model.addAttribute("userName", username);
+                    if(currentUser.role() == 0) {
 
-                    return "redirect:/admin";
-                }else {
+                        return "redirect:/admin";
+                    }else {
 
-                    return "redirect:/courses";
+                        return "redirect:/courses";
+                    }
                 }
+
+                model.addAttribute("message", "Nombre de usuario o contraseña incorrectos");
+
+            }else {
+
+                model.addAttribute("message", "Todos los campos son obligatorios");
             }
+            return "error";
+        }catch (NoSuchElementException e){
 
-            model.addAttribute("message", "Nombre de usuario o contraseña incorrectos");
-
-        }else {
-
-            model.addAttribute("message", "Todos los campos son obligatorios");
+            model.addAttribute("message", e.getMessage());
+            return "error";
         }
-        return "error";
     }
 
     @GetMapping("/register")
@@ -84,30 +93,36 @@ public class UserController {
     @PostMapping("/register")
     public String register(Model model, @RequestParam String name, @RequestParam String surname, @RequestParam String username, @RequestParam String password, @RequestParam String campus) {
 
-        if(!(name.isEmpty() && surname.isEmpty() && username.isEmpty() && password.isEmpty() && campus.isEmpty())) {
+        try {
+            if(!(name.isEmpty() && surname.isEmpty() && username.isEmpty() && password.isEmpty() && campus.isEmpty())) {
 
-            if(!(campus.equals("Noxus") || campus.equals("Piltover") || campus.equals("Zaun"))) {
+                if(!(campus.equals("Noxus") || campus.equals("Piltover") || campus.equals("Zaun"))) {
 
-                model.addAttribute("message", "Campus inválido");
-                return "error";
-            }else{
-
-                if(userService.findByUserName(username).isPresent()){
-
-                    model.addAttribute("message", "El usuario ya existe");
+                    model.addAttribute("message", "Campus inválido");
                     return "error";
-                }else {
+                }else{
 
+                    UserDTO user = userService.findByUserName(username);
+                    if(user != null) {
+
+                        model.addAttribute("message", "Nombre de usuario ya en uso");
+                        return "error";
+                    }
                     userService.save(name, surname, username, password, campus, 2);
                     return "redirect:/login";
+
                 }
+            }else{
+
+                model.addAttribute("message", "Todos los campos son obligatorios");
             }
-        }else{
 
-            model.addAttribute("message", "Todos los campos son obligatorios");
+            return "redirect:/register";
+        }catch (NoSuchElementException e) {
+
+            model.addAttribute("message", e.getMessage());
+            return "error";
         }
-
-        return "redirect:/register";
     }
 
     @GetMapping("/logout")
@@ -150,11 +165,12 @@ public class UserController {
 
             if(image != null && !image.isEmpty()) {
 
-                userService.saveImage(currentUser, image);
+                URI location = fromCurrentRequest().build().toUri();
+                userService.saveImage(currentUser, location, image.getInputStream(), image.getSize());
             }
 
             return redirect;
-        }catch (NoSuchElementException e) {
+        }catch (NoSuchElementException | IOException e) {
 
             model.addAttribute("message", e.getMessage());
             return "error";

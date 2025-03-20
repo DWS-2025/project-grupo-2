@@ -1,11 +1,15 @@
 package es.dws.aulavisual.service;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
 import java.security.NoSuchAlgorithmException;
 import java.security.MessageDigest;
 import java.sql.Blob;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
 import es.dws.aulavisual.DTO.UserDTO;
 import es.dws.aulavisual.Mapper.UserMapper;
 import es.dws.aulavisual.model.Course;
@@ -45,11 +49,6 @@ public class UserService {
     public void save(User user) {
 
         userRepository.save(user);
-    }
-
-    public Optional<User> findByUserName(String userName) {
-
-        return userRepository.findByUserName(userName);
     }
 
     public void deleteById(long id) {
@@ -144,15 +143,13 @@ public class UserService {
         return false;
     }
 
-    public void saveImage(User user, MultipartFile image) {
+    public void saveImage(UserDTO userDTO, URI location, InputStream inputStream, long size) {
 
-        try {
-            user.setImage(BlobProxy.generateProxy(image.getInputStream(), image.getSize()));
-            userRepository.save(user);
-        }catch (IOException e) {
+        User user = userMapper.toDomain(userDTO);
 
-            throw new RuntimeException("Error processing image", e);
-        }
+        user.setImage(location.toString());
+        user.setImageFile(BlobProxy.generateProxy(inputStream, size));
+        userRepository.save(user);
     }
 
     public ResponseEntity <Object> loadImage(long userId) {
@@ -167,7 +164,7 @@ public class UserService {
 
         try {
 
-            Blob image = user.getImage();
+            Blob image = user.getImageFile();
             if(image == null) {
 
                 System.out.println("User has no image");
@@ -185,15 +182,17 @@ public class UserService {
         }
     }
 
-    public List <User> getAllUsersExceptSelfFiltered(User currentUser, Example <User> example) {
+    public List <UserDTO> getAllUsersExceptSelfFiltered(UserDTO currentUserDTO, Example <User> example) {
 
+        User currentUser = userMapper.toDomain(currentUserDTO);
         List<User> users = userRepository.findAll(example);
         users.remove(currentUser);
-        return users;
+        return users.stream().map(userMapper::toDTO).collect(Collectors.toList());
     }
 
-    public boolean updateRole(User user, int newRole) {
+    public boolean updateRole(UserDTO userDTO, int newRole) {
 
+        User user = userMapper.toDomain(userDTO);
         if(newRole >= 0 && newRole <= 2) {
 
             user.setRole(newRole);
@@ -214,15 +213,18 @@ public class UserService {
         }
     }
 
-    public void addCourseToTeacher(User user, Course course) {
+    public void addCourseToTeacher(UserDTO userDTO, Course course) {
 
+        User user = userMapper.toDomain(userDTO);
         user.setCourseTeaching(course);
         userRepository.save(user);
     }
 
-    public List<User> getAvaliableTeachers() {
+    public List<UserDTO> getAvaliableTeachers() {
 
-        return userRepository.findAllByRoleAndCourseTeachingNull(1);
+        return userRepository.findAllByRoleAndCourseTeachingNull(1).stream()
+                .map(userMapper::toDTO)
+                .collect(Collectors.toList());
     }
 ///////////////////////////////////////////////////////////////////////////////////
     public List<UserDTO> getAllUsers() {
@@ -233,5 +235,10 @@ public class UserService {
     public UserDTO findById(long id) {
 
         return userMapper.toDTO(userRepository.findById(id).orElseThrow());
+    }
+
+    public UserDTO findByUserName(String userName) {
+
+        return userMapper.toDTO(userRepository.findByUserName(userName).orElseThrow());
     }
 }

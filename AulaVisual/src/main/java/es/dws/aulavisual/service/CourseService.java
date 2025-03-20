@@ -1,5 +1,6 @@
 package es.dws.aulavisual.service;
 
+import es.dws.aulavisual.DTO.UserDTO;
 import es.dws.aulavisual.model.Course;
 import es.dws.aulavisual.repository.CourseRepository;
 import es.dws.aulavisual.model.User;
@@ -33,7 +34,7 @@ public class CourseService {
         userService.addCourseToTeacher(course.getTeacher(), course);
     }
 
-    public void addUserToCourse(Course course, User user) {
+    public void addUserToCourse(Course course, UserDTO user) {
 
         course.getStudents().add(user);
         courseRepository.save(course);

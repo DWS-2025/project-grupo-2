@@ -22,8 +22,10 @@ public class User {
     @OneToOne()
     private Course courseTeaching = null;
 
+    private String image;
+
     @Lob
-    private Blob image;
+    private Blob imageFile;
 
     private String campus;
     private String realName;
@@ -39,6 +41,7 @@ public class User {
         this.passwordHash = passwordHash;
         this.role = role;
         this.campus = campus;
+        this.imageFile = null;
         this.image = null;
     }
 
@@ -99,14 +102,24 @@ public class User {
         this.role = role;
     }
 
-    public Blob getImage() {
+    public String getImage() {
 
         return this.image;
     }
 
-    public void setImage(Blob blob) {
+    public void setImage(String image) {
 
-        this.image = blob;
+        this.image = image;
+    }
+
+    public Blob getImageFile() {
+
+        return this.imageFile;
+    }
+
+    public void setImageFile(Blob blob) {
+
+        this.imageFile = blob;
     }
 
     public List<Course> getCourses() {
