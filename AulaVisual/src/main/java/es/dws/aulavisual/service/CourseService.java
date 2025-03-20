@@ -52,9 +52,9 @@ public class CourseService {
         return courseRepository.findById(id);
     }
 
-    public boolean userIsInCourse(User user, Course course) {
+    public boolean userIsInCourse(UserDTO userDTO, Course course) {
 
-        return  course.getTeacher() == user|| course.getStudents().contains(user);
+        return  course.getTeacher().equals(userDTO)|| course.getStudents().contains(user);
     }
 
     public void deleteCourse(Course course) {
