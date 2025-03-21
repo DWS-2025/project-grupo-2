@@ -1,5 +1,9 @@
 package es.dws.aulavisual.service;
 
+import es.dws.aulavisual.DTO.SubmissionDTO;
+import es.dws.aulavisual.DTO.UserDTO;
+import es.dws.aulavisual.Mapper.SubmissionMapper;
+import es.dws.aulavisual.Mapper.UserMapper;
 import es.dws.aulavisual.model.Course;
 import es.dws.aulavisual.model.Submission;
 import es.dws.aulavisual.repository.SubmissionRepository;
@@ -21,13 +25,18 @@ import java.io.IOException;
 public class SubmissionService {
 
     private final SubmissionRepository submissionRepository;
+    private final SubmissionMapper submissionMapper;
+    private final UserMapper userMapper;
 
-    public SubmissionService(SubmissionRepository submissionRepository) {
+    public SubmissionService(SubmissionRepository submissionRepository, SubmissionMapper submissionMapper, UserMapper userMapper) {
         this.submissionRepository = submissionRepository;
+        this.submissionMapper = submissionMapper;
+        this.userMapper = userMapper;
     }
 
-    public void save(Course course, User user, MultipartFile submission) {
+    public void save(Course course, UserDTO userDTO, MultipartFile submission) {
 
+        User user = userMapper.toDomain(userDTO);
         submissionRepository.save(new Submission(course, user, transformSubmission(submission)));
     }
 
@@ -39,36 +48,32 @@ public class SubmissionService {
         }
     }
 
-    public Optional<Submission> findById(long id) {
+    public SubmissionDTO findById(long id) {
 
-        return submissionRepository.findById(id);
+        return submissionMapper.toDTO(submissionRepository.findById(id).orElseThrow());
     }
 
-    public Optional<Submission> findByUserAndCourse(User user, Course course) {
+    public SubmissionDTO findByUserAndCourse(UserDTO userDTO, Course course) {
 
-        return submissionRepository.findByStudentAndCourse(user, course);
+        User user = userMapper.toDomain(userDTO);
+        return submissionMapper.toDTO(submissionRepository.findByStudentAndCourse(user, course).orElseThrow());
     }
 
-    public boolean userMadeSubmission(User user, Course course) {
+    public boolean userMadeSubmission(UserDTO userDTO, Course course) {
 
+        User user = userMapper.toDomain(userDTO);
         Optional <Submission> submission = submissionRepository.findByStudentAndCourse(user, course);
         return submission.isPresent();
     }
 
-    public boolean isgraded(User user, Course course) {
-        Optional <Submission> submission = submissionRepository.findByStudentAndCourse(user, course);
+    public List<SubmissionDTO> getSubmissions(Course course, boolean isGraded) {
 
-        return submission.map(Submission::isGraded).orElse(false);
-
+        return submissionMapper.toDTOs(submissionRepository.findSubmissionByCourseAndGraded(course, isGraded));
     }
 
-    public List<Submission> getSubmissions(Course course, boolean isGraded) {
+    public void gradeSubmission(Course course, UserDTO studentDTO, float grade) {
 
-        return submissionRepository.findSubmissionByCourseAndGraded(course, isGraded);
-    }
-
-    public void gradeSubmission(Course course, User student, float grade) {
-
+        User student = userMapper.toDomain(studentDTO);
         Optional <Submission> searchSubmission = submissionRepository.findByStudentAndCourse(student, course);
         if(searchSubmission.isPresent()) {
 
@@ -78,8 +83,9 @@ public class SubmissionService {
         }
     }
 
-    public ResponseEntity <Object> getSubmission(Course course, User student) {
+    public ResponseEntity <Object> getSubmission(Course course, UserDTO studentDTO) {
 
+        User student = userMapper.toDomain(studentDTO);
         Optional <Submission> searchSubmission = submissionRepository.findByStudentAndCourse(student, course);
         if(searchSubmission.isPresent()) {
 
@@ -98,8 +104,9 @@ public class SubmissionService {
         return ResponseEntity.notFound().build();
     }
 
-    public void deleteSubmission(User student, Course course) {
+    public void deleteSubmission(UserDTO studentDTO, Course course) {
 
+        User student = userMapper.toDomain(studentDTO);
         Optional <Submission> searchSubmission = submissionRepository.findByStudentAndCourse(student, course);
         searchSubmission.ifPresent(submissionRepository::delete);
     }

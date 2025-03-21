@@ -54,7 +54,7 @@ public class CourseService {
 
     public boolean userIsInCourse(UserDTO userDTO, Course course) {
 
-        return  course.getTeacher().equals(userDTO)|| course.getStudents().contains(user);
+        return  course.getTeacher().equals(userDTO)|| course.getStudents().contains(userDTO);
     }
 
     public void deleteCourse(Course course) {

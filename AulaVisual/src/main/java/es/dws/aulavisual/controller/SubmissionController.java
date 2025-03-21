@@ -1,5 +1,6 @@
 package es.dws.aulavisual.controller;
 
+import es.dws.aulavisual.DTO.SubmissionDTO;
 import es.dws.aulavisual.DTO.UserDTO;
 import es.dws.aulavisual.model.Course;
 import es.dws.aulavisual.service.CourseService;
@@ -63,11 +64,11 @@ public class SubmissionController {
                         model.addAttribute("task", course.getTask());
                     }else {
 
-                        Submission submission = submissionService.findByUserAndCourse(user, course).get();
+                        SubmissionDTO submission = submissionService.findByUserAndCourse(user, course);
                         model.addAttribute("submitted", true);
-                        if(submission.isGraded()) {
+                        if(submission.graded()) {
 
-                            model.addAttribute("grade", submission.getGrade());
+                            model.addAttribute("grade", submission.grade());
                         }else{
 
                             model.addAttribute("grade", "No Disponible");
@@ -108,8 +109,8 @@ public class SubmissionController {
 
             if(user.role() == 1){
 
-                List<Submission> submissions = submissionService.getSubmissions(course, false);
-                List<Submission> graded = submissionService.getSubmissions(course, true);
+                List<SubmissionDTO> submissions = submissionService.getSubmissions(course, false);
+                List<SubmissionDTO> graded = submissionService.getSubmissions(course, true);
                 model.addAttribute("gradedSubmissions", graded);
                 model.addAttribute("submissions", submissions);
                 model.addAttribute("courseId", courseId);
