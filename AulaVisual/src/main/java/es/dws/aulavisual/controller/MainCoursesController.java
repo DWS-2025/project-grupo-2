@@ -1,5 +1,6 @@
 package es.dws.aulavisual.controller;
 
+import es.dws.aulavisual.DTO.CourseDTO;
 import es.dws.aulavisual.DTO.UserDTO;
 import es.dws.aulavisual.model.Course;
 import es.dws.aulavisual.service.CourseService;
@@ -41,8 +42,8 @@ public class MainCoursesController {
                 return "redirect:/login";
             }
             UserDTO user = userService.findById(Long.parseLong(userId));
-            List <Course> userCourses = courseService.courseOfUser(userMapper.toDomain(user));
-            List <Course> availableCourses = courseService.notCourseOfUser(userMapper.toDomain(user));
+            List <Course> userCourses = courseService.courseOfUser(user);
+            List <Course> availableCourses = courseService.notCourseOfUser(user);
 
 
             model.addAttribute("user", user);
@@ -83,13 +84,7 @@ public class MainCoursesController {
 
                 return "redirect:/login";
             }
-            Optional <Course> searchCourse = courseService.findById(id);
-            if(searchCourse.isEmpty()) {
-
-                model.addAttribute("message", "Curso no encontrado");
-                return "error";
-            }
-            Course course = searchCourse.get();
+            CourseDTO course = courseService.findById(id);
             UserDTO user = userService.findById(Long.parseLong(userId));
             Optional <Module> searchModule = moduleService.findById(moduleId);
             if(searchModule.isEmpty()) {

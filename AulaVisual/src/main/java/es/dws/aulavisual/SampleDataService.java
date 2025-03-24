@@ -36,11 +36,9 @@ public class SampleDataService {
 
         try {
             userService.save("teacher1", "teacher1", "teacher1", "teacher1", "Noxus", 1);
-            UserDTO teacher1 = userService.findByUserName("teacher1");
             userService.save("teacher2", "teacher2", "teacher2", "teacher2", "Piltover", 1);
-            UserDTO teacher2 = userService.findByUserName("teacher2");
             userService.save("teacher3", "teacher3", "teacher3", "teacher3", "Zaun", 1);
-            UserDTO teacher3 = userService.findByUserName("teacher3");
+
             userService.save("asd", "asd", "asd", "asd", "Zaun", 0);
             userService.save("test2", "test2", "test2", "test2", "Zaun", 2);
             userService.save("test3", "test3", "test3", "test3", "Zaun", 2);
@@ -53,6 +51,10 @@ public class SampleDataService {
             Course course3 = new Course("Recetas de Cocina", "Aprende a cocinar recetas increíblemente sabrosas", "Haz una receta que incluya huevos, pasta y tomate", convertPNGToMultipart("files/courses/course-2/img.png"));
             courseService.save(course3);
 
+
+            UserDTO teacher2 = userService.findByUserName("teacher2");
+            UserDTO teacher1 = userService.findByUserName("teacher1");
+            UserDTO teacher3 = userService.findByUserName("teacher3");
             courseService.assignTeacher(teacher1, course1);
             courseService.assignTeacher(teacher2, course2);
             courseService.assignTeacher(teacher3, course3);

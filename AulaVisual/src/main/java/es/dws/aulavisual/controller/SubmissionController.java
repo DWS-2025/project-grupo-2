@@ -1,5 +1,6 @@
 package es.dws.aulavisual.controller;
 
+import es.dws.aulavisual.DTO.CourseDTO;
 import es.dws.aulavisual.DTO.SubmissionDTO;
 import es.dws.aulavisual.DTO.UserDTO;
 import es.dws.aulavisual.model.Course;
@@ -134,17 +135,11 @@ public class SubmissionController {
             }
             UserDTO user = userService.findById(Long.parseLong(userId));
 
-            Optional <Course> searchCourse = courseService.findById(courseId);
-            if(searchCourse.isEmpty()){
-
-                model.addAttribute("message", "Curso no encontrado");
-                return "error";
-            }
-            Course course = searchCourse.get();
+            CourseDTO course = courseService.findById(courseId);
 
             UserDTO student = userService.findById(studentId);
 
-            if(user.role() == 1 && course.getTeacher().equals(user)){
+            if(user.role() == 1 && course.teacher().id().equals(user.id())){
 
                 if(courseService.userIsInCourse(student, course)){
 

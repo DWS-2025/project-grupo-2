@@ -1,5 +1,6 @@
 package es.dws.aulavisual.controller;
 
+import es.dws.aulavisual.DTO.CourseDTO;
 import es.dws.aulavisual.DTO.UserDTO;
 import es.dws.aulavisual.Mapper.UserMapper;
 import es.dws.aulavisual.service.ModuleService;
@@ -72,17 +73,11 @@ public class CourseManagementController {
 
                 return "redirect:/login";
             }
-            Optional <Course> searchCourse = courseService.findById(id);
-            if(searchCourse.isEmpty()) {
-
-                model.addAttribute("message", "Curso no encontrado");
-                return "error";
-            }
-            Course course = searchCourse.get();
+            CourseDTO course = courseService.findById(id);
             UserDTO user = userService.findById(Long.parseLong(userId));
             if(user.role() == 0) {
 
-                model.addAttribute("courseName", course.getName());
+                model.addAttribute("courseName", course.name());
                 model.addAttribute("courseId", id);
                 model.addAttribute("userId", Long.parseLong(userId));
                 model.addAttribute("admin", user.realName());
@@ -147,12 +142,7 @@ public class CourseManagementController {
             }
 
             UserDTO user = userService.findById(Long.parseLong(userId));
-            Optional <Course> searchCourse = courseService.findById(courseId);
-            if(searchCourse.isEmpty()) {
-
-                return ResponseEntity.status(404).body("Course not found");
-            }
-            Course course = searchCourse.get();
+            CourseDTO course = courseService.findById(courseId);
 
             Optional <Module> searchModule = moduleService.findById(id);
             if(searchModule.isEmpty()) {
@@ -161,7 +151,7 @@ public class CourseManagementController {
             }
             Module module = searchModule.get();
 
-            if(user.role() == 0 || course.getTeacher().equals(user) || courseService.userIsInCourse(user, course)) {
+            if(user.role() == 0 || course.teacher().id().equals(user.id()) || courseService.userIsInCourse(user, course)) {
 
                 return moduleService.viewModule(module);
             }else{
@@ -188,13 +178,7 @@ public class CourseManagementController {
 
                 return "redirect:/";
             }
-            Optional <Course> searchCourse = courseService.findById(courseId);
-            if(searchCourse.isEmpty()) {
-
-                model.addAttribute("message", "Curso no encontrado");
-                return "error";
-            }
-            Course course = searchCourse.get();
+            CourseDTO course = courseService.findById(courseId);
             courseService.deleteCourse(course); //Mirar submisssions
             return "redirect:/admin/courses";
         }catch (NoSuchElementException e) {
@@ -437,12 +421,7 @@ public class CourseManagementController {
     @GetMapping("/courses/{courseId}/getImage")
     public ResponseEntity <Object> getImage(@PathVariable Long courseId) {
 
-        Optional<Course> searchCourse = courseService.findById(courseId);
-        if(searchCourse.isEmpty()) {
-
-            return ResponseEntity.notFound().build();
-        }
-        Course course = searchCourse.get();
+        CourseDTO course = courseService.findById(courseId);
 
         ResponseEntity <Object> response = courseService.loadImage(course);
 
@@ -463,13 +442,7 @@ public class CourseManagementController {
                 return "redirect:/";
             }
             UserDTO student = userService.findById(studentId);
-            Optional <Course> searchCourse = courseService.findById(courseId);
-            if(searchCourse.isEmpty()) {
-
-                model.addAttribute("message", "Curso no encontrado");
-                return "error";
-            }
-            Course course = searchCourse.get();
+            CourseDTO course = courseService.findById(courseId);
             if(courseService.userIsInCourse(student, course)) {
 
                 model.addAttribute("message", "El estudiante ya está en el curso");
