@@ -2,11 +2,9 @@ package es.dws.aulavisual.model;
 
 import java.io.IOException;
 import java.sql.Blob;
-
 import jakarta.persistence.*;
 import org.hibernate.engine.jdbc.BlobProxy;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.util.ArrayList;
 import java.util.List;
 

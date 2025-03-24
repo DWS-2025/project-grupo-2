@@ -9,7 +9,6 @@ import java.sql.Blob;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
 import es.dws.aulavisual.DTO.UserDTO;
 import es.dws.aulavisual.Mapper.UserMapper;
 import es.dws.aulavisual.model.Course;

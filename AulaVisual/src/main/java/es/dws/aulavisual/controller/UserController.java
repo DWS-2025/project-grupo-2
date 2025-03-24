@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 import es.dws.aulavisual.service.UserService;
 import org.springframework.web.multipart.MultipartFile;
 import es.dws.aulavisual.model.User;
-
 import java.io.IOException;
 import java.net.URI;
 import java.util.NoSuchElementException;

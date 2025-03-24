@@ -1,8 +1,8 @@
 package es.dws.aulavisual.controller;
 
 import es.dws.aulavisual.DTO.UserDTO;
+import es.dws.aulavisual.Mapper.UserMapper;
 import es.dws.aulavisual.service.ModuleService;
-import es.dws.aulavisual.model.User;
 import es.dws.aulavisual.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
@@ -25,12 +25,14 @@ public class CourseManagementController {
     private final CourseService courseService;
     private final UserService userService;
     private final ModuleService moduleService;
+    private final UserMapper userMapper;
 
-    public CourseManagementController(CourseService courseService, UserService userService, ModuleService moduleService) {
+    public CourseManagementController(CourseService courseService, UserService userService, ModuleService moduleService, UserMapper userMapper) {
 
         this.courseService = courseService;
         this.userService = userService;
         this.moduleService = moduleService;
+        this.userMapper = userMapper;
     }
 
     @GetMapping("/admin/courses")
@@ -288,13 +290,14 @@ public class CourseManagementController {
                 return "error";
             }
             Course course = searchCourse.get();
-            UserDTO teacher = userService.findById(teacherId);
-            if(teacher.role() != 1) {
+            UserDTO teacherDTO = userService.findById(teacherId);
+            if(teacherDTO.role() != 1) {
 
                 model.addAttribute("message", "El usuario seleccionado no es un profesor");
                 return "error";
             }
-            course.setTeacher(teacher);
+
+            course.setTeacher(userMapper.toDomain(teacherDTO));
             courseService.save(course);
             return "redirect:/admin/courses";
         }catch (NoSuchElementException e){
@@ -317,8 +320,8 @@ public class CourseManagementController {
 
                 return "redirect:/";
             }
-            UserDTO teacher = userService.findById(teacherId);
-            if (teacher.role() != 1) {
+            UserDTO teacherDTO = userService.findById(teacherId);
+            if (teacherDTO.role() != 1) {
 
                 model.addAttribute("message", "El usuario seleccionado no es un profesor");
                 return "error";
@@ -332,12 +335,12 @@ public class CourseManagementController {
 
             if (image != null && !image.isEmpty()) {
 
-                if (teacher.courseTeaching() != null) {
+                if (teacherDTO.courseTeaching() != null) {
 
                     model.addAttribute("message", "El profesor ya tiene un curso asignado");
                     return "error";
                 }
-                Course course = new Course(name, description, teacher, task, image);
+                Course course = new Course(name, description, userMapper.toDomain(teacherDTO), task, image);
                 courseService.save(course);
             } else {
 

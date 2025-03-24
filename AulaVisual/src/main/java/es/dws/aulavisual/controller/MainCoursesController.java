@@ -3,10 +3,8 @@ package es.dws.aulavisual.controller;
 import es.dws.aulavisual.DTO.UserDTO;
 import es.dws.aulavisual.model.Course;
 import es.dws.aulavisual.service.CourseService;
-
 import java.util.NoSuchElementException;
 import java.util.Optional;
-
 import es.dws.aulavisual.service.ModuleService;
 import es.dws.aulavisual.model.Module;
 import es.dws.aulavisual.model.User;
@@ -17,6 +15,7 @@ import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import java.util.List;
+import es.dws.aulavisual.Mapper.UserMapper;
 
 @Controller
 public class MainCoursesController {
@@ -24,11 +23,13 @@ public class MainCoursesController {
     private final CourseService courseService;
     private final UserService userService;
     private final ModuleService moduleService;
+    private final UserMapper userMapper;
 
-    public MainCoursesController(CourseService courseService, UserService userService, ModuleService moduleService) {
+    public MainCoursesController(CourseService courseService, UserService userService, ModuleService moduleService, UserMapper userMapper) {
         this.courseService = courseService;
         this.userService = userService;
         this.moduleService = moduleService;
+        this.userMapper = userMapper;
     }
 
     @GetMapping("/courses")
@@ -40,8 +41,8 @@ public class MainCoursesController {
                 return "redirect:/login";
             }
             UserDTO user = userService.findById(Long.parseLong(userId));
-            List <Course> userCourses = courseService.courseOfUser(user);
-            List <Course> availableCourses = courseService.notCourseOfUser(user);
+            List <Course> userCourses = courseService.courseOfUser(userMapper.toDomain(user));
+            List <Course> availableCourses = courseService.notCourseOfUser(userMapper.toDomain(user));
 
 
             model.addAttribute("user", user);

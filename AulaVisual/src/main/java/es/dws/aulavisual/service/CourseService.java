@@ -8,38 +8,40 @@ import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
-
 import java.sql.Blob;
 import java.util.Optional;
-
 import org.springframework.http.ResponseEntity;
 import java.util.List;
+import es.dws.aulavisual.DTO.UserDTO;
+import es.dws.aulavisual.Mapper.UserMapper;
 
 @Service
 public class CourseService {
 
     private final CourseRepository courseRepository;
     private final UserService userService;
+    private final UserMapper userMapper;
 
 
-    public CourseService(CourseRepository courseRepository, UserService userService) {
+    public CourseService(CourseRepository courseRepository, UserService userService, UserMapper userMapper) {
 
         this.courseRepository = courseRepository;
         this.userService = userService;
+        this.userMapper = userMapper;
     }
 
     public void save(Course course) {
 
         courseRepository.save(course);
-        userService.addCourseToTeacher(course.getTeacher(), course);
+        userService.addCourseToTeacher(userMapper.toDTO(course.getTeacher()), course);
     }
 
     public void addUserToCourse(Course course, UserDTO user) {
 
-        course.getStudents().add(user);
+        course.getStudents().add(userMapper.toDomain(user));
         courseRepository.save(course);
         //user.getCourses().add(course);
-        userService.save(user);
+        userService.save(userMapper.toDomain(user));
     }
 
     public List<Course> getCourses() {

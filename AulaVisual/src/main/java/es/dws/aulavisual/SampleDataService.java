@@ -1,6 +1,7 @@
 package es.dws.aulavisual;
 
 import es.dws.aulavisual.DTO.UserDTO;
+import es.dws.aulavisual.Mapper.UserMapper;
 import es.dws.aulavisual.model.Course;
 import es.dws.aulavisual.model.User;
 import es.dws.aulavisual.service.CourseService;
@@ -21,12 +22,14 @@ public class SampleDataService {
     private final CourseService courseService;
     private final UserService userService;
     private final ModuleService moduleService;
+    private final UserMapper userMapper;
 
-    public SampleDataService(CourseService courseService, UserService userService, ModuleService moduleService) {
+    public SampleDataService(CourseService courseService, UserService userService, ModuleService moduleService, UserMapper userMapper) {
 
         this.courseService = courseService;
         this.userService = userService;
         this.moduleService = moduleService;
+        this.userMapper = userMapper;
     }
 
     @PostConstruct
@@ -34,21 +37,21 @@ public class SampleDataService {
 
         try {
             userService.save("teacher1", "teacher1", "teacher1", "teacher1", "Noxus", 1);
-            UserDTO teachcer1 = userService.findByUserName("teacher1");
+            UserDTO teacher1 = userService.findByUserName("teacher1");
             userService.save("teacher2", "teacher2", "teacher2", "teacher2", "Piltover", 1);
-            UserDTO teachcer2 = userService.findByUserName("teacher2");
+            UserDTO teacher2 = userService.findByUserName("teacher2");
             userService.save("teacher3", "teacher3", "teacher3", "teacher3", "Zaun", 1);
-            UserDTO teachcer3 = userService.findByUserName("teacher3");
+            UserDTO teacher3 = userService.findByUserName("teacher3");
             userService.save("asd", "asd", "asd", "asd", "Zaun", 0);
             userService.save("test2", "test2", "test2", "test2", "Zaun", 2);
             userService.save("test3", "test3", "test3", "test3", "Zaun", 2);
             userService.save("test4", "test4", "test4", "test4", "Zaun", 2);
 
-            Course course1 = new Course("League of Legends", "Aprende a jugar al LOL", teachcer1, "Haz una redacción sobre el control de oleadas", convertPNGToMultipart("files/courses/course-0/img.png"));
+            Course course1 = new Course("League of Legends", "Aprende a jugar al LOL", userMapper.toDomain(teacher1), "Haz una redacción sobre el control de oleadas", convertPNGToMultipart("files/courses/course-0/img.png"));
             courseService.save(course1);
-            Course course2 = new Course("Padel", "Comienza a disfrutar de hacer ejercicio", teachcer2, "Explica las reglas del padel", convertPNGToMultipart("files/courses/course-1/img.png"));
+            Course course2 = new Course("Padel", "Comienza a disfrutar de hacer ejercicio", userMapper.toDomain(teacher2), "Explica las reglas del padel", convertPNGToMultipart("files/courses/course-1/img.png"));
             courseService.save(course2);
-            Course course3 = new Course("Recetas de Cocina", "Aprende a cocinar recetas increíblemente sabrosas", teachcer3, "Haz una receta que incluya huevos, pasta y tomate", convertPNGToMultipart("files/courses/course-2/img.png"));
+            Course course3 = new Course("Recetas de Cocina", "Aprende a cocinar recetas increíblemente sabrosas", userMapper.toDomain(teacher3), "Haz una receta que incluya huevos, pasta y tomate", convertPNGToMultipart("files/courses/course-2/img.png"));
             courseService.save(course3);
 
             courseService.addUserToCourse(course1, userService.findByUserName("test2"));
