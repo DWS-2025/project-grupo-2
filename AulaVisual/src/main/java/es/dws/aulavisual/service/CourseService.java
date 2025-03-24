@@ -30,6 +30,12 @@ public class CourseService {
         this.userMapper = userMapper;
     }
 
+    public void assignTeacher(UserDTO teacher, Course course) {
+
+        course.setTeacher(userMapper.toDomain(teacher));
+        courseRepository.save(course);
+    }
+
     public void save(Course course) {
 
         courseRepository.save(course);

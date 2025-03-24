@@ -3,7 +3,6 @@ package es.dws.aulavisual;
 import es.dws.aulavisual.DTO.UserDTO;
 import es.dws.aulavisual.Mapper.UserMapper;
 import es.dws.aulavisual.model.Course;
-import es.dws.aulavisual.model.User;
 import es.dws.aulavisual.service.CourseService;
 import es.dws.aulavisual.service.ModuleService;
 import org.springframework.web.multipart.MultipartFile;
@@ -47,12 +46,16 @@ public class SampleDataService {
             userService.save("test3", "test3", "test3", "test3", "Zaun", 2);
             userService.save("test4", "test4", "test4", "test4", "Zaun", 2);
 
-            Course course1 = new Course("League of Legends", "Aprende a jugar al LOL", userMapper.toDomain(teacher1), "Haz una redacción sobre el control de oleadas", convertPNGToMultipart("files/courses/course-0/img.png"));
+            Course course1 = new Course("League of Legends", "Aprende a jugar al LOL", "Haz una redacción sobre el control de oleadas", convertPNGToMultipart("files/courses/course-0/img.png"));
             courseService.save(course1);
-            Course course2 = new Course("Padel", "Comienza a disfrutar de hacer ejercicio", userMapper.toDomain(teacher2), "Explica las reglas del padel", convertPNGToMultipart("files/courses/course-1/img.png"));
+            Course course2 = new Course("Padel", "Comienza a disfrutar de hacer ejercicio", "Explica las reglas del padel", convertPNGToMultipart("files/courses/course-1/img.png"));
             courseService.save(course2);
-            Course course3 = new Course("Recetas de Cocina", "Aprende a cocinar recetas increíblemente sabrosas", userMapper.toDomain(teacher3), "Haz una receta que incluya huevos, pasta y tomate", convertPNGToMultipart("files/courses/course-2/img.png"));
+            Course course3 = new Course("Recetas de Cocina", "Aprende a cocinar recetas increíblemente sabrosas", "Haz una receta que incluya huevos, pasta y tomate", convertPNGToMultipart("files/courses/course-2/img.png"));
             courseService.save(course3);
+
+            courseService.assignTeacher(teacher1, course1);
+            courseService.assignTeacher(teacher2, course2);
+            courseService.assignTeacher(teacher3, course3);
 
             courseService.addUserToCourse(course1, userService.findByUserName("test2"));
             courseService.addUserToCourse(course1, userService.findByUserName("test3"));

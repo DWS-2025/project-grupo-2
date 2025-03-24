@@ -20,7 +20,7 @@ public class Course {
     private  String task;
 
     @OneToOne()
-    private User teacher;
+    private User teacher = null;
 
     @Lob
     private Blob imageCourse;
@@ -40,11 +40,10 @@ public class Course {
 
     }
 
-    public Course(String name, String description, User teacher, String task, MultipartFile imageCourse) {
+    public Course(String name, String description, String task, MultipartFile imageCourse) {
 
         this.name = name;
         this.description = description;
-        this.teacher = teacher;
         this.task = task;
         this.imageCourse = transformImage(imageCourse);
     }

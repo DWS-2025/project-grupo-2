@@ -340,8 +340,9 @@ public class CourseManagementController {
                     model.addAttribute("message", "El profesor ya tiene un curso asignado");
                     return "error";
                 }
-                Course course = new Course(name, description, userMapper.toDomain(teacherDTO), task, image);
+                Course course = new Course(name, description, task, image);
                 courseService.save(course);
+                courseService.assignTeacher(teacherDTO, course);
             } else {
 
                 model.addAttribute("message", "La imagen es obligatoria");
