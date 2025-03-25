@@ -6,6 +6,7 @@ import es.dws.aulavisual.Mapper.CourseMapper;
 import es.dws.aulavisual.model.Course;
 import es.dws.aulavisual.repository.CourseRepository;
 import es.dws.aulavisual.model.User;
+import jakarta.transaction.Transactional;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -18,6 +19,7 @@ import java.util.List;
 import es.dws.aulavisual.Mapper.UserMapper;
 
 @Service
+@Transactional
 public class CourseService {
 
     private final CourseRepository courseRepository;
@@ -40,7 +42,7 @@ public class CourseService {
         User teacher = userService.findById(teacherDTO.id());
         course.setTeacher(teacher);
         courseRepository.save(course);
-        userService.addCourseToTeacher(teacherDTO, courseDTO);
+        userService.addCourseToTeacher(teacherDTO, course);
     }
 
     public CourseDTO saveDTO(CourseDTO courseDTO) {
@@ -58,9 +60,14 @@ public class CourseService {
 
         Course course = courseMapper.toDomain(courseDTO);
         course.getStudents().add(userMapper.toDomain(user));
-        courseRepository.save(course);
         //user.getCourses().add(course);
         userService.saveDTO(userMapper.toDomain(user));
+        courseRepository.save(course);
+    }
+
+    void removeUserFromCourse(Course course, User user) {
+
+        course.getStudents().remove(user);
     }
 
     public List<Course> getCourses() {
@@ -88,7 +95,7 @@ public class CourseService {
     public void deleteCourse(CourseDTO courseDTO) {
 
         Course course = courseMapper.toDomain(courseDTO);
-        userService.removeAllUsersFromCourse(courseDTO);
+        userService.removeAllUsersFromCourse(course);
         courseRepository.delete(course);
     }
 
@@ -135,23 +142,5 @@ public class CourseService {
 
         User user = userMapper.toDomain(userDTO);
         return courseRepository.searchCoursesByTeacherId(user.getId());
-    }
-
-    public String getName (CourseDTO courseDTO) {
-
-        Course course = courseMapper.toDomain(courseDTO);
-        return course.getName();
-    }
-
-    public String getTask (CourseDTO courseDTO) {
-
-        Course course = courseMapper.toDomain(courseDTO);
-        return course.getTask();
-    }
-
-    public UserDTO getTeacher (CourseDTO courseDTO) {
-
-        Course course = courseMapper.toDomain(courseDTO);
-        return userMapper.toDTO(course.getTeacher());
     }
 }

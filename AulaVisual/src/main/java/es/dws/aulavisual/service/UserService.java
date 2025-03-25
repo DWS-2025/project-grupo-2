@@ -30,13 +30,11 @@ import org.springframework.stereotype.Service;
 public class UserService {
 
     private final UserRepository userRepository;
-    private final CourseService courseService;
     private final UserMapper userMapper;
 
-    public UserService(UserRepository userRepository, CourseService courseService, UserMapper userMapper) {
+    public UserService(UserRepository userRepository, UserMapper userMapper) {
 
         this.userRepository = userRepository;
-        this.courseService = courseService;
         this.userMapper = userMapper;
     }
 
@@ -71,19 +69,19 @@ public class UserService {
             return;
         }
         User userToDelete = user.get();
-        List<Course> courses = userToDelete.getCourses();
-        for (Course course : courses) {
-
-            course.getStudents().remove(userToDelete);
-            courseService.save(course);
-        }
-
-        if(userToDelete.getRole() == 1) {
-
-            Course course = userToDelete.getCourseTeaching();
-            course.setTeacher(null);
-            courseService.save(course);
-        }
+//        List<Course> courses = userToDelete.getCourses();
+//        for (Course course : courses) {
+//
+//            course.getStudents().remove(userToDelete);
+//            courseService.save(course);
+//        }
+//
+//        if(userToDelete.getRole() == 1) {
+//
+//            Course course = userToDelete.getCourseTeaching();
+//            course.setTeacher(null);
+//            courseService.save(course);
+//        }
         userRepository.deleteById(id);
     }
 
@@ -207,9 +205,8 @@ public class UserService {
         return false;
     }
 
-    public void removeAllUsersFromCourse(CourseDTO courseDTO) {
+    void removeAllUsersFromCourse(Course course) {
 
-        Course course = courseService.findById(courseDTO.id());
         List<User> users = userRepository.findAll();
 
         for (User user : users) {
@@ -219,9 +216,8 @@ public class UserService {
         }
     }
 
-    public void addCourseToTeacher(UserDTO userDTO, CourseDTO courseDTO) {
+    void addCourseToTeacher(UserDTO userDTO, Course course) {
 
-        Course course = courseService.findById(courseDTO.id());
         User user = userRepository.findById(userDTO.id()).orElseThrow();
         user.setCourseTeaching(course);
         userRepository.save(user);
