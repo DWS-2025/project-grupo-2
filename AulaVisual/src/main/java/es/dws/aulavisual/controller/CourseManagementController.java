@@ -2,7 +2,6 @@ package es.dws.aulavisual.controller;
 
 import es.dws.aulavisual.DTO.CourseDTO;
 import es.dws.aulavisual.DTO.UserDTO;
-import es.dws.aulavisual.Mapper.UserMapper;
 import es.dws.aulavisual.Mapper.CourseMapper;
 import es.dws.aulavisual.service.ModuleService;
 import es.dws.aulavisual.service.UserService;
@@ -26,15 +25,13 @@ public class CourseManagementController {
     private final CourseService courseService;
     private final UserService userService;
     private final ModuleService moduleService;
-    private final UserMapper userMapper;
     private final CourseMapper courseMapper;
 
-    public CourseManagementController(CourseService courseService, UserService userService, ModuleService moduleService, UserMapper userMapper, CourseMapper courseMapper) {
+    public CourseManagementController(CourseService courseService, UserService userService, ModuleService moduleService,CourseMapper courseMapper) {
 
         this.courseService = courseService;
         this.userService = userService;
         this.moduleService = moduleService;
-        this.userMapper = userMapper;
         this.courseMapper = courseMapper;
     }
 
@@ -83,7 +80,7 @@ public class CourseManagementController {
                 model.addAttribute("courseId", id);
                 model.addAttribute("userId", Long.parseLong(userId));
                 model.addAttribute("admin", user.realName());
-                model.addAttribute("modules", moduleService.getModulesByCourse(courseMapper.toDomain(courseDTO)));
+                model.addAttribute("modules", moduleService.getModulesByCourse(courseDTO));
                 return "courses-management/modules";
             }
             return "redirect:/";
@@ -337,7 +334,7 @@ public class CourseManagementController {
                 return "redirect:/";
             }
             CourseDTO courseDTO = courseService.findById(courseId);
-            model.addAttribute("availablePositions", moduleService.getAvailablePositions(courseMapper.toDomain(courseDTO)));
+            model.addAttribute("availablePositions", moduleService.getAvailablePositions(courseDTO));
             model.addAttribute("userId", Long.parseLong(userId));
             model.addAttribute("courseId", courseId);
             return "courses-management/addModule";
@@ -369,7 +366,7 @@ public class CourseManagementController {
 
             CourseDTO courseDTO = courseService.findById(courseId);
             int numPosition = Integer.parseInt(position);
-            if(moduleService.positionExists(courseMapper.toDomain(courseDTO), numPosition)) {
+            if(moduleService.positionExists(courseDTO, numPosition)) {
 
                 model.addAttribute("message", "Ya existe un módulo en esa posición");
                 return "error";
@@ -379,7 +376,7 @@ public class CourseManagementController {
                 model.addAttribute("message", "La posición no puede ser negativa");
                 return "error";
             }
-            moduleService.save(courseMapper.toDomain(courseDTO), name, numPosition, module);
+            moduleService.save(courseDTO, name, numPosition, module);
             return "redirect:/admin/courses/{courseId}/modules";
         }catch (NoSuchElementException e) {
 

@@ -1,9 +1,12 @@
 package es.dws.aulavisual.service;
 
 import java.sql.Blob;
+
+import es.dws.aulavisual.DTO.CourseDTO;
 import es.dws.aulavisual.model.Course;
 import es.dws.aulavisual.model.Module;
 import es.dws.aulavisual.repository.ModuleRepository;
+import es.dws.aulavisual.Mapper.CourseMapper;
 import org.hibernate.engine.jdbc.BlobProxy;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
@@ -17,17 +20,21 @@ import java.util.Optional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.http.ResponseEntity;
 
+
 @Service
 public class ModuleService {
 
     private final ModuleRepository moduleRepository;
+    private final CourseMapper courseMapper;
 
-    public ModuleService(ModuleRepository moduleRepository) {
+    public ModuleService(ModuleRepository moduleRepository, CourseMapper courseMapper) {
         this.moduleRepository = moduleRepository;
+        this.courseMapper = courseMapper;
     }
 
-    public void save(Course course, String name, int position, MultipartFile content) {
+    public void save(CourseDTO courseDTO, String name, int position, MultipartFile content) {
 
+        Course course = courseMapper.toDomain(courseDTO);
         Module module = new Module(course, name, position, transformImage(content));
         moduleRepository.save(module);
     }
@@ -47,8 +54,9 @@ public class ModuleService {
         return moduleRepository.findById(id);
     }
 
-    public List<Module> getModulesByCourse(Course course) {
+    public List<Module> getModulesByCourse(CourseDTO courseDTO) {
 
+        Course course = courseMapper.toDomain(courseDTO);
         return moduleRepository.findByCourse(course, Sort.by(Sort.Direction.ASC, "position"));
     }
 
@@ -73,18 +81,21 @@ public class ModuleService {
         moduleRepository.delete(module);
     }
 
-    public boolean positionExists(Course course, int position) {
+    public boolean positionExists(CourseDTO courseDto, int position) {
 
+        Course course = courseMapper.toDomain(courseDto);
         return moduleRepository.existsByCourseAndPosition(course, position);
     }
 
-    public Optional<Module> findFirstModule(Course course) {
+    public Optional<Module> findFirstModule(CourseDTO courseDTO) {
 
+        Course course = courseMapper.toDomain(courseDTO);
         return moduleRepository.findFirstModule(course.getId());
     }
 
-    public List<Integer> getAvailablePositions(Course course) {
+    public List<Integer> getAvailablePositions(CourseDTO courseDTO) {
 
+        Course course = courseMapper.toDomain(courseDTO);
         int maxPosition = moduleRepository.findlastModuleId(course.getId());
         List<Integer> positions = new ArrayList<>();
         List<Module> modules = moduleRepository.findByCourse(course);

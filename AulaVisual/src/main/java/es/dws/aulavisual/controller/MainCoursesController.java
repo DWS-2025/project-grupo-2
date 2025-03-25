@@ -15,8 +15,6 @@ import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import java.util.List;
-import es.dws.aulavisual.Mapper.UserMapper;
-import es.dws.aulavisual.Mapper.CourseMapper;
 
 @Controller
 public class MainCoursesController {
@@ -24,15 +22,11 @@ public class MainCoursesController {
     private final CourseService courseService;
     private final UserService userService;
     private final ModuleService moduleService;
-    private final UserMapper userMapper;
-    private final CourseMapper courseMapper;
 
-    public MainCoursesController(CourseService courseService, UserService userService, ModuleService moduleService, UserMapper userMapper, CourseMapper courseMapper) {
+    public MainCoursesController(CourseService courseService, UserService userService, ModuleService moduleService) {
         this.courseService = courseService;
         this.userService = userService;
         this.moduleService = moduleService;
-        this.userMapper = userMapper;
-        this.courseMapper = courseMapper;
     }
 
     @GetMapping("/courses")
@@ -66,7 +60,7 @@ public class MainCoursesController {
         try{
 
             CourseDTO courseDTO = courseService.findById(id);
-            Optional <Module> searchFirstModule = moduleService.findFirstModule(courseMapper.toDomain(courseDTO));
+            Optional <Module> searchFirstModule = moduleService.findFirstModule(courseDTO);
             if(searchFirstModule.isEmpty()) {
 
                 return "redirect:/courses";
@@ -98,7 +92,7 @@ public class MainCoursesController {
             }
             if(courseService.userIsInCourse(user, courseDTO)) {
 
-                List <Module> modules = moduleService.getModulesByCourse(courseMapper.toDomain(courseDTO));
+                List <Module> modules = moduleService.getModulesByCourse(courseDTO);
                 model.addAttribute("modules", modules);
                 model.addAttribute("courseId", id);
                 model.addAttribute("id", moduleId);
