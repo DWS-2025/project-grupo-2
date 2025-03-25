@@ -9,6 +9,9 @@ import java.sql.Blob;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import es.dws.aulavisual.DTO.CourseDTO;
+import es.dws.aulavisual.DTO.TeacherInfoDTO;
 import es.dws.aulavisual.DTO.UserDTO;
 import es.dws.aulavisual.Mapper.UserMapper;
 import es.dws.aulavisual.model.Course;
@@ -30,10 +33,10 @@ import org.springframework.web.multipart.MultipartFile;
 public class UserService {
 
     private final UserRepository userRepository;
-    private final CourseRepository courseService;
+    private final CourseService courseService;
     private final UserMapper userMapper;
 
-    public UserService(UserRepository userRepository, CourseRepository courseService, UserMapper userMapper) {
+    public UserService(UserRepository userRepository, CourseService courseService, UserMapper userMapper) {
 
         this.userRepository = userRepository;
         this.courseService = courseService;
@@ -197,8 +200,9 @@ public class UserService {
         return false;
     }
 
-    public void removeAllUsersFromCourse(Course course) {
+    public void removeAllUsersFromCourse(CourseDTO courseDTO) {
 
+        Course course = courseService.findById(courseDTO.id());
         List<User> users = userRepository.findAll();
 
         for (User user : users) {
@@ -208,9 +212,10 @@ public class UserService {
         }
     }
 
-    public void addCourseToTeacher(UserDTO userDTO, Course course) {
+    public void addCourseToTeacher(TeacherInfoDTO teacherInfoDTO, CourseDTO courseDTO) {
 
-        User user = userMapper.toDomain(userDTO);
+        Course course = courseService.findById(courseDTO.id());
+        User user = userRepository.findById(teacherInfoDTO.id()).orElseThrow();
         user.setCourseTeaching(course);
         userRepository.save(user);
     }

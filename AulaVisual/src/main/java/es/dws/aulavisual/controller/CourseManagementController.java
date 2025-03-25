@@ -2,7 +2,6 @@ package es.dws.aulavisual.controller;
 
 import es.dws.aulavisual.DTO.CourseDTO;
 import es.dws.aulavisual.DTO.UserDTO;
-import es.dws.aulavisual.Mapper.CourseMapper;
 import es.dws.aulavisual.service.ModuleService;
 import es.dws.aulavisual.service.UserService;
 import org.springframework.http.ResponseEntity;
@@ -25,14 +24,12 @@ public class CourseManagementController {
     private final CourseService courseService;
     private final UserService userService;
     private final ModuleService moduleService;
-    private final CourseMapper courseMapper;
 
-    public CourseManagementController(CourseService courseService, UserService userService, ModuleService moduleService,CourseMapper courseMapper) {
+    public CourseManagementController(CourseService courseService, UserService userService, ModuleService moduleService) {
 
         this.courseService = courseService;
         this.userService = userService;
         this.moduleService = moduleService;
-        this.courseMapper = courseMapper;
     }
 
     @GetMapping("/admin/courses")
@@ -260,8 +257,8 @@ public class CourseManagementController {
                 return "error";
             }
 
+            courseService.save(courseDTO);
             courseService.assignTeacher(teacherDTO, courseDTO);
-//            courseService.save(courseDTO);
             return "redirect:/admin/courses";
         }catch (NoSuchElementException e){
 
@@ -271,7 +268,7 @@ public class CourseManagementController {
     }
 
     @PostMapping("/admin/courses/addCourse")
-    public String addCourse(Model model, @RequestParam String name, @RequestParam String description, @RequestParam long teacherId, MultipartFile image, @RequestParam String task, @CookieValue(value = "userId", defaultValue = "") String userId) {
+    public String addCourse(Model model, CourseDTO courseDTO, @RequestParam long teacherId, MultipartFile image, @CookieValue(value = "userId", defaultValue = "") String userId) {
 
         try {
             if (userId.isEmpty()) {
@@ -290,7 +287,7 @@ public class CourseManagementController {
                 return "error";
             }
 
-            if (name.isEmpty() || description == null || description.isEmpty() || task.isEmpty()) {
+            if (courseDTO.name().isEmpty() || courseDTO.description() == null || courseDTO.description().isEmpty() || courseDTO.task().isEmpty()) {
 
                 model.addAttribute("message", "Faltan campos por rellenar");
                 return "error";
@@ -303,9 +300,8 @@ public class CourseManagementController {
                     model.addAttribute("message", "El profesor ya tiene un curso asignado");
                     return "error";
                 }
-                Course course = new Course(name, description, task, image);
-                courseService.save(course);
-                courseService.assignTeacher(teacherDTO, courseMapper.toDTO(course));
+                courseService.save(courseDTO);
+                courseService.assignTeacher(teacherDTO, courseDTO);
             } else {
 
                 model.addAttribute("message", "La imagen es obligatoria");

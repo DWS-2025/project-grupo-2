@@ -50,11 +50,11 @@ public class SubmissionController {
                 if(courseService.userIsInCourse(userDTO, courseDTO)){
 
                     model.addAttribute("courseId", courseId);
-                    model.addAttribute("courseName", courseService.getName(courseDTO));
+                    model.addAttribute("courseName", courseDTO.name());
                     if(!submissionService.userMadeSubmission(userDTO, courseDTO)){
 
                         model.addAttribute("submitted", false);
-                        model.addAttribute("task", courseService.getTask(courseDTO));
+                        model.addAttribute("task", courseDTO.task());
                     }else {
 
                         SubmissionDTO submission = submissionService.findByUserAndCourse(userDTO, courseDTO);
@@ -101,7 +101,7 @@ public class SubmissionController {
                 model.addAttribute("gradedSubmissions", graded);
                 model.addAttribute("submissions", submissions);
                 model.addAttribute("courseId", courseId);
-                model.addAttribute("courseName", courseService.getName(courseDTO));
+                model.addAttribute("courseName", courseDTO.name());
                 return "courses-user/submissionsGrade";
             }
             return "redirect:/courses";
@@ -164,7 +164,7 @@ public class SubmissionController {
             CourseDTO courseDTO = courseService.findById(courseId);
 
             UserDTO student = userService.findById(studentId);
-            if(user.role() == 1 && courseService.getTeacher(courseDTO).equals(user)){
+            if(user.role() == 1 && courseDTO.teacher().id().equals(user.id())){
 
                 if(courseService.userIsInCourse(student, courseDTO)) {
 
@@ -233,7 +233,7 @@ public class SubmissionController {
 
                 if(submissionService.userMadeSubmission(student, courseDTO)) {
 
-                    if(courseService.getTeacher(courseDTO).equals(user)) {
+                    if(courseDTO.teacher().id().equals(user.id())) {
 
                         submissionService.deleteSubmission(student, courseDTO);
                         return "redirect:/courses/" + courseId + "/grade";

@@ -1,6 +1,7 @@
 package es.dws.aulavisual.service;
 
 import es.dws.aulavisual.DTO.CourseDTO;
+import es.dws.aulavisual.DTO.TeacherInfoDTO;
 import es.dws.aulavisual.DTO.UserDTO;
 import es.dws.aulavisual.Mapper.CourseMapper;
 import es.dws.aulavisual.model.Course;
@@ -34,16 +35,17 @@ public class CourseService {
         this.courseMapper = courseMapper;
     }
 
-    public void assignTeacher(UserDTO teacher, CourseDTO courseDTO) {
+    public void assignTeacher(TeacherInfoDTO teacherDTO, CourseDTO courseDTO) {
 
-        Course course = courseMapper.toDomain(courseDTO);
-        course.setTeacher(userMapper.toDomain(teacher));
-        userService.addCourseToTeacher(userMapper.toDTO(course.getTeacher()), course);
+        Course course = courseRepository.findById(courseDTO.id()).orElseThrow();
+        course.setTeacher(userMapper.toDomain(teacherDTO));
         courseRepository.save(course);
+        userService.addCourseToTeacher(teacherDTO, courseDTO);
     }
 
-    public void save(Course course) {
+    public void save(CourseDTO courseDTO) {
 
+        Course course = courseMapper.toDomain(courseDTO);
         courseRepository.save(course);
     }
 
