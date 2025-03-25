@@ -8,7 +8,6 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import es.dws.aulavisual.service.ModuleService;
 import es.dws.aulavisual.model.Module;
-import es.dws.aulavisual.model.User;
 import es.dws.aulavisual.service.UserService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,6 +16,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import java.util.List;
 import es.dws.aulavisual.Mapper.UserMapper;
+import es.dws.aulavisual.Mapper.CourseMapper;
 
 @Controller
 public class MainCoursesController {
@@ -25,12 +25,14 @@ public class MainCoursesController {
     private final UserService userService;
     private final ModuleService moduleService;
     private final UserMapper userMapper;
+    private final CourseMapper courseMapper;
 
-    public MainCoursesController(CourseService courseService, UserService userService, ModuleService moduleService, UserMapper userMapper) {
+    public MainCoursesController(CourseService courseService, UserService userService, ModuleService moduleService, UserMapper userMapper, CourseMapper courseMapper) {
         this.courseService = courseService;
         this.userService = userService;
         this.moduleService = moduleService;
         this.userMapper = userMapper;
+        this.courseMapper = courseMapper;
     }
 
     @GetMapping("/courses")
@@ -59,21 +61,23 @@ public class MainCoursesController {
     }
 
     @GetMapping("/courses/{id}")
-    public String singleCourse(@PathVariable long id) {
+    public String singleCourse(@PathVariable long id, Model model) {
 
-        Optional<Course> searchCourse = courseService.findById(id);
-        if(searchCourse.isEmpty()) {
+        try{
 
-            return "redirect:/courses";
+            CourseDTO courseDTO = courseService.findById(id);
+            Optional <Module> searchFirstModule = moduleService.findFirstModule(courseMapper.toDomain(courseDTO));
+            if(searchFirstModule.isEmpty()) {
+
+                return "redirect:/courses";
+            }
+            Module module = searchFirstModule.get();
+            return "redirect:/courses/" + id + "/module/" + module.getId();
+        }catch (NoSuchElementException e) {
+            model.addAttribute("message", e.getMessage());
+            return "error";
         }
-        Course course = searchCourse.get();
-        Optional <Module> searchFirstModule = moduleService.findFirstModule(course);
-        if(searchFirstModule.isEmpty()) {
 
-            return "redirect:/courses";
-        }
-        Module module = searchFirstModule.get();
-        return "redirect:/courses/" + id + "/module/" + module.getId();
     }
 
     @GetMapping("/courses/{id}/module/{moduleId}")
@@ -84,7 +88,7 @@ public class MainCoursesController {
 
                 return "redirect:/login";
             }
-            CourseDTO course = courseService.findById(id);
+            CourseDTO courseDTO = courseService.findById(id);
             UserDTO user = userService.findById(Long.parseLong(userId));
             Optional <Module> searchModule = moduleService.findById(moduleId);
             if(searchModule.isEmpty()) {
@@ -92,9 +96,9 @@ public class MainCoursesController {
                 model.addAttribute("message", "Módulo no encontrado");
                 return "error";
             }
-            if(courseService.userIsInCourse(user, course)) {
+            if(courseService.userIsInCourse(user, courseDTO)) {
 
-                List <Module> modules = moduleService.getModulesByCourse(course);
+                List <Module> modules = moduleService.getModulesByCourse(courseMapper.toDomain(courseDTO));
                 model.addAttribute("modules", modules);
                 model.addAttribute("courseId", id);
                 model.addAttribute("id", moduleId);

@@ -124,4 +124,22 @@ public class CourseService {
         User user = userMapper.toDomain(userDTO);
         return courseRepository.searchCoursesByTeacherId(user.getId());
     }
+
+    public String getName (CourseDTO courseDTO) {
+
+        Course course = courseMapper.toDomain(courseDTO);
+        return course.getName();
+    }
+
+    public String getTask (CourseDTO courseDTO) {
+
+        Course course = courseMapper.toDomain(courseDTO);
+        return course.getTask();
+    }
+
+    public UserDTO getTeacher (CourseDTO courseDTO) {
+
+        Course course = courseMapper.toDomain(courseDTO);
+        return userMapper.toDTO(course.getTeacher());
+    }
 }

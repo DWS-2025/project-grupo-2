@@ -1,6 +1,7 @@
 package es.dws.aulavisual;
 
 import es.dws.aulavisual.DTO.UserDTO;
+import es.dws.aulavisual.Mapper.CourseMapper;
 import es.dws.aulavisual.Mapper.UserMapper;
 import es.dws.aulavisual.model.Course;
 import es.dws.aulavisual.service.CourseService;
@@ -22,13 +23,15 @@ public class SampleDataService {
     private final UserService userService;
     private final ModuleService moduleService;
     private final UserMapper userMapper;
+    private final CourseMapper courseMapper;
 
-    public SampleDataService(CourseService courseService, UserService userService, ModuleService moduleService, UserMapper userMapper) {
+    public SampleDataService(CourseService courseService, UserService userService, ModuleService moduleService, UserMapper userMapper, CourseMapper courseMapper) {
 
         this.courseService = courseService;
         this.userService = userService;
         this.moduleService = moduleService;
         this.userMapper = userMapper;
+        this.courseMapper = courseMapper;
     }
 
     @PostConstruct
@@ -55,13 +58,13 @@ public class SampleDataService {
             UserDTO teacher2 = userService.findByUserName("teacher2");
             UserDTO teacher1 = userService.findByUserName("teacher1");
             UserDTO teacher3 = userService.findByUserName("teacher3");
-            courseService.assignTeacher(teacher1, course1);
-            courseService.assignTeacher(teacher2, course2);
-            courseService.assignTeacher(teacher3, course3);
+            courseService.assignTeacher(teacher1, courseMapper.toDTO(course1));
+            courseService.assignTeacher(teacher2, courseMapper.toDTO(course2));
+            courseService.assignTeacher(teacher3, courseMapper.toDTO(course3));
 
-            courseService.addUserToCourse(course1, userService.findByUserName("test2"));
-            courseService.addUserToCourse(course1, userService.findByUserName("test3"));
-            courseService.addUserToCourse(course2, userService.findByUserName("test4"));
+            courseService.addUserToCourse(courseMapper.toDTO(course1), userService.findByUserName("test2"));
+            courseService.addUserToCourse(courseMapper.toDTO(course2), userService.findByUserName("test3"));
+            courseService.addUserToCourse(courseMapper.toDTO(course3), userService.findByUserName("test4"));
 
             moduleService.save(course1, "Intro", 1, convertMDToMultipart("files/courses/course-0/module0-Intro.md"));
             moduleService.save(course1, "Campeones", 2, convertMDToMultipart("files/courses/course-0/module1-Champions.md"));

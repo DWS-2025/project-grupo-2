@@ -3,6 +3,7 @@ package es.dws.aulavisual.controller;
 import es.dws.aulavisual.DTO.CourseDTO;
 import es.dws.aulavisual.DTO.UserDTO;
 import es.dws.aulavisual.Mapper.UserMapper;
+import es.dws.aulavisual.Mapper.CourseMapper;
 import es.dws.aulavisual.service.ModuleService;
 import es.dws.aulavisual.service.UserService;
 import org.springframework.http.ResponseEntity;
@@ -13,7 +14,6 @@ import es.dws.aulavisual.service.CourseService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
@@ -27,13 +27,15 @@ public class CourseManagementController {
     private final UserService userService;
     private final ModuleService moduleService;
     private final UserMapper userMapper;
+    private final CourseMapper courseMapper;
 
-    public CourseManagementController(CourseService courseService, UserService userService, ModuleService moduleService, UserMapper userMapper) {
+    public CourseManagementController(CourseService courseService, UserService userService, ModuleService moduleService, UserMapper userMapper, CourseMapper courseMapper) {
 
         this.courseService = courseService;
         this.userService = userService;
         this.moduleService = moduleService;
         this.userMapper = userMapper;
+        this.courseMapper = courseMapper;
     }
 
     @GetMapping("/admin/courses")
@@ -73,15 +75,15 @@ public class CourseManagementController {
 
                 return "redirect:/login";
             }
-            CourseDTO course = courseService.findById(id);
+            CourseDTO courseDTO = courseService.findById(id);
             UserDTO user = userService.findById(Long.parseLong(userId));
             if(user.role() == 0) {
 
-                model.addAttribute("courseName", course.name());
+                model.addAttribute("courseName", courseDTO.name());
                 model.addAttribute("courseId", id);
                 model.addAttribute("userId", Long.parseLong(userId));
                 model.addAttribute("admin", user.realName());
-                model.addAttribute("modules", moduleService.getModulesByCourse(course));
+                model.addAttribute("modules", moduleService.getModulesByCourse(courseMapper.toDomain(courseDTO)));
                 return "courses-management/modules";
             }
             return "redirect:/";
@@ -102,14 +104,7 @@ public class CourseManagementController {
 
                 return "redirect:/login";
             }
-            Optional <Course> searchCourse = courseService.findById(courseId);
-            if(searchCourse.isEmpty()) {
-
-                model.addAttribute("message", "Curso no encontrado");
-                return "error";
-            }
-            Course course = searchCourse.get();
-
+            CourseDTO courseDTO = courseService.findById(courseId);
             UserDTO user = userService.findById(Long.parseLong(userId));
             if(user.role() == 0) {
 
@@ -201,14 +196,7 @@ public class CourseManagementController {
 
                 return "redirect:/";
             }
-            Optional <Course> searchCourse = courseService.findById(courseId);
-            if(searchCourse.isEmpty()) {
-
-                model.addAttribute("message", "Curso no encontrado");
-                return "error";
-            }
-            Course course = searchCourse.get();
-
+            CourseDTO courseDTO = courseService.findById(courseId);
             Optional <Module> searchModule = moduleService.findById(id);
             if(searchModule.isEmpty()) {
 
@@ -267,13 +255,7 @@ public class CourseManagementController {
 
                 return "redirect:/";
             }
-            Optional <Course> searchCourse = courseService.findById(id);
-            if(searchCourse.isEmpty()) {
-
-                model.addAttribute("message", "Curso no encontrado");
-                return "error";
-            }
-            Course course = searchCourse.get();
+            CourseDTO courseDTO = courseService.findById(id);
             UserDTO teacherDTO = userService.findById(teacherId);
             if(teacherDTO.role() != 1) {
 
@@ -281,8 +263,8 @@ public class CourseManagementController {
                 return "error";
             }
 
-            course.setTeacher(userMapper.toDomain(teacherDTO));
-            courseService.save(course);
+            courseService.assignTeacher(teacherDTO, courseDTO);
+//            courseService.save(courseDTO);
             return "redirect:/admin/courses";
         }catch (NoSuchElementException e){
 
@@ -326,7 +308,7 @@ public class CourseManagementController {
                 }
                 Course course = new Course(name, description, task, image);
                 courseService.save(course);
-                courseService.assignTeacher(teacherDTO, course);
+                courseService.assignTeacher(teacherDTO, courseMapper.toDTO(course));
             } else {
 
                 model.addAttribute("message", "La imagen es obligatoria");
@@ -354,14 +336,8 @@ public class CourseManagementController {
 
                 return "redirect:/";
             }
-            Optional <Course> searchCourse = courseService.findById(courseId);
-            if(searchCourse.isEmpty()) {
-
-                model.addAttribute("message", "Curso no encontrado");
-                return "error";
-            }
-            Course course = searchCourse.get();
-            model.addAttribute("availablePositions", moduleService.getAvailablePositions(course));
+            CourseDTO courseDTO = courseService.findById(courseId);
+            model.addAttribute("availablePositions", moduleService.getAvailablePositions(courseMapper.toDomain(courseDTO)));
             model.addAttribute("userId", Long.parseLong(userId));
             model.addAttribute("courseId", courseId);
             return "courses-management/addModule";
@@ -391,15 +367,9 @@ public class CourseManagementController {
                 return "error";
             }
 
-            Optional <Course> searchCourse = courseService.findById(courseId);
-            if(searchCourse.isEmpty()) {
-
-                model.addAttribute("message", "Curso no encontrado");
-                return "error";
-            }
-            Course course = searchCourse.get();
+            CourseDTO courseDTO = courseService.findById(courseId);
             int numPosition = Integer.parseInt(position);
-            if(moduleService.positionExists(course, numPosition)) {
+            if(moduleService.positionExists(courseMapper.toDomain(courseDTO), numPosition)) {
 
                 model.addAttribute("message", "Ya existe un módulo en esa posición");
                 return "error";
@@ -409,7 +379,7 @@ public class CourseManagementController {
                 model.addAttribute("message", "La posición no puede ser negativa");
                 return "error";
             }
-            moduleService.save(course, name, numPosition, module);
+            moduleService.save(courseMapper.toDomain(courseDTO), name, numPosition, module);
             return "redirect:/admin/courses/{courseId}/modules";
         }catch (NoSuchElementException e) {
 

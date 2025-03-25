@@ -5,13 +5,11 @@ import es.dws.aulavisual.DTO.SubmissionDTO;
 import es.dws.aulavisual.DTO.UserDTO;
 import es.dws.aulavisual.model.Course;
 import es.dws.aulavisual.service.CourseService;
-import es.dws.aulavisual.model.Submission;
 import es.dws.aulavisual.service.SubmissionService;
 import org.springframework.web.bind.annotation.*;
 import es.dws.aulavisual.service.UserService;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.http.ResponseEntity;
-import es.dws.aulavisual.model.User;
 import org.springframework.ui.Model;
 import org.springframework.stereotype.Controller;
 import java.util.List;
@@ -38,34 +36,28 @@ public class SubmissionController {
             if(userId.isEmpty()){
                 return "redirect:/login";
             }
-            UserDTO user = userService.findById(Long.parseLong(userId));
+            UserDTO userDTO = userService.findById(Long.parseLong(userId));
 
-            Optional <Course> searchCourse = courseService.findById(courseId);
-            if(searchCourse.isEmpty()){
+            CourseDTO courseDTO = courseService.findById(courseId);
 
-                model.addAttribute("message", "Curso no encontrado");
-                return "error";
-            }
-            Course course = searchCourse.get();
-
-            if(user.role() == 1){
+            if(userDTO.role() == 1){
 
                 return "redirect:/courses/" + courseId + "/grade";
             }
 
-            if(user.role() == 2){
+            if(userDTO.role() == 2){
 
-                if(courseService.userIsInCourse(user, course)){
+                if(courseService.userIsInCourse(userDTO, courseDTO)){
 
                     model.addAttribute("courseId", courseId);
-                    model.addAttribute("courseName", course.getName());
-                    if(!submissionService.userMadeSubmission(user, course)){
+                    model.addAttribute("courseName", courseService.getName(courseDTO));
+                    if(!submissionService.userMadeSubmission(userDTO, courseDTO)){
 
                         model.addAttribute("submitted", false);
-                        model.addAttribute("task", course.getTask());
+                        model.addAttribute("task", courseService.getTask(courseDTO));
                     }else {
 
-                        SubmissionDTO submission = submissionService.findByUserAndCourse(user, course);
+                        SubmissionDTO submission = submissionService.findByUserAndCourse(userDTO, courseDTO);
                         model.addAttribute("submitted", true);
                         if(submission.graded()) {
 
@@ -100,22 +92,16 @@ public class SubmissionController {
             }
             UserDTO user = userService.findById(Long.parseLong(userId));
 
-            Optional <Course> searchCourse = courseService.findById(courseId);
-            if(searchCourse.isEmpty()){
-
-                model.addAttribute("message", "Curso no encontrado");
-                return "error";
-            }
-            Course course = searchCourse.get();
+            CourseDTO courseDTO = courseService.findById(courseId);
 
             if(user.role() == 1){
 
-                List<SubmissionDTO> submissions = submissionService.getSubmissions(course, false);
-                List<SubmissionDTO> graded = submissionService.getSubmissions(course, true);
+                List<SubmissionDTO> submissions = submissionService.getSubmissions(courseDTO, false);
+                List<SubmissionDTO> graded = submissionService.getSubmissions(courseDTO, true);
                 model.addAttribute("gradedSubmissions", graded);
                 model.addAttribute("submissions", submissions);
                 model.addAttribute("courseId", courseId);
-                model.addAttribute("courseName", course.getName());
+                model.addAttribute("courseName", courseService.getName(courseDTO));
                 return "courses-user/submissionsGrade";
             }
             return "redirect:/courses";
@@ -133,19 +119,19 @@ public class SubmissionController {
             if(userId.isEmpty()){
                 return "redirect:/login";
             }
-            UserDTO user = userService.findById(Long.parseLong(userId));
+            UserDTO userDTO = userService.findById(Long.parseLong(userId));
 
-            CourseDTO course = courseService.findById(courseId);
+            CourseDTO courseDTO = courseService.findById(courseId);
 
-            UserDTO student = userService.findById(studentId);
+            UserDTO studentDTO = userService.findById(studentId);
 
-            if(user.role() == 1 && course.teacher().id().equals(user.id())){
+            if(userDTO.role() == 1 && courseDTO.teacher().id().equals(userDTO.id())){
 
-                if(courseService.userIsInCourse(student, course)){
+                if(courseService.userIsInCourse(studentDTO, courseDTO)){
 
-                    if(submissionService.userMadeSubmission(student, course)){
+                    if(submissionService.userMadeSubmission(studentDTO, courseDTO)){
 
-                        submissionService.gradeSubmission(course, student, grade);
+                        submissionService.gradeSubmission(courseDTO, studentDTO, grade);
                         return "redirect:/courses/" + courseId + "/grade";
                     }else{
 
@@ -175,21 +161,16 @@ public class SubmissionController {
             }
             UserDTO user = userService.findById(Long.parseLong(userId));
 
-            Optional <Course> searchCourse = courseService.findById(courseId);
-            if(searchCourse.isEmpty()){
-
-                return ResponseEntity.status(404).body("Course not found");
-            }
-            Course course = searchCourse.get();
+            CourseDTO courseDTO = courseService.findById(courseId);
 
             UserDTO student = userService.findById(studentId);
-            if(user.role() == 1 && course.getTeacher().equals(user)){
+            if(user.role() == 1 && courseService.getTeacher(courseDTO).equals(user)){
 
-                if(courseService.userIsInCourse(student, course)) {
+                if(courseService.userIsInCourse(student, courseDTO)) {
 
-                    if(submissionService.userMadeSubmission(student, course)) {
+                    if(submissionService.userMadeSubmission(student, courseDTO)) {
 
-                        return submissionService.getSubmission(course, student);
+                        return submissionService.getSubmission(courseDTO, student);
                     }else {
 
                         return ResponseEntity.status(404).body("Submission not found");
@@ -215,24 +196,17 @@ public class SubmissionController {
             }
             UserDTO user = userService.findById(Long.parseLong(userId));
 
-            Optional <Course> searchCourse = courseService.findById(courseId);
-            if(searchCourse.isEmpty()){
-
-                model.addAttribute("message", "Curso no encontrado");
-                return "error";
-            }
-            Course course = searchCourse.get();
-
+            CourseDTO courseDTO = courseService.findById(courseId);
             if(submission.isEmpty()){
 
                 model.addAttribute("message", "No se ha seleccionado un archivo");
                 return "error";
             }
-            if(courseService.userIsInCourse(user, course)) {
+            if(courseService.userIsInCourse(user, courseDTO)) {
 
-                if(!submissionService.userMadeSubmission(user, course)) {
+                if(!submissionService.userMadeSubmission(user, courseDTO)) {
 
-                    submissionService.save(course, user, submission);
+                    submissionService.save(courseDTO, user, submission);
                 }
             }
             return "redirect:/courses";
@@ -252,23 +226,16 @@ public class SubmissionController {
             }
             UserDTO user = userService.findById(Long.parseLong(userId));
 
-            Optional <Course> searchCourse = courseService.findById(courseId);
-            if(searchCourse.isEmpty()){
-
-                model.addAttribute("message", "Curso no encontrado");
-                return "error";
-            }
-            Course course = searchCourse.get();
-
+            CourseDTO courseDTO = courseService.findById(courseId);
             UserDTO student = userService.findById(studentId);
 
-            if(courseService.userIsInCourse(student, course)) {
+            if(courseService.userIsInCourse(student, courseDTO)) {
 
-                if(submissionService.userMadeSubmission(student, course)) {
+                if(submissionService.userMadeSubmission(student, courseDTO)) {
 
-                    if(course.getTeacher().equals(user)) {
+                    if(courseService.getTeacher(courseDTO).equals(user)) {
 
-                        submissionService.deleteSubmission(student, course);
+                        submissionService.deleteSubmission(student, courseDTO);
                         return "redirect:/courses/" + courseId + "/grade";
                     }
                 }
