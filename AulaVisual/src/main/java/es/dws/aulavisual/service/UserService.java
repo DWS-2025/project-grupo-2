@@ -15,6 +15,7 @@ import es.dws.aulavisual.model.Course;
 import es.dws.aulavisual.repository.CourseRepository;
 import es.dws.aulavisual.model.User;
 import es.dws.aulavisual.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import org.hibernate.engine.jdbc.BlobProxy;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
@@ -25,6 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
+@Transactional
 public class UserService {
 
     private final UserRepository userRepository;
@@ -151,15 +153,9 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public ResponseEntity <Object> loadImage(long userId) {
+    public ResponseEntity <Object> loadImage(UserDTO userDTO) {
 
-        Optional<User> searchUser = userRepository.findById(userId);
-        if(searchUser.isEmpty()) {
-
-            System.out.println("User not found");
-            return null;
-        }
-        User user = searchUser.get();
+        User user = userMapper.toDomain(userDTO);
 
         try {
 

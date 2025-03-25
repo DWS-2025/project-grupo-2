@@ -75,11 +75,17 @@ public class Course {
 
     private Blob transformImage(MultipartFile imageCourse) {
 
-        try {
-            return BlobProxy.generateProxy(imageCourse.getInputStream(), imageCourse.getSize());
-        }catch (IOException e) {
+        if(imageCourse == null ||imageCourse.isEmpty()){
 
-            throw new RuntimeException("Error processing image", e);
+            return null;
+        }else{
+
+            try {
+                return BlobProxy.generateProxy(imageCourse.getInputStream(), imageCourse.getSize());
+            }catch (IOException e) {
+
+                throw new RuntimeException("Error processing image", e);
+            }
         }
     }
 

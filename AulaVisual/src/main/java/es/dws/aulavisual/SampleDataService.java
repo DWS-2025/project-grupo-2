@@ -56,8 +56,8 @@ public class SampleDataService {
             courseService.save(course3);
 
 
-            UserDTO teacher2 = userService.findByUserName("teacher2");
             UserDTO teacher1 = userService.findByUserName("teacher1");
+            UserDTO teacher2 = userService.findByUserName("teacher2");
             UserDTO teacher3 = userService.findByUserName("teacher3");
             courseService.assignTeacher(teacher1, courseMapper.toDTO(course1));
             courseService.assignTeacher(teacher2, courseMapper.toDTO(course2));

@@ -164,12 +164,12 @@ public class UserController {
 
             if(image != null && !image.isEmpty()) {
 
-                URI location = fromCurrentRequest().build().toUri();
+                URI location = new URI("/api/user/" + currentUser.id() + "/image");
                 userService.saveImage(currentUser, location, image.getInputStream(), image.getSize());
             }
 
             return redirect;
-        }catch (NoSuchElementException | IOException e) {
+        }catch (NoSuchElementException | IOException  | java.net.URISyntaxException e) {
 
             model.addAttribute("message", e.getMessage());
             return "error";
@@ -189,7 +189,7 @@ public class UserController {
 
                 userId = Long.toString(id);
             }
-            ResponseEntity <Object> image = userService.loadImage(Long.parseLong(userId));
+            ResponseEntity <Object> image = userService.loadImage(currentUser);
 
             if(image == null) {
 

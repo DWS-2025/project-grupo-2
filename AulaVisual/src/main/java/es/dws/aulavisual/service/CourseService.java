@@ -38,8 +38,8 @@ public class CourseService {
 
         Course course = courseMapper.toDomain(courseDTO);
         course.setTeacher(userMapper.toDomain(teacher));
-        courseRepository.save(course);
         userService.addCourseToTeacher(userMapper.toDTO(course.getTeacher()), course);
+        courseRepository.save(course);
     }
 
     public void save(Course course) {
