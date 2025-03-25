@@ -1,5 +1,6 @@
 package es.dws.aulavisual;
 
+import es.dws.aulavisual.DTO.CourseDTO;
 import es.dws.aulavisual.DTO.UserDTO;
 import es.dws.aulavisual.Mapper.CourseMapper;
 import es.dws.aulavisual.Mapper.UserMapper;
@@ -66,9 +67,10 @@ public class SampleDataService {
             courseService.addUserToCourse(courseMapper.toDTO(course2), userService.findByUserName("test3"));
             courseService.addUserToCourse(courseMapper.toDTO(course3), userService.findByUserName("test4"));
 
-            moduleService.save(course1, "Intro", 1, convertMDToMultipart("files/courses/course-0/module0-Intro.md"));
-            moduleService.save(course1, "Campeones", 2, convertMDToMultipart("files/courses/course-0/module1-Champions.md"));
-            moduleService.save(course1, "Delete Me", 3, convertMDToMultipart("files/courses/course-0/module2-Delete_me.md"));
+            CourseDTO course1DTO = courseMapper.toDTO(course1);
+            moduleService.save(course1DTO, "Intro", 1, convertMDToMultipart("files/courses/course-0/module0-Intro.md"));
+            moduleService.save(course1DTO, "Campeones", 2, convertMDToMultipart("files/courses/course-0/module1-Champions.md"));
+            moduleService.save(course1DTO, "Delete Me", 3, convertMDToMultipart("files/courses/course-0/module2-Delete_me.md"));
         }catch (NoSuchElementException e) {
             System.out.println("Error creating sample data");
         }
