@@ -39,14 +39,14 @@ public class SampleDataService {
     public void init() {
 
         try {
-            userService.save("teacher1", "teacher1", "teacher1", "teacher1", "Noxus", 1);
-            userService.save("teacher2", "teacher2", "teacher2", "teacher2", "Piltover", 1);
-            userService.save("teacher3", "teacher3", "teacher3", "teacher3", "Zaun", 1);
+            userService.saveDTO("teacher1", "teacher1", "teacher1", "teacher1", "Noxus", 1);
+            userService.saveDTO("teacher2", "teacher2", "teacher2", "teacher2", "Piltover", 1);
+            userService.saveDTO("teacher3", "teacher3", "teacher3", "teacher3", "Zaun", 1);
 
-            userService.save("asd", "asd", "asd", "asd", "Zaun", 0);
-            userService.save("test2", "test2", "test2", "test2", "Zaun", 2);
-            userService.save("test3", "test3", "test3", "test3", "Zaun", 2);
-            userService.save("test4", "test4", "test4", "test4", "Zaun", 2);
+            userService.saveDTO("asd", "asd", "asd", "asd", "Zaun", 0);
+            userService.saveDTO("test2", "test2", "test2", "test2", "Zaun", 2);
+            userService.saveDTO("test3", "test3", "test3", "test3", "Zaun", 2);
+            userService.saveDTO("test4", "test4", "test4", "test4", "Zaun", 2);
 
             Course course1 = new Course("League of Legends", "Aprende a jugar al LOL", "Haz una redacción sobre el control de oleadas", convertPNGToMultipart("files/courses/course-0/img.png"));
             courseService.save(course1);

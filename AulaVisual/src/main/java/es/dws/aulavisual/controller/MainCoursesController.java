@@ -37,7 +37,7 @@ public class MainCoursesController {
 
                 return "redirect:/login";
             }
-            UserDTO user = userService.findById(Long.parseLong(userId));
+            UserDTO user = userService.findByIdDTO(Long.parseLong(userId));
             List <Course> userCourses = courseService.courseOfUser(user);
             List <Course> availableCourses = courseService.notCourseOfUser(user);
 
@@ -59,7 +59,7 @@ public class MainCoursesController {
 
         try{
 
-            CourseDTO courseDTO = courseService.findById(id);
+            CourseDTO courseDTO = courseService.findByIdDTO(id);
             Optional <Module> searchFirstModule = moduleService.findFirstModule(courseDTO);
             if(searchFirstModule.isEmpty()) {
 
@@ -82,8 +82,8 @@ public class MainCoursesController {
 
                 return "redirect:/login";
             }
-            CourseDTO courseDTO = courseService.findById(id);
-            UserDTO user = userService.findById(Long.parseLong(userId));
+            CourseDTO courseDTO = courseService.findByIdDTO(id);
+            UserDTO user = userService.findByIdDTO(Long.parseLong(userId));
             Optional <Module> searchModule = moduleService.findById(moduleId);
             if(searchModule.isEmpty()) {
 

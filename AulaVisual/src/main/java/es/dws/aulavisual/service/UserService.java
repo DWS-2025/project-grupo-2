@@ -1,6 +1,5 @@
 package es.dws.aulavisual.service;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.security.NoSuchAlgorithmException;
@@ -15,7 +14,6 @@ import es.dws.aulavisual.DTO.TeacherInfoDTO;
 import es.dws.aulavisual.DTO.UserDTO;
 import es.dws.aulavisual.Mapper.UserMapper;
 import es.dws.aulavisual.model.Course;
-import es.dws.aulavisual.repository.CourseRepository;
 import es.dws.aulavisual.model.User;
 import es.dws.aulavisual.repository.UserRepository;
 import jakarta.transaction.Transactional;
@@ -26,7 +24,6 @@ import org.springframework.data.domain.Example;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @Transactional
@@ -43,16 +40,26 @@ public class UserService {
         this.userMapper = userMapper;
     }
 
-    public void save(String name, String surname, String userName, String password, String campus, int role) {
+    public UserDTO saveDTO(String name, String surname, String userName, String password, String campus, int role) {
 
         String passwordHash = hashPassword(password);
-        User user = new User(name, surname, userName, passwordHash, campus, role);
-        userRepository.save(user);
+        return userMapper.toDTO(save(name, surname, userName, passwordHash, campus, role));
     }
 
-    public void save(User user) {
+    User save(String name, String surname, String userName, String passwordHash, String campus, int role) {
 
-        userRepository.save(user);
+        User user = new User(name, surname, userName, passwordHash, campus, role);
+        return userRepository.save(user);
+    }
+
+    public UserDTO saveDTO(User user) {
+
+        return userMapper.toDTO(save(user));
+    }
+
+    User save(User user) {
+
+        return userRepository.save(user);
     }
 
     public void deleteById(long id) {
@@ -212,10 +219,10 @@ public class UserService {
         }
     }
 
-    public void addCourseToTeacher(TeacherInfoDTO teacherInfoDTO, CourseDTO courseDTO) {
+    public void addCourseToTeacher(UserDTO userDTO, CourseDTO courseDTO) {
 
         Course course = courseService.findById(courseDTO.id());
-        User user = userRepository.findById(teacherInfoDTO.id()).orElseThrow();
+        User user = userRepository.findById(userDTO.id()).orElseThrow();
         user.setCourseTeaching(course);
         userRepository.save(user);
     }
@@ -232,9 +239,14 @@ public class UserService {
         return userMapper.toDTOs(userRepository.findAll());
     }
 
-    public UserDTO findById(long id) {
+    public UserDTO findByIdDTO(long id) {
 
-        return userMapper.toDTO(userRepository.findById(id).orElseThrow());
+        return userMapper.toDTO(findById(id));
+    }
+
+    User findById(long id) {
+
+        return userRepository.findById(id).orElseThrow();
     }
 
     public UserDTO findByUserName(String userName) {

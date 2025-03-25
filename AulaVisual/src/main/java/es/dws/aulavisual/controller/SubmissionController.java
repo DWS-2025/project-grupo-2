@@ -3,7 +3,6 @@ package es.dws.aulavisual.controller;
 import es.dws.aulavisual.DTO.CourseDTO;
 import es.dws.aulavisual.DTO.SubmissionDTO;
 import es.dws.aulavisual.DTO.UserDTO;
-import es.dws.aulavisual.model.Course;
 import es.dws.aulavisual.service.CourseService;
 import es.dws.aulavisual.service.SubmissionService;
 import org.springframework.web.bind.annotation.*;
@@ -14,7 +13,6 @@ import org.springframework.ui.Model;
 import org.springframework.stereotype.Controller;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 
 @Controller
 public class SubmissionController {
@@ -36,9 +34,9 @@ public class SubmissionController {
             if(userId.isEmpty()){
                 return "redirect:/login";
             }
-            UserDTO userDTO = userService.findById(Long.parseLong(userId));
+            UserDTO userDTO = userService.findByIdDTO(Long.parseLong(userId));
 
-            CourseDTO courseDTO = courseService.findById(courseId);
+            CourseDTO courseDTO = courseService.findByIdDTO(courseId);
 
             if(userDTO.role() == 1){
 
@@ -90,9 +88,9 @@ public class SubmissionController {
             if(userId.isEmpty()){
                 return "redirect:/login";
             }
-            UserDTO user = userService.findById(Long.parseLong(userId));
+            UserDTO user = userService.findByIdDTO(Long.parseLong(userId));
 
-            CourseDTO courseDTO = courseService.findById(courseId);
+            CourseDTO courseDTO = courseService.findByIdDTO(courseId);
 
             if(user.role() == 1){
 
@@ -119,11 +117,11 @@ public class SubmissionController {
             if(userId.isEmpty()){
                 return "redirect:/login";
             }
-            UserDTO userDTO = userService.findById(Long.parseLong(userId));
+            UserDTO userDTO = userService.findByIdDTO(Long.parseLong(userId));
 
-            CourseDTO courseDTO = courseService.findById(courseId);
+            CourseDTO courseDTO = courseService.findByIdDTO(courseId);
 
-            UserDTO studentDTO = userService.findById(studentId);
+            UserDTO studentDTO = userService.findByIdDTO(studentId);
 
             if(userDTO.role() == 1 && courseDTO.teacher().id().equals(userDTO.id())){
 
@@ -159,11 +157,11 @@ public class SubmissionController {
             if(userId.isEmpty()){
                 return ResponseEntity.status(401).body("Unauthorized");
             }
-            UserDTO user = userService.findById(Long.parseLong(userId));
+            UserDTO user = userService.findByIdDTO(Long.parseLong(userId));
 
-            CourseDTO courseDTO = courseService.findById(courseId);
+            CourseDTO courseDTO = courseService.findByIdDTO(courseId);
 
-            UserDTO student = userService.findById(studentId);
+            UserDTO student = userService.findByIdDTO(studentId);
             if(user.role() == 1 && courseDTO.teacher().id().equals(user.id())){
 
                 if(courseService.userIsInCourse(student, courseDTO)) {
@@ -194,9 +192,9 @@ public class SubmissionController {
             if(userId.isEmpty()){
                 return "redirect:/login";
             }
-            UserDTO user = userService.findById(Long.parseLong(userId));
+            UserDTO user = userService.findByIdDTO(Long.parseLong(userId));
 
-            CourseDTO courseDTO = courseService.findById(courseId);
+            CourseDTO courseDTO = courseService.findByIdDTO(courseId);
             if(submission.isEmpty()){
 
                 model.addAttribute("message", "No se ha seleccionado un archivo");
@@ -224,10 +222,10 @@ public class SubmissionController {
             if(userId.isEmpty()){
                 return "redirect:/login";
             }
-            UserDTO user = userService.findById(Long.parseLong(userId));
+            UserDTO user = userService.findByIdDTO(Long.parseLong(userId));
 
-            CourseDTO courseDTO = courseService.findById(courseId);
-            UserDTO student = userService.findById(studentId);
+            CourseDTO courseDTO = courseService.findByIdDTO(courseId);
+            UserDTO student = userService.findByIdDTO(studentId);
 
             if(courseService.userIsInCourse(student, courseDTO)) {
 

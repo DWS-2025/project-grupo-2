@@ -19,8 +19,6 @@ import java.net.URI;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
-import static org.springframework.web.servlet.support.ServletUriComponentsBuilder.fromCurrentRequest;
-
 @Controller
 public class UserController {
 
@@ -107,7 +105,7 @@ public class UserController {
                         model.addAttribute("message", "Nombre de usuario ya en uso");
                         return "error";
                     }
-                    userService.save(name, surname, username, password, campus, 2);
+                    userService.saveDTO(name, surname, username, password, campus, 2);
                     return "redirect:/login";
 
                 }
@@ -144,11 +142,11 @@ public class UserController {
             }
             redirect = "/logout";
 
-            UserDTO currentUser = userService.findById(Long.parseLong(userId));
+            UserDTO currentUser = userService.findByIdDTO(Long.parseLong(userId));
             if(currentUser.role() == 0 && id != Long.parseLong(userId)) {
 
                 userId = Long.toString(id);
-                currentUser = userService.findById(Long.parseLong(userId));
+                currentUser = userService.findByIdDTO(Long.parseLong(userId));
                 redirect = "/admin";
             }
 
@@ -184,7 +182,7 @@ public class UserController {
 
                 return ResponseEntity.status(401).body("Unauthorized");
             }
-            UserDTO currentUser = userService.findById(Long.parseLong(userId));
+            UserDTO currentUser = userService.findByIdDTO(Long.parseLong(userId));
             if(currentUser.role() == 0 && id != Long.parseLong(userId)) {
 
                 userId = Long.toString(id);
@@ -219,11 +217,11 @@ public class UserController {
 
                 return "redirect:/login";
             }
-            UserDTO currentUser = userService.findById(Long.parseLong(userId));
+            UserDTO currentUser = userService.findByIdDTO(Long.parseLong(userId));
             if(currentUser.role() == 0 && id != Long.parseLong(userId)) {
 
                 userId = Long.toString(id);
-                currentUser = userService.findById(Long.parseLong(userId));
+                currentUser = userService.findByIdDTO(Long.parseLong(userId));
                 model.addAttribute("id", userId);
             }
             model.addAttribute("userName", currentUser.userName());
@@ -245,7 +243,7 @@ public class UserController {
                 return "redirect:/login";
             }else {
 
-                UserDTO currentUser = userService.findById(Long.parseLong(userId));
+                UserDTO currentUser = userService.findByIdDTO(Long.parseLong(userId));
                 if(currentUser.role() == 0) {
 
                     User exampleUser = new User();
@@ -294,7 +292,7 @@ public class UserController {
                 return "redirect:/login";
             }else {
 
-                UserDTO currentUser = userService.findById(Long.parseLong(userId));
+                UserDTO currentUser = userService.findByIdDTO(Long.parseLong(userId));
                 if(currentUser.role() == 0) {
 
                     userService.deleteById(id);
@@ -321,10 +319,10 @@ public class UserController {
                 return "redirect:/login";
             }else {
 
-                UserDTO currentUser = userService.findById(Long.parseLong(userId));
+                UserDTO currentUser = userService.findByIdDTO(Long.parseLong(userId));
                 if(currentUser.role() == 0) {
 
-                    UserDTO user = userService.findById(id);
+                    UserDTO user = userService.findByIdDTO(id);
                     model.addAttribute("user", user);
                     model.addAttribute("userId", Long.parseLong(userId));
                     return "redirect:/profile/" + id;
@@ -349,10 +347,10 @@ public class UserController {
                 return "redirect:/login";
             }else {
 
-                UserDTO currentUser = userService.findById(Long.parseLong(userId));
+                UserDTO currentUser = userService.findByIdDTO(Long.parseLong(userId));
                 if(currentUser.role() == 0) {
 
-                    UserDTO user = userService.findById(id);
+                    UserDTO user = userService.findByIdDTO(id);
                     model.addAttribute("userId", Long.parseLong(userId));
                     model.addAttribute("user", user.realName() + " " + user.surname());
                     model.addAttribute("id", user.id());
@@ -378,10 +376,10 @@ public class UserController {
                 return "redirect:/login";
             }else {
 
-                UserDTO currentUser = userService.findById(Long.parseLong(userId));
+                UserDTO currentUser = userService.findByIdDTO(Long.parseLong(userId));
                 if(currentUser.role() == 0) {
 
-                    UserDTO user = userService.findById(id);
+                    UserDTO user = userService.findByIdDTO(id);
                     if(userService.updateRole(user, role)){
 
                         return "redirect:/admin";

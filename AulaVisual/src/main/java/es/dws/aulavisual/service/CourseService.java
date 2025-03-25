@@ -1,7 +1,6 @@
 package es.dws.aulavisual.service;
 
 import es.dws.aulavisual.DTO.CourseDTO;
-import es.dws.aulavisual.DTO.TeacherInfoDTO;
 import es.dws.aulavisual.DTO.UserDTO;
 import es.dws.aulavisual.Mapper.CourseMapper;
 import es.dws.aulavisual.model.Course;
@@ -12,10 +11,10 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import java.sql.Blob;
-import java.util.Optional;
+
 import org.springframework.http.ResponseEntity;
 import java.util.List;
-import es.dws.aulavisual.DTO.UserDTO;
+
 import es.dws.aulavisual.Mapper.UserMapper;
 
 @Service
@@ -35,18 +34,24 @@ public class CourseService {
         this.courseMapper = courseMapper;
     }
 
-    public void assignTeacher(TeacherInfoDTO teacherDTO, CourseDTO courseDTO) {
+    public void assignTeacher(UserDTO teacherDTO, CourseDTO courseDTO) {
 
         Course course = courseRepository.findById(courseDTO.id()).orElseThrow();
-        course.setTeacher(userMapper.toDomain(teacherDTO));
+        User teacher = userService.findById(teacherDTO.id());
+        course.setTeacher(teacher);
         courseRepository.save(course);
         userService.addCourseToTeacher(teacherDTO, courseDTO);
     }
 
-    public void save(CourseDTO courseDTO) {
+    public CourseDTO saveDTO(CourseDTO courseDTO) {
 
         Course course = courseMapper.toDomain(courseDTO);
-        courseRepository.save(course);
+        return courseMapper.toDTO(save(course));
+    }
+
+    public Course save(Course course) {
+
+        return courseRepository.save(course);
     }
 
     public void addUserToCourse(CourseDTO courseDTO, UserDTO user) {
@@ -55,7 +60,7 @@ public class CourseService {
         course.getStudents().add(userMapper.toDomain(user));
         courseRepository.save(course);
         //user.getCourses().add(course);
-        userService.save(userMapper.toDomain(user));
+        userService.saveDTO(userMapper.toDomain(user));
     }
 
     public List<Course> getCourses() {
@@ -63,9 +68,14 @@ public class CourseService {
         return courseRepository.findAll();
     }
 
-    public CourseDTO findById(long id) {
+    public CourseDTO findByIdDTO(long id) {
 
-        return courseMapper.toDTO(courseRepository.findById(id).orElseThrow());
+        return courseMapper.toDTO(findById(id));
+    }
+
+    Course findById(long id) {
+
+        return courseRepository.findById(id).orElseThrow();
     }
 
     public boolean userIsInCourse(UserDTO userDTO, CourseDTO courseDTO) {
@@ -78,7 +88,7 @@ public class CourseService {
     public void deleteCourse(CourseDTO courseDTO) {
 
         Course course = courseMapper.toDomain(courseDTO);
-        userService.removeAllUsersFromCourse(course);
+        userService.removeAllUsersFromCourse(courseDTO);
         courseRepository.delete(course);
     }
 

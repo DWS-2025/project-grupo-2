@@ -41,7 +41,7 @@ public class CourseManagementController {
                 return "redirect:/login";
             }
 
-            UserDTO user = userService.findById(Long.parseLong(userId));
+            UserDTO user = userService.findByIdDTO(Long.parseLong(userId));
             if(user.role() == 0) {
 
                 model.addAttribute("admin", user.realName());
@@ -69,8 +69,8 @@ public class CourseManagementController {
 
                 return "redirect:/login";
             }
-            CourseDTO courseDTO = courseService.findById(id);
-            UserDTO user = userService.findById(Long.parseLong(userId));
+            CourseDTO courseDTO = courseService.findByIdDTO(id);
+            UserDTO user = userService.findByIdDTO(Long.parseLong(userId));
             if(user.role() == 0) {
 
                 model.addAttribute("courseName", courseDTO.name());
@@ -98,8 +98,8 @@ public class CourseManagementController {
 
                 return "redirect:/login";
             }
-            CourseDTO courseDTO = courseService.findById(courseId);
-            UserDTO user = userService.findById(Long.parseLong(userId));
+            CourseDTO courseDTO = courseService.findByIdDTO(courseId);
+            UserDTO user = userService.findByIdDTO(Long.parseLong(userId));
             if(user.role() == 0) {
 
                 Optional<Module> searchModule = moduleService.findById(id);
@@ -130,8 +130,8 @@ public class CourseManagementController {
                 return ResponseEntity.status(401).body("Unauthorized");
             }
 
-            UserDTO user = userService.findById(Long.parseLong(userId));
-            CourseDTO course = courseService.findById(courseId);
+            UserDTO user = userService.findByIdDTO(Long.parseLong(userId));
+            CourseDTO course = courseService.findByIdDTO(courseId);
 
             Optional <Module> searchModule = moduleService.findById(id);
             if(searchModule.isEmpty()) {
@@ -162,12 +162,12 @@ public class CourseManagementController {
 
                 return "redirect:/login";
             }
-            UserDTO user = userService.findById(Long.parseLong(userId));
+            UserDTO user = userService.findByIdDTO(Long.parseLong(userId));
             if(user.role() != 0) {
 
                 return "redirect:/";
             }
-            CourseDTO course = courseService.findById(courseId);
+            CourseDTO course = courseService.findByIdDTO(courseId);
             courseService.deleteCourse(course); //Mirar submisssions
             return "redirect:/admin/courses";
         }catch (NoSuchElementException e) {
@@ -185,12 +185,12 @@ public class CourseManagementController {
 
                 return "redirect:/login";
             }
-            UserDTO user = userService.findById(Long.parseLong(userId));
+            UserDTO user = userService.findByIdDTO(Long.parseLong(userId));
             if(user.role() != 0) {
 
                 return "redirect:/";
             }
-            CourseDTO courseDTO = courseService.findById(courseId);
+            CourseDTO courseDTO = courseService.findByIdDTO(courseId);
             Optional <Module> searchModule = moduleService.findById(id);
             if(searchModule.isEmpty()) {
 
@@ -216,7 +216,7 @@ public class CourseManagementController {
 
                 return "redirect:/login";
             }
-            UserDTO user = userService.findById(Long.parseLong(userId));
+            UserDTO user = userService.findByIdDTO(Long.parseLong(userId));
             if(user.role() != 0) {
 
                 return "redirect:/";
@@ -244,20 +244,20 @@ public class CourseManagementController {
 
                 return "redirect:/login";
             }
-            UserDTO user = userService.findById(Long.parseLong(userId));
+            UserDTO user = userService.findByIdDTO(Long.parseLong(userId));
             if(user.role() != 0) {
 
                 return "redirect:/";
             }
-            CourseDTO courseDTO = courseService.findById(id);
-            UserDTO teacherDTO = userService.findById(teacherId);
+            CourseDTO courseDTO = courseService.findByIdDTO(id);
+            UserDTO teacherDTO = userService.findByIdDTO(teacherId);
             if(teacherDTO.role() != 1) {
 
                 model.addAttribute("message", "El usuario seleccionado no es un profesor");
                 return "error";
             }
 
-            courseService.save(courseDTO);
+            courseService.saveDTO(courseDTO);
             courseService.assignTeacher(teacherDTO, courseDTO);
             return "redirect:/admin/courses";
         }catch (NoSuchElementException e){
@@ -275,12 +275,12 @@ public class CourseManagementController {
 
                 return "redirect:/login";
             }
-            UserDTO user = userService.findById(Long.parseLong(userId));
+            UserDTO user = userService.findByIdDTO(Long.parseLong(userId));
             if (user.role() != 0) {
 
                 return "redirect:/";
             }
-            UserDTO teacherDTO = userService.findById(teacherId);
+            UserDTO teacherDTO = userService.findByIdDTO(teacherId);
             if (teacherDTO.role() != 1) {
 
                 model.addAttribute("message", "El usuario seleccionado no es un profesor");
@@ -300,7 +300,7 @@ public class CourseManagementController {
                     model.addAttribute("message", "El profesor ya tiene un curso asignado");
                     return "error";
                 }
-                courseService.save(courseDTO);
+                courseService.saveDTO(courseDTO);
                 courseService.assignTeacher(teacherDTO, courseDTO);
             } else {
 
@@ -324,12 +324,12 @@ public class CourseManagementController {
 
                 return "redirect:/login";
             }
-            UserDTO user = userService.findById(Long.parseLong(userId));
+            UserDTO user = userService.findByIdDTO(Long.parseLong(userId));
             if(user.role() != 0) {
 
                 return "redirect:/";
             }
-            CourseDTO courseDTO = courseService.findById(courseId);
+            CourseDTO courseDTO = courseService.findByIdDTO(courseId);
             model.addAttribute("availablePositions", moduleService.getAvailablePositions(courseDTO));
             model.addAttribute("userId", Long.parseLong(userId));
             model.addAttribute("courseId", courseId);
@@ -349,7 +349,7 @@ public class CourseManagementController {
 
                 return "redirect:/login";
             }
-            UserDTO user = userService.findById(Long.parseLong(userId));
+            UserDTO user = userService.findByIdDTO(Long.parseLong(userId));
             if(user.role() != 0) {
 
                 return "redirect:/";
@@ -360,7 +360,7 @@ public class CourseManagementController {
                 return "error";
             }
 
-            CourseDTO courseDTO = courseService.findById(courseId);
+            CourseDTO courseDTO = courseService.findByIdDTO(courseId);
             int numPosition = Integer.parseInt(position);
             if(moduleService.positionExists(courseDTO, numPosition)) {
 
@@ -384,7 +384,7 @@ public class CourseManagementController {
     @GetMapping("/courses/{courseId}/getImage")
     public ResponseEntity <Object> getImage(@PathVariable Long courseId) {
 
-        CourseDTO course = courseService.findById(courseId);
+        CourseDTO course = courseService.findByIdDTO(courseId);
 
         ResponseEntity <Object> response = courseService.loadImage(course);
 
@@ -399,13 +399,13 @@ public class CourseManagementController {
 
                 return "redirect:/login";
             }
-            UserDTO user = userService.findById(Long.parseLong(userId));
+            UserDTO user = userService.findByIdDTO(Long.parseLong(userId));
             if(user.role() != 0) {
 
                 return "redirect:/";
             }
-            UserDTO student = userService.findById(studentId);
-            CourseDTO course = courseService.findById(courseId);
+            UserDTO student = userService.findByIdDTO(studentId);
+            CourseDTO course = courseService.findByIdDTO(courseId);
             if(courseService.userIsInCourse(student, course)) {
 
                 model.addAttribute("message", "El estudiante ya está en el curso");
