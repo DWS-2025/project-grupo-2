@@ -16,7 +16,7 @@ public class User {
     @ManyToMany(mappedBy = "students", fetch = FetchType.EAGER)
     private final List<Course> courses = new ArrayList <>();
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "student")
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "student")
     private List<Submission> submissions;
 
     @OneToOne()

@@ -6,7 +6,6 @@ import es.dws.aulavisual.Mapper.CourseMapper;
 import es.dws.aulavisual.model.Course;
 import es.dws.aulavisual.repository.CourseRepository;
 import es.dws.aulavisual.model.User;
-import jakarta.transaction.Transactional;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -14,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.sql.Blob;
 
 import org.springframework.http.ResponseEntity;
+
 import java.util.List;
 
 import es.dws.aulavisual.Mapper.UserMapper;
@@ -72,9 +72,9 @@ public class CourseService {
         course.getStudents().remove(user);
     }
 
-    public List<Course> getCourses() {
+    public List<CourseDTO> getCourses() {
 
-        return courseRepository.findAll();
+        return courseMapper.toDTOs(courseRepository.findAll());
     }
 
     public CourseDTO findByIdDTO(long id) {
@@ -89,24 +89,30 @@ public class CourseService {
 
     public boolean userIsInCourse(UserDTO userDTO, CourseDTO courseDTO) {
 
-        User user = userMapper.toDomain(userDTO);
-        Course course = courseMapper.toDomain(courseDTO);
+        User user = userService.findById(userDTO.id());
+        Course course = courseRepository.findById(courseDTO.id()).orElseThrow();
         return course.getTeacher().equals(user)|| course.getStudents().contains(user);
     }
 
     public void deleteCourse(long courseId) {
 
-        //Course course = courseRepository.findById(courseId).orElseThrow();
-        //userService.removeAllUsersFromCourse(course);
+        Course course = courseRepository.findById(courseId).orElseThrow();
+//      userService.removeAllUsersFromCourse(course);
+        removeCourseFromTeacher(course.getTeacher(), course);
         courseRepository.deleteById(courseId);
         System.out.println("Hola");
+    }
+
+    void removeCourseFromTeacher(User teacher, Course course) {
+
+        teacher.setCourseTeaching(null);
     }
 
     public ResponseEntity<Object> loadImage(CourseDTO courseDTO){
 
         try {
 
-            Course course = courseMapper.toDomain(courseDTO);
+            Course course = courseRepository.findById(courseDTO.id()).orElseThrow();
             Blob image = course.getImage();
             if(image == null) {
 
@@ -125,25 +131,25 @@ public class CourseService {
         }
     }
 
-    public List<Course> courseOfUser(UserDTO userDTO) {
+    public List<CourseDTO> courseOfUser(UserDTO userDTO) {
 
-        User user = userMapper.toDomain(userDTO);
+        User user = userService.findById(userDTO.id());
         List<Course> normalCourses = courseRepository.searchCoursesByStudentsContaining(user);
         normalCourses.addAll(courseOfTeacher(userDTO));
-        return normalCourses;
+        return courseMapper.toDTOs(normalCourses);
     }
 
-    public List<Course> notCourseOfUser(UserDTO userDTO) {
+    public List<CourseDTO> notCourseOfUser(UserDTO userDTO) {
 
-        User user = userMapper.toDomain(userDTO);
+        User user = userService.findById(userDTO.id());
         List<Course> notCourses = courseRepository.searchCoursesByStudentsNotContaining(user);
         notCourses.removeAll(courseOfTeacher(userDTO));
-        return notCourses;
+        return courseMapper.toDTOs(notCourses);
     }
 
-    public List<Course> courseOfTeacher(UserDTO userDTO) {
+    List<Course> courseOfTeacher(UserDTO userDTO) {
 
-        User user = userMapper.toDomain(userDTO);
+        User user = userService.findById(userDTO.id());
         return courseRepository.searchCoursesByTeacherId(user.getId());
     }
 }

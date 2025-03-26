@@ -31,6 +31,9 @@
           }
         </script>
         </div>
+      {{#modules}}
+      <form action="/admin/courses/{{courseId}}/module/{{id}}/delete" method="post" id="delete-module-{{id}}"></form>
+      {{/modules}}
       <table id="usersTable">
         <thead>
         <tr>
@@ -46,9 +49,7 @@
           <td class="center">{{name}}</td>
           <td class="center">
             <a href="/admin/courses/{{courseId}}/modules/{{id}}">Ver</a>
-            <form method="post" action="/admin/courses/{{courseId}}/module/{{id}}/delete">
-              <input type="submit" value="Eliminar módulo">
-            </form>
+            <input type="submit" value="Eliminar Modulo" form="delete-module-{{id}}">
           </td>
         </tr>
         {{/modules}}

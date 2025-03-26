@@ -28,10 +28,10 @@ public class Course {
     @ManyToMany(fetch = FetchType.EAGER)
     private final List <User> students = new ArrayList<>();
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "course")
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "course")
     private final List <Module> modules = new ArrayList<>();
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "course")
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "course")
     private final List<Submission> submissions = new ArrayList<>();
 
 

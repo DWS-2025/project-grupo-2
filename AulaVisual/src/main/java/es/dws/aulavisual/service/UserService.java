@@ -69,19 +69,17 @@ public class UserService {
             return;
         }
         User userToDelete = user.get();
-//        List<Course> courses = userToDelete.getCourses();
-//        for (Course course : courses) {
-//
-//            course.getStudents().remove(userToDelete);
-//            courseService.save(course);
-//        }
-//
-//        if(userToDelete.getRole() == 1) {
-//
-//            Course course = userToDelete.getCourseTeaching();
-//            course.setTeacher(null);
-//            courseService.save(course);
-//        }
+        List<Course> courses = userToDelete.getCourses();
+        for (Course course : courses) {
+
+            course.getStudents().remove(userToDelete);
+        }
+
+        if(userToDelete.getRole() == 1) {
+
+            Course course = userToDelete.getCourseTeaching();
+            course.setTeacher(null);
+        }
         userRepository.deleteById(id);
     }
 
@@ -154,7 +152,7 @@ public class UserService {
 
     public void saveImage(UserDTO userDTO, URI location, InputStream inputStream, long size) {
 
-        User user = userMapper.toDomain(userDTO);
+        User user = userRepository.findById(userDTO.id()).orElseThrow();
 
         user.setImage(location.toString());
         user.setImageFile(BlobProxy.generateProxy(inputStream, size));
@@ -163,7 +161,7 @@ public class UserService {
 
     public ResponseEntity <Object> loadImage(UserDTO userDTO) {
 
-        User user = userMapper.toDomain(userDTO);
+        User user = userRepository.findById(userDTO.id()).orElseThrow();
 
         try {
 
@@ -187,7 +185,7 @@ public class UserService {
 
     public List <UserDTO> getAllUsersExceptSelfFiltered(UserDTO currentUserDTO, Example <User> example) {
 
-        User currentUser = userMapper.toDomain(currentUserDTO);
+        User currentUser = userRepository.findById(currentUserDTO.id()).orElseThrow();
         List<User> users = userRepository.findAll(example);
         users.remove(currentUser);
         return users.stream().map(userMapper::toDTO).collect(Collectors.toList());
@@ -195,7 +193,7 @@ public class UserService {
 
     public boolean updateRole(UserDTO userDTO, int newRole) {
 
-        User user = userMapper.toDomain(userDTO);
+        User user = userRepository.findById(userDTO.id()).orElseThrow();
         if(newRole >= 0 && newRole <= 2) {
 
             user.setRole(newRole);
@@ -212,7 +210,7 @@ public class UserService {
         for (User user : users) {
 
             user.getCourses().remove(course);
-            userRepository.save(user);
+            //userRepository.save(user);
         }
     }
 

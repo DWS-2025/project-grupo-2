@@ -1,6 +1,7 @@
 package es.dws.aulavisual.controller;
 
 import es.dws.aulavisual.DTO.CourseDTO;
+import es.dws.aulavisual.DTO.ModuleSimpleDTO;
 import es.dws.aulavisual.DTO.UserDTO;
 import es.dws.aulavisual.model.Course;
 import es.dws.aulavisual.service.CourseService;
@@ -38,8 +39,8 @@ public class MainCoursesController {
                 return "redirect:/login";
             }
             UserDTO user = userService.findByIdDTO(Long.parseLong(userId));
-            List <Course> userCourses = courseService.courseOfUser(user);
-            List <Course> availableCourses = courseService.notCourseOfUser(user);
+            List <CourseDTO> userCourses = courseService.courseOfUser(user);
+            List <CourseDTO> availableCourses = courseService.notCourseOfUser(user);
 
 
             model.addAttribute("user", user);
@@ -60,13 +61,8 @@ public class MainCoursesController {
         try{
 
             CourseDTO courseDTO = courseService.findByIdDTO(id);
-            Optional <Module> searchFirstModule = moduleService.findFirstModule(courseDTO);
-            if(searchFirstModule.isEmpty()) {
-
-                return "redirect:/courses";
-            }
-            Module module = searchFirstModule.get();
-            return "redirect:/courses/" + id + "/module/" + module.getId();
+            ModuleSimpleDTO module = moduleService.findById(id);
+            return "redirect:/courses/" + id + "/module/" + module.id();
         }catch (NoSuchElementException e) {
             model.addAttribute("message", e.getMessage());
             return "error";
@@ -84,15 +80,10 @@ public class MainCoursesController {
             }
             CourseDTO courseDTO = courseService.findByIdDTO(id);
             UserDTO user = userService.findByIdDTO(Long.parseLong(userId));
-            Optional <Module> searchModule = moduleService.findById(moduleId);
-            if(searchModule.isEmpty()) {
-
-                model.addAttribute("message", "Módulo no encontrado");
-                return "error";
-            }
+            ModuleSimpleDTO module = moduleService.findById(moduleId);
             if(courseService.userIsInCourse(user, courseDTO)) {
 
-                List <Module> modules = moduleService.getModulesByCourse(courseDTO);
+                List <ModuleSimpleDTO> modules = moduleService.getModulesByCourse(courseDTO);
                 model.addAttribute("modules", modules);
                 model.addAttribute("courseId", id);
                 model.addAttribute("id", moduleId);

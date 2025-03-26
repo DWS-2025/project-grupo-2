@@ -100,14 +100,8 @@ public class UserController {
                 }else{
 
                     UserDTO user = userService.findByUserName(username);
-                    if(user != null) {
-
-                        model.addAttribute("message", "Nombre de usuario ya en uso");
-                        return "error";
-                    }
-                    userService.saveDTO(name, surname, username, password, campus, 2);
-                    return "redirect:/login";
-
+                    model.addAttribute("message", "Nombre de usuario ya en uso");
+                    return "error";
                 }
             }else{
 
@@ -117,8 +111,8 @@ public class UserController {
             return "redirect:/register";
         }catch (NoSuchElementException e) {
 
-            model.addAttribute("message", e.getMessage());
-            return "error";
+            userService.saveDTO(name, surname, username, password, campus, 2);
+            return "redirect:/login";
         }
     }
 

@@ -1,6 +1,7 @@
 package es.dws.aulavisual.controller;
 
 import es.dws.aulavisual.DTO.CourseDTO;
+import es.dws.aulavisual.DTO.ModuleSimpleDTO;
 import es.dws.aulavisual.DTO.UserDTO;
 import es.dws.aulavisual.service.ModuleService;
 import es.dws.aulavisual.service.UserService;
@@ -47,7 +48,7 @@ public class CourseManagementController {
                 model.addAttribute("admin", user.realName());
                 model.addAttribute("userId", Long.parseLong(userId));
                 model.addAttribute("availableTeachers", userService.getAvaliableTeachers());
-                List <Course> courses = courseService.getCourses();
+                List <CourseDTO> courses = courseService.getCourses();
                 model.addAttribute("courses", courses);
                 return "courses-management/manageCourses";
             }
@@ -102,13 +103,7 @@ public class CourseManagementController {
             UserDTO user = userService.findByIdDTO(Long.parseLong(userId));
             if(user.role() == 0) {
 
-                Optional<Module> searchModule = moduleService.findById(id);
-                if(searchModule.isEmpty()) {
-
-                    model.addAttribute("message", "Módulo no encontrado");
-                    return "error";
-                }
-                Module module = searchModule.get();
+                ModuleSimpleDTO module = moduleService.findById(id);
                 model.addAttribute("courseId", courseId);
                 model.addAttribute("module", module);
                 return "courses-management/modulePreview";
@@ -133,12 +128,7 @@ public class CourseManagementController {
             UserDTO user = userService.findByIdDTO(Long.parseLong(userId));
             CourseDTO course = courseService.findByIdDTO(courseId);
 
-            Optional <Module> searchModule = moduleService.findById(id);
-            if(searchModule.isEmpty()) {
-
-                return ResponseEntity.status(404).body("Module not found");
-            }
-            Module module = searchModule.get();
+            ModuleSimpleDTO module = moduleService.findById(id);
 
             if(user.role() == 0 || course.teacher().id().equals(user.id()) || courseService.userIsInCourse(user, course)) {
 
@@ -191,13 +181,7 @@ public class CourseManagementController {
                 return "redirect:/";
             }
             CourseDTO courseDTO = courseService.findByIdDTO(courseId);
-            Optional <Module> searchModule = moduleService.findById(id);
-            if(searchModule.isEmpty()) {
-
-                model.addAttribute("message", "Módulo no encontrado");
-                return "error";
-            }
-            Module module = searchModule.get();
+            ModuleSimpleDTO module = moduleService.findById(id);
 
             moduleService.delete(module);
             return "redirect:/admin/courses/{courseId}/modules";
