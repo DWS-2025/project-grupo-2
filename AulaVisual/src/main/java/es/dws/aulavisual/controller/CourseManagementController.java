@@ -284,7 +284,7 @@ public class CourseManagementController {
                     model.addAttribute("message", "El profesor ya tiene un curso asignado");
                     return "error";
                 }
-                courseService.saveDTO(courseDTO);
+                courseDTO = courseService.saveDTO(courseDTO);
                 courseService.assignTeacher(teacherDTO, courseDTO);
             } else {
 
