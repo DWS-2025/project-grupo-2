@@ -1,62 +1,63 @@
 package es.dws.aulavisual.service;
 
-import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
 import java.security.NoSuchAlgorithmException;
 import java.security.MessageDigest;
 import java.sql.Blob;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
+import es.dws.aulavisual.DTO.CourseDTO;
+import es.dws.aulavisual.DTO.TeacherInfoDTO;
 import es.dws.aulavisual.DTO.UserDTO;
 import es.dws.aulavisual.Mapper.UserMapper;
 import es.dws.aulavisual.model.Course;
-import es.dws.aulavisual.repository.CourseRepository;
 import es.dws.aulavisual.model.User;
 import es.dws.aulavisual.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import org.hibernate.engine.jdbc.BlobProxy;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Example;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class UserService {
 
     private final UserRepository userRepository;
-    private final CourseRepository courseService;
     private final UserMapper userMapper;
 
-    public UserService(UserRepository userRepository, CourseRepository courseService, UserMapper userMapper) {
+    public UserService(UserRepository userRepository, UserMapper userMapper) {
 
         this.userRepository = userRepository;
-        this.courseService = courseService;
         this.userMapper = userMapper;
     }
 
-    public void save(String name, String surname, String userName, String password, String campus, int role) {
+    public UserDTO saveDTO(String name, String surname, String userName, String password, String campus, int role) {
 
         String passwordHash = hashPassword(password);
+        return userMapper.toDTO(save(name, surname, userName, passwordHash, campus, role));
+    }
+
+    User save(String name, String surname, String userName, String passwordHash, String campus, int role) {
+
         User user = new User(name, surname, userName, passwordHash, campus, role);
-        userRepository.save(user);
+        return userRepository.saveAndFlush(user);
     }
 
-    public void save(User user) {
+    public UserDTO saveDTO(UserDTO userDTO) {
 
-        userRepository.save(user);
+        User user = userRepository.findById(userDTO.id()).orElseThrow();
+        return userMapper.toDTO(save(user));
     }
 
-    public Optional<User> findByUserName(String userName) {
+    User save(User user) {
 
-        return userRepository.findByUserName(userName);
-    }
-
-    public Optional<User> findById(long id) {
-
-        return userRepository.findById(id);
+        return userRepository.saveAndFlush(user);
     }
 
     public void deleteById(long id) {
@@ -68,19 +69,19 @@ public class UserService {
             return;
         }
         User userToDelete = user.get();
-        List<Course> courses = userToDelete.getCourses();
-        for (Course course : courses) {
-
-            course.getStudents().remove(userToDelete);
-            courseService.save(course);
-        }
-
-        if(userToDelete.getRole() == 1) {
-
-            Course course = userToDelete.getCourseTeaching();
-            course.setTeacher(null);
-            courseService.save(course);
-        }
+//        List<Course> courses = userToDelete.getCourses();
+//        for (Course course : courses) {
+//
+//            course.getStudents().remove(userToDelete);
+//            courseService.save(course);
+//        }
+//
+//        if(userToDelete.getRole() == 1) {
+//
+//            Course course = userToDelete.getCourseTeaching();
+//            course.setTeacher(null);
+//            courseService.save(course);
+//        }
         userRepository.deleteById(id);
     }
 
@@ -151,30 +152,22 @@ public class UserService {
         return false;
     }
 
-    public void saveImage(User user, MultipartFile image) {
+    public void saveImage(UserDTO userDTO, URI location, InputStream inputStream, long size) {
 
-        try {
-            user.setImage(BlobProxy.generateProxy(image.getInputStream(), image.getSize()));
-            userRepository.save(user);
-        }catch (IOException e) {
+        User user = userMapper.toDomain(userDTO);
 
-            throw new RuntimeException("Error processing image", e);
-        }
+        user.setImage(location.toString());
+        user.setImageFile(BlobProxy.generateProxy(inputStream, size));
+        userRepository.save(user);
     }
 
-    public ResponseEntity <Object> loadImage(long userId) {
+    public ResponseEntity <Object> loadImage(UserDTO userDTO) {
 
-        Optional<User> searchUser = userRepository.findById(userId);
-        if(searchUser.isEmpty()) {
-
-            System.out.println("User not found");
-            return null;
-        }
-        User user = searchUser.get();
+        User user = userMapper.toDomain(userDTO);
 
         try {
 
-            Blob image = user.getImage();
+            Blob image = user.getImageFile();
             if(image == null) {
 
                 System.out.println("User has no image");
@@ -192,15 +185,17 @@ public class UserService {
         }
     }
 
-    public List <User> getAllUsersExceptSelfFiltered(User currentUser, Example <User> example) {
+    public List <UserDTO> getAllUsersExceptSelfFiltered(UserDTO currentUserDTO, Example <User> example) {
 
+        User currentUser = userMapper.toDomain(currentUserDTO);
         List<User> users = userRepository.findAll(example);
         users.remove(currentUser);
-        return users;
+        return users.stream().map(userMapper::toDTO).collect(Collectors.toList());
     }
 
-    public boolean updateRole(User user, int newRole) {
+    public boolean updateRole(UserDTO userDTO, int newRole) {
 
+        User user = userMapper.toDomain(userDTO);
         if(newRole >= 0 && newRole <= 2) {
 
             user.setRole(newRole);
@@ -210,7 +205,7 @@ public class UserService {
         return false;
     }
 
-    public void removeAllUsersFromCourse(Course course) {
+    void removeAllUsersFromCourse(Course course) {
 
         List<User> users = userRepository.findAll();
 
@@ -221,15 +216,18 @@ public class UserService {
         }
     }
 
-    public void addCourseToTeacher(User user, Course course) {
+    void addCourseToTeacher(UserDTO userDTO, Course course) {
 
+        User user = userRepository.findById(userDTO.id()).orElseThrow();
         user.setCourseTeaching(course);
         userRepository.save(user);
     }
 
-    public List<User> getAvaliableTeachers() {
+    public List<UserDTO> getAvaliableTeachers() {
 
-        return userRepository.findAllByRoleAndCourseTeachingNull(1);
+        return userRepository.findAllByRoleAndCourseTeachingNull(1).stream()
+                .map(userMapper::toDTO)
+                .collect(Collectors.toList());
     }
 ///////////////////////////////////////////////////////////////////////////////////
     public List<UserDTO> getAllUsers() {
@@ -237,8 +235,18 @@ public class UserService {
         return userMapper.toDTOs(userRepository.findAll());
     }
 
-    public UserDTO findbyId(long id) {
+    public UserDTO findByIdDTO(long id) {
 
-        return userMapper.toDTO(userRepository.findById(id).orElseThrow());
+        return userMapper.toDTO(findById(id));
+    }
+
+    User findById(long id) {
+
+        return userRepository.findById(id).orElseThrow();
+    }
+
+    public UserDTO findByUserName(String userName) {
+
+        return userMapper.toDTO(userRepository.findByUserName(userName).orElseThrow());
     }
 }

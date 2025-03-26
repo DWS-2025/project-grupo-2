@@ -5,6 +5,7 @@ import es.dws.aulavisual.DTO.UserDTO;
 import org.mapstruct.Mapper;
 import es.dws.aulavisual.DTO.UserSimpleDTO;
 import es.dws.aulavisual.model.User;
+import org.springframework.data.domain.Example;
 
 import java.util.Collection;
 import java.util.List;
@@ -23,4 +24,5 @@ public interface UserMapper {
     TeacherInfoDTO toTeacherInfoDTO(User user);
     List <TeacherInfoDTO> toTeacherInfoDTOs(Collection <User> users);
     User toDomain(TeacherInfoDTO teacherInfoDTO);
+
 }

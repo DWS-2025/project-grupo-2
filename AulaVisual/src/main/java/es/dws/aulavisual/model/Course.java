@@ -2,11 +2,9 @@ package es.dws.aulavisual.model;
 
 import java.io.IOException;
 import java.sql.Blob;
-
 import jakarta.persistence.*;
 import org.hibernate.engine.jdbc.BlobProxy;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,12 +20,12 @@ public class Course {
     private  String task;
 
     @OneToOne()
-    private User teacher;
+    private User teacher = null;
 
     @Lob
     private Blob imageCourse;
 
-    @ManyToMany()
+    @ManyToMany(fetch = FetchType.EAGER)
     private final List <User> students = new ArrayList<>();
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "course")
@@ -42,11 +40,10 @@ public class Course {
 
     }
 
-    public Course(String name, String description, User teacher, String task, MultipartFile imageCourse) {
+    public Course(String name, String description, String task, MultipartFile imageCourse) {
 
         this.name = name;
         this.description = description;
-        this.teacher = teacher;
         this.task = task;
         this.imageCourse = transformImage(imageCourse);
     }
@@ -78,11 +75,17 @@ public class Course {
 
     private Blob transformImage(MultipartFile imageCourse) {
 
-        try {
-            return BlobProxy.generateProxy(imageCourse.getInputStream(), imageCourse.getSize());
-        }catch (IOException e) {
+        if(imageCourse == null ||imageCourse.isEmpty()){
 
-            throw new RuntimeException("Error processing image", e);
+            return null;
+        }else{
+
+            try {
+                return BlobProxy.generateProxy(imageCourse.getInputStream(), imageCourse.getSize());
+            }catch (IOException e) {
+
+                throw new RuntimeException("Error processing image", e);
+            }
         }
     }
 

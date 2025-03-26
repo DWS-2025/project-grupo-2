@@ -1,7 +1,6 @@
 package es.dws.aulavisual.RESTController;
 
 import es.dws.aulavisual.DTO.UserDTO;
-import es.dws.aulavisual.model.User;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,6 +28,6 @@ public class UserRestController {
     @GetMapping("/{id}")
     public UserDTO getUserById(@PathVariable Long id) {
 
-        return userService.findbyId(id);
+        return userService.findByIdDTO(id);
     }
 }

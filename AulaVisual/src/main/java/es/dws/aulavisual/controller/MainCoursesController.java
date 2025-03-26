@@ -1,12 +1,13 @@
 package es.dws.aulavisual.controller;
 
+import es.dws.aulavisual.DTO.CourseDTO;
+import es.dws.aulavisual.DTO.UserDTO;
 import es.dws.aulavisual.model.Course;
 import es.dws.aulavisual.service.CourseService;
+import java.util.NoSuchElementException;
 import java.util.Optional;
-
 import es.dws.aulavisual.service.ModuleService;
 import es.dws.aulavisual.model.Module;
-import es.dws.aulavisual.model.User;
 import es.dws.aulavisual.service.UserService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -31,82 +32,79 @@ public class MainCoursesController {
     @GetMapping("/courses")
     public String coursesview(Model model, @CookieValue(value = "userId", defaultValue = "") String userId) {
 
-        if(userId.isEmpty()) {
+        try {
+            if(userId.isEmpty()) {
 
-            return "redirect:/login";
+                return "redirect:/login";
+            }
+            UserDTO user = userService.findByIdDTO(Long.parseLong(userId));
+            List <Course> userCourses = courseService.courseOfUser(user);
+            List <Course> availableCourses = courseService.notCourseOfUser(user);
+
+
+            model.addAttribute("user", user);
+            model.addAttribute("userId", Long.parseLong(userId));
+            model.addAttribute("userCourses", userCourses);
+            model.addAttribute("availableCourses", availableCourses);
+            return "courses-user/courses";
+        }catch (NoSuchElementException e) {
+
+            model.addAttribute("message", e.getMessage());
+            return "error";
         }
-        Optional <User> searchUser = userService.findById(Long.parseLong(userId));
-        if(searchUser.isEmpty()) {
-
-            return "redirect:/login";
-        }
-        User user = searchUser.get();
-        List <Course> userCourses = courseService.courseOfUser(user);
-        List <Course> availableCourses = courseService.notCourseOfUser(user);
-
-
-        model.addAttribute("user", user);
-        model.addAttribute("userId", Long.parseLong(userId));
-        model.addAttribute("userCourses", userCourses);
-        model.addAttribute("availableCourses", availableCourses);
-        return "courses-user/courses";
     }
 
     @GetMapping("/courses/{id}")
-    public String singleCourse(@PathVariable long id) {
+    public String singleCourse(@PathVariable long id, Model model) {
 
-        Optional<Course> searchCourse = courseService.findById(id);
-        if(searchCourse.isEmpty()) {
+        try{
 
-            return "redirect:/courses";
+            CourseDTO courseDTO = courseService.findByIdDTO(id);
+            Optional <Module> searchFirstModule = moduleService.findFirstModule(courseDTO);
+            if(searchFirstModule.isEmpty()) {
+
+                return "redirect:/courses";
+            }
+            Module module = searchFirstModule.get();
+            return "redirect:/courses/" + id + "/module/" + module.getId();
+        }catch (NoSuchElementException e) {
+            model.addAttribute("message", e.getMessage());
+            return "error";
         }
-        Course course = searchCourse.get();
-        Optional <Module> searchFirstModule = moduleService.findFirstModule(course);
-        if(searchFirstModule.isEmpty()) {
 
-            return "redirect:/courses";
-        }
-        Module module = searchFirstModule.get();
-        return "redirect:/courses/" + id + "/module/" + module.getId();
     }
 
     @GetMapping("/courses/{id}/module/{moduleId}")
     public String usersCoursePanel(Model model, @CookieValue(value = "userId", defaultValue = "") String userId, @PathVariable long id, @PathVariable long moduleId) {
 
-        if(userId.isEmpty()) {
+        try {
+            if(userId.isEmpty()) {
 
-            return "redirect:/login";
-        }
-        Optional <Course> searchCourse = courseService.findById(id);
-        if(searchCourse.isEmpty()) {
+                return "redirect:/login";
+            }
+            CourseDTO courseDTO = courseService.findByIdDTO(id);
+            UserDTO user = userService.findByIdDTO(Long.parseLong(userId));
+            Optional <Module> searchModule = moduleService.findById(moduleId);
+            if(searchModule.isEmpty()) {
 
-            model.addAttribute("message", "Curso no encontrado");
-            return "error";
-        }
-        Course course = searchCourse.get();
-        Optional<User> searchUser = userService.findById(Long.parseLong(userId));
-        if(searchUser.isEmpty()) {
+                model.addAttribute("message", "Módulo no encontrado");
+                return "error";
+            }
+            if(courseService.userIsInCourse(user, courseDTO)) {
 
-            model.addAttribute("message", "Usuario no encontrado");
-            return "error";
-        }
-        User user = searchUser.get();
-        Optional <Module> searchModule = moduleService.findById(moduleId);
-        if(searchModule.isEmpty()) {
+                List <Module> modules = moduleService.getModulesByCourse(courseDTO);
+                model.addAttribute("modules", modules);
+                model.addAttribute("courseId", id);
+                model.addAttribute("id", moduleId);
+                return "courses-user/singleCourse";
+            }else {
 
-            model.addAttribute("message", "Módulo no encontrado");
-            return "error";
-        }
-        if(courseService.userIsInCourse(user, course)) {
+                model.addAttribute("message", "No tienes acceso a este curso");
+                return "error";
+            }
+        }catch (NoSuchElementException e) {
 
-            List <Module> modules = moduleService.getModulesByCourse(course);
-            model.addAttribute("modules", modules);
-            model.addAttribute("courseId", id);
-            model.addAttribute("id", moduleId);
-            return "courses-user/singleCourse";
-        }else {
-
-            model.addAttribute("message", "No tienes acceso a este curso");
+            model.addAttribute("message", e.getMessage());
             return "error";
         }
     }

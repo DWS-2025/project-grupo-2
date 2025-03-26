@@ -1,5 +1,12 @@
 package es.dws.aulavisual.DTO;
 
-public class ModuleSimpleDTO {
+import es.dws.aulavisual.DTO.CourseSimpleDTO;
+
+public record ModuleSimpleDTO(
+        Long id,
+        String name,
+        String description,
+        CourseSimpleDTO course
+) {
 
 }

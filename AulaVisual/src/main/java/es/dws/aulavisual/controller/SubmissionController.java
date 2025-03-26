@@ -1,18 +1,18 @@
 package es.dws.aulavisual.controller;
 
-import es.dws.aulavisual.model.Course;
+import es.dws.aulavisual.DTO.CourseDTO;
+import es.dws.aulavisual.DTO.SubmissionDTO;
+import es.dws.aulavisual.DTO.UserDTO;
 import es.dws.aulavisual.service.CourseService;
-import es.dws.aulavisual.model.Submission;
 import es.dws.aulavisual.service.SubmissionService;
 import org.springframework.web.bind.annotation.*;
 import es.dws.aulavisual.service.UserService;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.http.ResponseEntity;
-import es.dws.aulavisual.model.User;
 import org.springframework.ui.Model;
 import org.springframework.stereotype.Controller;
 import java.util.List;
-import java.util.Optional;
+import java.util.NoSuchElementException;
 
 @Controller
 public class SubmissionController {
@@ -30,268 +30,219 @@ public class SubmissionController {
     @GetMapping("/courses/{courseId}/submission")
     public String seeCourseSubmission(Model model, @CookieValue(value = "userId", defaultValue = "") String userId, @PathVariable long courseId) {
 
-        if(userId.isEmpty()){
-            return "redirect:/login";
-        }
-        Optional <User> searchUser = userService.findById(Long.parseLong(userId));
-        if(searchUser.isEmpty()){
+        try {
+            if(userId.isEmpty()){
+                return "redirect:/login";
+            }
+            UserDTO userDTO = userService.findByIdDTO(Long.parseLong(userId));
 
-            return "redirect:/login";
-        }
-        User user = searchUser.get();
+            CourseDTO courseDTO = courseService.findByIdDTO(courseId);
 
-        Optional <Course> searchCourse = courseService.findById(courseId);
-        if(searchCourse.isEmpty()){
+            if(userDTO.role() == 1){
 
-            model.addAttribute("message", "Curso no encontrado");
-            return "error";
-        }
-        Course course = searchCourse.get();
-
-        if(user.getRole() == 1){
-
-            return "redirect:/courses/" + courseId + "/grade";
-        }
-
-        if(user.getRole() == 2){
-
-            if(courseService.userIsInCourse(user, course)){
-
-                model.addAttribute("courseId", courseId);
-                model.addAttribute("courseName", course.getName());
-                if(!submissionService.userMadeSubmission(user, course)){
-
-                    model.addAttribute("submitted", false);
-                    model.addAttribute("task", course.getTask());
-                }else {
-
-                    Submission submission = submissionService.findByUserAndCourse(user, course).get();
-                    model.addAttribute("submitted", true);
-                    if(submission.isGraded()) {
-
-                        model.addAttribute("grade", submission.getGrade());
-                    }else{
-
-                        model.addAttribute("grade", "No Disponible");
-                    }
-                }
-            }else {
-
-                model.addAttribute("message", "No tienes acceso a este curso");
-                return "error";
+                return "redirect:/courses/" + courseId + "/grade";
             }
 
-            return "courses-user/submission";
+            if(userDTO.role() == 2){
+
+                if(courseService.userIsInCourse(userDTO, courseDTO)){
+
+                    model.addAttribute("courseId", courseId);
+                    model.addAttribute("courseName", courseDTO.name());
+                    if(!submissionService.userMadeSubmission(userDTO, courseDTO)){
+
+                        model.addAttribute("submitted", false);
+                        model.addAttribute("task", courseDTO.task());
+                    }else {
+
+                        SubmissionDTO submission = submissionService.findByUserAndCourse(userDTO, courseDTO);
+                        model.addAttribute("submitted", true);
+                        if(submission.graded()) {
+
+                            model.addAttribute("grade", submission.grade());
+                        }else{
+
+                            model.addAttribute("grade", "No Disponible");
+                        }
+                    }
+                }else {
+
+                    model.addAttribute("message", "No tienes acceso a este curso");
+                    return "error";
+                }
+
+                return "courses-user/submission";
+            }
+            return "redirect:/courses";
+        }catch (NoSuchElementException e){
+
+            model.addAttribute("message", e.getMessage());
+            return "error";
         }
-        return "redirect:/courses";
     }
 
     @GetMapping("/courses/{courseId}/grade")
     public String gradeCourseSubmission(Model model, @CookieValue(value = "userId", defaultValue = "") String userId, @PathVariable long courseId) {
 
-        if(userId.isEmpty()){
-            return "redirect:/login";
-        }
-        Optional <User> searchUser = userService.findById(Long.parseLong(userId));
-        if(searchUser.isEmpty()){
+        try {
+            if(userId.isEmpty()){
+                return "redirect:/login";
+            }
+            UserDTO user = userService.findByIdDTO(Long.parseLong(userId));
 
-            return "redirect:/login";
-        }
-        User user = searchUser.get();
+            CourseDTO courseDTO = courseService.findByIdDTO(courseId);
 
-        Optional <Course> searchCourse = courseService.findById(courseId);
-        if(searchCourse.isEmpty()){
+            if(user.role() == 1){
 
-            model.addAttribute("message", "Curso no encontrado");
+                List<SubmissionDTO> submissions = submissionService.getSubmissions(courseDTO, false);
+                List<SubmissionDTO> graded = submissionService.getSubmissions(courseDTO, true);
+                model.addAttribute("gradedSubmissions", graded);
+                model.addAttribute("submissions", submissions);
+                model.addAttribute("courseId", courseId);
+                model.addAttribute("courseName", courseDTO.name());
+                return "courses-user/submissionsGrade";
+            }
+            return "redirect:/courses";
+        }catch (NoSuchElementException e){
+
+            model.addAttribute("message", e.getMessage());
             return "error";
         }
-        Course course = searchCourse.get();
-
-        if(user.getRole() == 1){
-
-            List<Submission> submissions = submissionService.getSubmissions(course, false);
-            List<Submission> graded = submissionService.getSubmissions(course, true);
-            model.addAttribute("gradedSubmissions", graded);
-            model.addAttribute("submissions", submissions);
-            model.addAttribute("courseId", courseId);
-            model.addAttribute("courseName", course.getName());
-            return "courses-user/submissionsGrade";
-        }
-        return "redirect:/courses";
     }
 
     @PostMapping("/courses/{courseId}/grade/{studentId}")
     public String gradeCourseSubmission(Model model, @CookieValue(value = "userId", defaultValue = "") String userId, @PathVariable long courseId, @PathVariable long studentId, @RequestParam float grade) {
 
-        if(userId.isEmpty()){
-            return "redirect:/login";
-        }
-        Optional <User> searchUser = userService.findById(Long.parseLong(userId));
-        if(searchUser.isEmpty()){
+        try {
+            if(userId.isEmpty()){
+                return "redirect:/login";
+            }
+            UserDTO userDTO = userService.findByIdDTO(Long.parseLong(userId));
 
-            return "redirect:/login";
-        }
-        User user = searchUser.get();
+            CourseDTO courseDTO = courseService.findByIdDTO(courseId);
 
-        Optional <Course> searchCourse = courseService.findById(courseId);
-        if(searchCourse.isEmpty()){
+            UserDTO studentDTO = userService.findByIdDTO(studentId);
 
-            model.addAttribute("message", "Curso no encontrado");
-            return "error";
-        }
-        Course course = searchCourse.get();
+            if(userDTO.role() == 1 && courseDTO.teacher().id().equals(userDTO.id())){
 
-        Optional <User> searchStudent = userService.findById(studentId);
-        if(searchStudent.isEmpty()){
+                if(courseService.userIsInCourse(studentDTO, courseDTO)){
 
-            model.addAttribute("message", "Estudiante no encontrado");
-            return "error";
-        }
-        User student = searchStudent.get();
+                    if(submissionService.userMadeSubmission(studentDTO, courseDTO)){
 
-        if(user.getRole() == 1 && course.getTeacher() == user){
+                        submissionService.gradeSubmission(courseDTO, studentDTO, grade);
+                        return "redirect:/courses/" + courseId + "/grade";
+                    }else{
 
-            if(courseService.userIsInCourse(student, course)){
-
-                if(submissionService.userMadeSubmission(student, course)){
-
-                    submissionService.gradeSubmission(course, student, grade);
-                    return "redirect:/courses/" + courseId + "/grade";
+                        model.addAttribute("message", "Estudiante no ha entregado la tarea");
+                        return "error";
+                    }
                 }else{
 
-                    model.addAttribute("message", "Estudiante no ha entregado la tarea");
+                    model.addAttribute("message", "Estudiante no cursando el curso");
                     return "error";
                 }
-            }else{
-
-                model.addAttribute("message", "Estudiante no cursando el curso");
-                return "error";
             }
+            return "redirect:/courses";
+        }catch (NoSuchElementException e){
+
+            model.addAttribute("message", e.getMessage());
+            return "error";
         }
-        return "redirect:/courses";
     }
 
     @GetMapping("/courses/{courseId}/submission/download/{studentId}")
     public ResponseEntity<Object> downloadCourseSubmission(@CookieValue(value = "userId", defaultValue = "") String userId, @PathVariable long courseId, @PathVariable long studentId) {
 
-        if(userId.isEmpty()){
-            return ResponseEntity.status(401).body("Unauthorized");
-        }
-        Optional <User> searchUser = userService.findById(Long.parseLong(userId));
-        if(searchUser.isEmpty()){
-
-            return ResponseEntity.status(401).body("Unauthorized");
-        }
-        User user = searchUser.get();
-
-        Optional <Course> searchCourse = courseService.findById(courseId);
-        if(searchCourse.isEmpty()){
-
-            return ResponseEntity.status(404).body("Course not found");
-        }
-        Course course = searchCourse.get();
-
-        Optional <User> searchStudent = userService.findById(studentId);
-        if(searchStudent.isEmpty()){
-
-            return ResponseEntity.status(404).body("Student not found");
-        }
-        User student = searchStudent.get();
-        if(user.getRole() == 1 && course.getTeacher() == user){
-
-            if(courseService.userIsInCourse(student, course)) {
-
-                if(submissionService.userMadeSubmission(student, course)) {
-
-                    return submissionService.getSubmission(course, student);
-                }else {
-
-                    return ResponseEntity.status(404).body("Submission not found");
-                }
-            }else{
-
-                return ResponseEntity.status(404).body("User is not inm course");
+        try {
+            if(userId.isEmpty()){
+                return ResponseEntity.status(401).body("Unauthorized");
             }
+            UserDTO user = userService.findByIdDTO(Long.parseLong(userId));
+
+            CourseDTO courseDTO = courseService.findByIdDTO(courseId);
+
+            UserDTO student = userService.findByIdDTO(studentId);
+            if(user.role() == 1 && courseDTO.teacher().id().equals(user.id())){
+
+                if(courseService.userIsInCourse(student, courseDTO)) {
+
+                    if(submissionService.userMadeSubmission(student, courseDTO)) {
+
+                        return submissionService.getSubmission(courseDTO, student);
+                    }else {
+
+                        return ResponseEntity.status(404).body("Submission not found");
+                    }
+                }else{
+
+                    return ResponseEntity.status(404).body("User is not inm course");
+                }
+            }
+            return ResponseEntity.status(401).body("Unauthorized");
+        }catch (NoSuchElementException e){
+
+            return ResponseEntity.status(404).body("Error");
         }
-        return ResponseEntity.status(401).body("Unauthorized");
     }
 
     @PostMapping("/courses/{courseId}/submission")
     public String submitCourseSubmission(Model model, @CookieValue(value = "userId", defaultValue = "") String userId, @PathVariable long courseId, MultipartFile submission) {
 
-        if(userId.isEmpty()){
-            return "redirect:/login";
-        }
-        Optional <User> searchUser = userService.findById(Long.parseLong(userId));
-        if(searchUser.isEmpty()){
-
-            return "redirect:/login";
-        }
-        User user = searchUser.get();
-
-        Optional <Course> searchCourse = courseService.findById(courseId);
-        if(searchCourse.isEmpty()){
-
-            model.addAttribute("message", "Curso no encontrado");
-            return "error";
-        }
-        Course course = searchCourse.get();
-
-        if(submission.isEmpty()){
-
-            model.addAttribute("message", "No se ha seleccionado un archivo");
-            return "error";
-        }
-        if(courseService.userIsInCourse(user, course)) {
-
-            if(!submissionService.userMadeSubmission(user, course)) {
-
-                submissionService.save(course, user, submission);
+        try {
+            if(userId.isEmpty()){
+                return "redirect:/login";
             }
+            UserDTO user = userService.findByIdDTO(Long.parseLong(userId));
+
+            CourseDTO courseDTO = courseService.findByIdDTO(courseId);
+            if(submission.isEmpty()){
+
+                model.addAttribute("message", "No se ha seleccionado un archivo");
+                return "error";
+            }
+            if(courseService.userIsInCourse(user, courseDTO)) {
+
+                if(!submissionService.userMadeSubmission(user, courseDTO)) {
+
+                    submissionService.save(courseDTO, user, submission);
+                }
+            }
+            return "redirect:/courses";
+        }catch (NoSuchElementException e){
+
+            model.addAttribute("message", e.getMessage());
+            return "error";
         }
-        return "redirect:/courses";
     }
 
     @PostMapping("/courses/{courseId}/draft/{studentId}")
     public String deleteSubmission(Model model, @CookieValue(value = "userId", defaultValue = "") String userId, @PathVariable long courseId, @PathVariable long studentId) {
 
-        if(userId.isEmpty()){
-            return "redirect:/login";
-        }
-        Optional <User> searchUser = userService.findById(Long.parseLong(userId));
-        if(searchUser.isEmpty()){
+        try {
+            if(userId.isEmpty()){
+                return "redirect:/login";
+            }
+            UserDTO user = userService.findByIdDTO(Long.parseLong(userId));
 
-            return "redirect:/login";
-        }
-        User user = searchUser.get();
+            CourseDTO courseDTO = courseService.findByIdDTO(courseId);
+            UserDTO student = userService.findByIdDTO(studentId);
 
-        Optional <Course> searchCourse = courseService.findById(courseId);
-        if(searchCourse.isEmpty()){
+            if(courseService.userIsInCourse(student, courseDTO)) {
 
-            model.addAttribute("message", "Curso no encontrado");
-            return "error";
-        }
-        Course course = searchCourse.get();
+                if(submissionService.userMadeSubmission(student, courseDTO)) {
 
-        Optional <User> searchStudent = userService.findById(studentId);
-        if(searchStudent.isEmpty()){
+                    if(courseDTO.teacher().id().equals(user.id())) {
 
-            model.addAttribute("message", "Estudiante no encontrado");
-            return "error";
-        }
-        User student = searchStudent.get();
-
-        if(courseService.userIsInCourse(student, course)) {
-
-            if(submissionService.userMadeSubmission(student, course)) {
-
-                if(course.getTeacher() == user) {
-
-                    submissionService.deleteSubmission(student, course);
-                    return "redirect:/courses/" + courseId + "/grade";
+                        submissionService.deleteSubmission(student, courseDTO);
+                        return "redirect:/courses/" + courseId + "/grade";
+                    }
                 }
             }
+            return "redirect:/courses";
+        }catch (NoSuchElementException e){
+
+            model.addAttribute("message", e.getMessage());
+            return "error";
         }
-        return "redirect:/courses";
     }
 }
