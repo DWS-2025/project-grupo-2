@@ -19,7 +19,6 @@ import java.util.List;
 import es.dws.aulavisual.Mapper.UserMapper;
 
 @Service
-@Transactional
 public class CourseService {
 
     private final CourseRepository courseRepository;
@@ -56,12 +55,15 @@ public class CourseService {
         return courseRepository.save(course);
     }
 
-    public void addUserToCourse(CourseDTO courseDTO, UserDTO user) {
+    public void addUserToCourse(CourseDTO courseDTO, UserDTO userDTO) {
 
-        Course course = courseMapper.toDomain(courseDTO);
-        course.getStudents().add(userMapper.toDomain(user));
+        // Course course = courseMapper.toDomain(courseDTO);
+        Course course = findById(courseDTO.id());
+        //User user = userMapper.toDomain(userDTO);
+        User user = userService.findById(userDTO.id());
+        course.getStudents().add(user);
         //user.getCourses().add(course);
-        userService.saveDTO(userMapper.toDomain(user));
+        //userService.save(user);
         courseRepository.save(course);
     }
 
@@ -92,11 +94,12 @@ public class CourseService {
         return course.getTeacher().equals(user)|| course.getStudents().contains(user);
     }
 
-    public void deleteCourse(CourseDTO courseDTO) {
+    public void deleteCourse(long courseId) {
 
-        Course course = courseMapper.toDomain(courseDTO);
-        userService.removeAllUsersFromCourse(course);
-        courseRepository.delete(course);
+        //Course course = courseRepository.findById(courseId).orElseThrow();
+        //userService.removeAllUsersFromCourse(course);
+        courseRepository.deleteById(courseId);
+        System.out.println("Hola");
     }
 
     public ResponseEntity<Object> loadImage(CourseDTO courseDTO){

@@ -25,7 +25,7 @@ public class Course {
     @Lob
     private Blob imageCourse;
 
-    @ManyToMany()
+    @ManyToMany(fetch = FetchType.EAGER)
     private final List <User> students = new ArrayList<>();
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "course")

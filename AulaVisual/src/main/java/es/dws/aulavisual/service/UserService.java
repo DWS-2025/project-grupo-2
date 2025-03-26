@@ -26,7 +26,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 @Service
-@Transactional
 public class UserService {
 
     private final UserRepository userRepository;
@@ -47,17 +46,18 @@ public class UserService {
     User save(String name, String surname, String userName, String passwordHash, String campus, int role) {
 
         User user = new User(name, surname, userName, passwordHash, campus, role);
-        return userRepository.save(user);
+        return userRepository.saveAndFlush(user);
     }
 
-    public UserDTO saveDTO(User user) {
+    public UserDTO saveDTO(UserDTO userDTO) {
 
+        User user = userRepository.findById(userDTO.id()).orElseThrow();
         return userMapper.toDTO(save(user));
     }
 
     User save(User user) {
 
-        return userRepository.save(user);
+        return userRepository.saveAndFlush(user);
     }
 
     public void deleteById(long id) {

@@ -162,13 +162,13 @@ public class CourseManagementController {
 
                 return "redirect:/login";
             }
-            UserDTO user = userService.findByIdDTO(Long.parseLong(userId));
-            if(user.role() != 0) {
-
-                return "redirect:/";
-            }
-            CourseDTO course = courseService.findByIdDTO(courseId);
-            courseService.deleteCourse(course); //Mirar submisssions
+//            UserDTO user = userService.findByIdDTO(Long.parseLong(userId));
+//            if(user.role() != 0) {
+//
+//                return "redirect:/";
+//            }
+            //CourseDTO course = courseService.findByIdDTO(courseId);
+            courseService.deleteCourse(courseId); //Mirar submisssions
             return "redirect:/admin/courses";
         }catch (NoSuchElementException e) {
 
@@ -413,7 +413,7 @@ public class CourseManagementController {
             }
             courseService.addUserToCourse(course, student);
 
-            return "redirect:/admin/courses/{courseId}/";
+            return "redirect:/admin/courses";
         }catch (NoSuchElementException e){
 
             model.addAttribute("message", e.getMessage());

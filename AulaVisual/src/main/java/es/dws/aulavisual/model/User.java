@@ -13,7 +13,7 @@ public class User {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
-    @ManyToMany(mappedBy = "students")
+    @ManyToMany(mappedBy = "students", fetch = FetchType.EAGER)
     private final List<Course> courses = new ArrayList <>();
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "student")
