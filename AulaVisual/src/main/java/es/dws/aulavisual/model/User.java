@@ -136,4 +136,14 @@ public class User {
 
         return campus;
     }
+
+    public void setRealName(String realName) {
+
+        this.realName = realName;
+    }
+
+    public void setSurname(String surname) {
+
+        this.surname = surname;
+    }
 }

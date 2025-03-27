@@ -1,19 +1,21 @@
 package es.dws.aulavisual.RESTController;
 
+import es.dws.aulavisual.DTO.UserCreationDTO;
 import es.dws.aulavisual.DTO.UserDTO;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 import es.dws.aulavisual.service.UserService;
 
+import java.net.URI;
 import java.util.Collection;
 
+import static org.springframework.web.servlet.support.ServletUriComponentsBuilder.fromCurrentRequest;
+
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/api/users")
 public class UserRestController {
 
-    private UserService userService;
+    private final UserService userService;
 
     public UserRestController(UserService userService) {
         this.userService = userService;
@@ -23,6 +25,23 @@ public class UserRestController {
     public Collection<UserDTO> users() {
 
         return userService.getAllUsers();
+    }
+
+    @PostMapping("/")
+    public ResponseEntity<UserDTO> createUser(@RequestBody UserCreationDTO userCreationDTO) {
+
+        UserDTO userDTO = userService.saveDTO(userCreationDTO);
+        URI location = fromCurrentRequest().path("/{id}").buildAndExpand(userDTO.id()).toUri();
+
+        return ResponseEntity.created(location).body(userDTO);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<UserDTO> updateUser(@PathVariable Long id, @RequestBody UserCreationDTO userCreationDTO) {
+
+        UserDTO userDTO = userService.updateDTO(id, userCreationDTO);
+        URI location = fromCurrentRequest().path("/{id}").buildAndExpand(userDTO.id()).toUri();
+        return ResponseEntity.created(location).body(userDTO);
     }
 
     @GetMapping("/{id}")

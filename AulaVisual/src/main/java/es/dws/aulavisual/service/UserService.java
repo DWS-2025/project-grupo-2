@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 
 import es.dws.aulavisual.DTO.CourseDTO;
 import es.dws.aulavisual.DTO.TeacherInfoDTO;
+import es.dws.aulavisual.DTO.UserCreationDTO;
 import es.dws.aulavisual.DTO.UserDTO;
 import es.dws.aulavisual.Mapper.UserMapper;
 import es.dws.aulavisual.model.Course;
@@ -49,9 +50,13 @@ public class UserService {
         return userRepository.saveAndFlush(user);
     }
 
-    public UserDTO saveDTO(UserDTO userDTO) {
+    public UserDTO saveDTO(UserCreationDTO userDTO) {
 
-        User user = userRepository.findById(userDTO.id()).orElseThrow();
+        User user = userMapper.toDomain(userDTO.userDTO());
+        user.setPasswordHash(hashPassword(userDTO.password()));
+        user.setUserName(userDTO.userDTO().userName());
+        user.setRealName(userDTO.userDTO().realName());
+        user.setSurname(userDTO.userDTO().surname());
         return userMapper.toDTO(save(user));
     }
 
@@ -246,5 +251,16 @@ public class UserService {
     public UserDTO findByUserName(String userName) {
 
         return userMapper.toDTO(userRepository.findByUserName(userName).orElseThrow());
+    }
+
+    public UserDTO updateDTO(Long id, UserCreationDTO userCreationDTO) {
+
+        User user = userRepository.findById(id).orElseThrow();
+        user.setRealName(userCreationDTO.userDTO().realName());
+        user.setSurname(userCreationDTO.userDTO().surname());
+        user.setUserName(userCreationDTO.userDTO().userName());
+        user.setCampus(userCreationDTO.userDTO().campus());
+        user.setRole(userCreationDTO.userDTO().role());
+        return userMapper.toDTO(userRepository.save(user));
     }
 }
