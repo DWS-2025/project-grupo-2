@@ -8,6 +8,7 @@ import es.dws.aulavisual.service.UserService;
 
 import java.net.URI;
 import java.util.Collection;
+import java.util.List;
 
 import static org.springframework.web.servlet.support.ServletUriComponentsBuilder.fromCurrentRequest;
 
@@ -18,13 +19,15 @@ public class UserRestController {
     private final UserService userService;
 
     public UserRestController(UserService userService) {
+
         this.userService = userService;
     }
 
     @GetMapping("/")
-    public Collection<UserDTO> users() {
+    public ResponseEntity<List<UserDTO>> users() {
 
-        return userService.getAllUsers();
+        List<UserDTO> users = userService.getAllUsers();
+        return ResponseEntity.ok(users);
     }
 
     @PostMapping("/")
@@ -45,8 +48,8 @@ public class UserRestController {
     }
 
     @GetMapping("/{id}")
-    public UserDTO getUserById(@PathVariable Long id) {
+    public ResponseEntity<UserDTO> getUserById(@PathVariable Long id) {
 
-        return userService.findByIdDTO(id);
+        return ResponseEntity.ok(userService.findByIdDTO(id));
     }
 }
