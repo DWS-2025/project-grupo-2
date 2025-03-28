@@ -10,7 +10,7 @@
 <div class="container">
     <h1>Entrega del Curso {{courseName}}</h1>
     {{#submissions}}
-    <form action="/courses/{{courseId}}/grade/{{user.id}}" method="post" id="grade-user-{{user.id}}"></form>
+    <form action="/courses/{{courseId}}/grade/{{student.id}}" method="post" id="grade-user-{{student.id}}"></form>
     {{/submissions}}
     <table class="usersTable">
         <thead>
@@ -25,16 +25,16 @@
         <tbody>
     {{#submissions}}
     <tr class="tableItems">
-        <td class="center">{{user.realName}}</td>
-        <td class="center">{{user.surname}}</td>
+        <td class="center">{{student.realName}}</td>
+        <td class="center">{{student.surname}}</td>
         <td class="center">
-            <a href="/courses/{{courseId}}/submission/download/{{user.id}}" download="{{user.realName}}">Descargar</a>
+            <a href="/courses/{{courseId}}/submission/download/{{student.id}}" download="{{student.realName}}">Descargar</a>
         </td>
         <td class="center">
-            <input type="number" step="0.01" id="grade" name="grade" value="" form="grade-user-{{user.id}}">
+            <input type="number" step="0.01" id="grade" name="grade" value="" form="grade-user-{{student.id}}">
         </td>
         <td class="center">
-            <button type="submit" class="save" form="grade-user-{{user.id}}">Guardar</button>
+            <button type="submit" class="save" form="grade-user-{{student.id}}">Guardar</button>
         </td>
     </tr>
     {{/submissions}}

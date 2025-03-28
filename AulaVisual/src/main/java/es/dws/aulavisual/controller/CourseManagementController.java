@@ -130,7 +130,7 @@ public class CourseManagementController {
 
             ModuleSimpleDTO module = moduleService.findById(id);
 
-            if(user.role() == 0 || course.teacher().id().equals(user.id()) || courseService.userIsInCourse(user, course)) {
+            if(user.role() == 0 || course.teacher().id() == user.id() || courseService.userIsInCourse(user, course)) {
 
                 return moduleService.viewModule(module);
             }else{
@@ -180,10 +180,10 @@ public class CourseManagementController {
 
                 return "redirect:/";
             }
-            CourseDTO courseDTO = courseService.findByIdDTO(courseId);
+            //CourseDTO courseDTO = courseService.findByIdDTO(courseId);
             ModuleSimpleDTO module = moduleService.findById(id);
 
-            moduleService.delete(module);
+            moduleService.delete(module, courseId);
             return "redirect:/admin/courses/{courseId}/modules";
         }catch (NoSuchElementException e) {
 

@@ -11,7 +11,7 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id;
+    private Long id;
 
     @ManyToMany(mappedBy = "students", fetch = FetchType.EAGER)
     private final List<Course> courses = new ArrayList <>();

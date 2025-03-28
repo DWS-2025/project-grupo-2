@@ -9,7 +9,7 @@ public class Submission {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id;
+    private Long id;
 
     @ManyToOne
     private User student;
@@ -58,5 +58,24 @@ public class Submission {
     public Blob getSubmission() {
 
         return submission;
+    }
+
+    public Long getId() {
+
+        return id;
+    }
+
+    public void setId(Long id) {
+
+        this.id = id;
+    }
+
+    public Course getCourse() {
+
+        return this.course;
+    }
+
+    public User getStudent () {
+        return this.student;
     }
 }

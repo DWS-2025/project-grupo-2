@@ -155,9 +155,9 @@ public class UserService {
         return false;
     }
 
-    public void saveImage(UserDTO userDTO, URI location, InputStream inputStream, long size) {
+    public void saveImage(long userId, URI location, InputStream inputStream, long size) {
 
-        User user = userRepository.findById(userDTO.id()).orElseThrow();
+        User user = userRepository.findById(userId).orElseThrow();
 
         user.setImage(location.toString());
         user.setImageFile(BlobProxy.generateProxy(inputStream, size));

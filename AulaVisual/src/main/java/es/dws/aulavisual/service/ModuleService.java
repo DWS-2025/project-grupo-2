@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.http.ResponseEntity;
@@ -85,10 +86,17 @@ public class ModuleService {
         }
     }
 
-    public void delete(ModuleSimpleDTO moduleDTO) {
+    public void delete(ModuleSimpleDTO moduleDTO, long courseId) {
 
         Module module = moduleRepository.findById(moduleDTO.id()).orElseThrow();
-        moduleRepository.delete(module);
+        Course course = module.getCourse();
+        if (courseId != course.getId()){
+
+            throw new NoSuchElementException("No such Course");
+        }
+        course.getmodules().remove(module);
+        courseService.save(course);
+        moduleRepository.deleteById(module.getId());
     }
 
     public boolean positionExists(CourseDTO courseDto, int position) {

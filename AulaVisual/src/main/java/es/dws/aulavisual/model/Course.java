@@ -13,7 +13,7 @@ public class Course {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id;
+    private Long id;
 
     private  String name;
     private  String description;
@@ -102,5 +102,10 @@ public class Course {
     public void setTeacher(User teacher) {
 
         this.teacher = teacher;
+    }
+
+    public List<Module> getmodules() {
+
+        return modules;
     }
 }

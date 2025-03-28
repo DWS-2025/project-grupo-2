@@ -157,7 +157,7 @@ public class UserController {
             if(image != null && !image.isEmpty()) {
 
                 URI location = new URI("/api/user/" + currentUser.id() + "/image");
-                userService.saveImage(currentUser, location, image.getInputStream(), image.getSize());
+                userService.saveImage(currentUser.id(), location, image.getInputStream(), image.getSize());
             }
 
             return redirect;
