@@ -106,6 +106,11 @@ public class Course {
 
     public List<Module> getmodules() {
 
-        return modules;
+        return this.modules;
+    }
+
+    public List<Submission> getSubmissions() {
+
+        return this.submissions;
     }
 }

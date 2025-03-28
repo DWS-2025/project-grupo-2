@@ -146,4 +146,8 @@ public class User {
 
         this.surname = surname;
     }
+
+    public List<Submission> getSubmissions() {
+        return submissions;
+    }
 }

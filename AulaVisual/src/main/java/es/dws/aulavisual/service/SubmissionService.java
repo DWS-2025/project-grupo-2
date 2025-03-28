@@ -121,7 +121,9 @@ public class SubmissionService {
 
         User student = userService.findById(studentDTO.id());
         Course course = courseService.findById(courseDTO.id());
-        Optional <Submission> searchSubmission = submissionRepository.findByStudentAndCourse(student, course);
-        searchSubmission.ifPresent(submissionRepository::delete);
+        Submission submission = submissionRepository.findByStudentAndCourse(student, course).orElseThrow();
+        student.getSubmissions().remove(submission);
+        course.getSubmissions().remove(submission);
+        submissionRepository.delete(submission);
     }
 }

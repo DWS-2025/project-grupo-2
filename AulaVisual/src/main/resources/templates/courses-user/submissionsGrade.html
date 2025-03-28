@@ -43,7 +43,7 @@
 
     <h1>Entregas calificadas del Curso {{courseName}}</h1>
     {{#gradedSubmissions}}
-    <form action="/courses/{{courseId}}/draft/{{user.id}}" method="post" id="delete-user-{{user.id}}"></form>
+    <form action="/courses/{{courseId}}/draft/{{student.id}}" method="post" id="delete-user-{{student.id}}"></form>
     {{/gradedSubmissions}}
     <table class="usersTable">
         <thead>
@@ -57,15 +57,15 @@
         <tbody>
         {{#gradedSubmissions}}
         <tr class="tableItems">
-            <td class="center">{{user.realName}}</td>
-            <td class="center">{{user.surname}}</td>
+            <td class="center">{{student.realName}}</td>
+            <td class="center">{{student.surname}}</td>
             <td class="center">
-                <a href="/courses/{{courseId}}/submission/download/{{user.id}}" download="{{user.realName}}">Descargar</a>
+                <a href="/courses/{{courseId}}/submission/download/{{student.id}}" download="{{student.realName}}">Descargar</a>
             </td>
             <td class="center">
             </td>
             <td class="center">
-                <button type="submit" class="save" form="delete-user-{{user.id}}" name="delete">Devolver a borrador</button>
+                <button type="submit" class="save" form="delete-user-{{student.id}}" name="delete">Devolver a borrador</button>
             </td>
         </tr>
         {{/gradedSubmissions}}

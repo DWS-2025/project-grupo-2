@@ -231,7 +231,7 @@ public class SubmissionController {
 
                 if(submissionService.userMadeSubmission(student, courseDTO)) {
 
-                    if(courseDTO.teacher().id() == user.id()) {
+                    if(courseDTO.teacher().id().equals(user.id())) {
 
                         submissionService.deleteSubmission(student, courseDTO);
                         return "redirect:/courses/" + courseId + "/grade";
