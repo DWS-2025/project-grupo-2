@@ -123,7 +123,7 @@ public class SubmissionController {
 
             UserDTO studentDTO = userService.findByIdDTO(studentId);
 
-            if(userDTO.role() == 1 && courseDTO.teacher().id().equals(userDTO.id())){
+            if(userDTO.role() == 1 && courseDTO.teacher().id() == userDTO.id()){
 
                 if(courseService.userIsInCourse(studentDTO, courseDTO)){
 
@@ -162,7 +162,7 @@ public class SubmissionController {
             CourseDTO courseDTO = courseService.findByIdDTO(courseId);
 
             UserDTO student = userService.findByIdDTO(studentId);
-            if(user.role() == 1 && courseDTO.teacher().id().equals(user.id())){
+            if(user.role() == 1 && courseDTO.teacher().id() == user.id()){
 
                 if(courseService.userIsInCourse(student, courseDTO)) {
 
@@ -231,7 +231,7 @@ public class SubmissionController {
 
                 if(submissionService.userMadeSubmission(student, courseDTO)) {
 
-                    if(courseDTO.teacher().id().equals(user.id())) {
+                    if(courseDTO.teacher().id() == user.id()) {
 
                         submissionService.deleteSubmission(student, courseDTO);
                         return "redirect:/courses/" + courseId + "/grade";

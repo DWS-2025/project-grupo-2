@@ -13,7 +13,7 @@ public class Course {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id;
+    private Long id;
 
     private  String name;
     private  String description;
@@ -28,10 +28,10 @@ public class Course {
     @ManyToMany(fetch = FetchType.EAGER)
     private final List <User> students = new ArrayList<>();
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "course")
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "course")
     private final List <Module> modules = new ArrayList<>();
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "course")
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "course")
     private final List<Submission> submissions = new ArrayList<>();
 
 
@@ -102,5 +102,10 @@ public class Course {
     public void setTeacher(User teacher) {
 
         this.teacher = teacher;
+    }
+
+    public List<Module> getmodules() {
+
+        return modules;
     }
 }

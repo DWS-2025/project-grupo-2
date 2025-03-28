@@ -11,12 +11,12 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id;
+    private Long id;
 
     @ManyToMany(mappedBy = "students", fetch = FetchType.EAGER)
     private final List<Course> courses = new ArrayList <>();
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "student")
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "student")
     private List<Submission> submissions;
 
     @OneToOne()
@@ -135,5 +135,15 @@ public class User {
     public String getCampus() {
 
         return campus;
+    }
+
+    public void setRealName(String realName) {
+
+        this.realName = realName;
+    }
+
+    public void setSurname(String surname) {
+
+        this.surname = surname;
     }
 }

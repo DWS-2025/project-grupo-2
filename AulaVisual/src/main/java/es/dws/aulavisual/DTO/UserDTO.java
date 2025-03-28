@@ -11,7 +11,8 @@ public record UserDTO(
         Integer role,
         String campus,
         List<CourseSimpleDTO> courses,
-        CourseInfoDTO courseTeaching
+        CourseInfoDTO courseTeaching,
+        String image
 ) {
 
 }

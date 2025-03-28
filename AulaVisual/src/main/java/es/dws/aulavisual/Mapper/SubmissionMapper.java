@@ -3,6 +3,7 @@ package es.dws.aulavisual.Mapper;
 import es.dws.aulavisual.DTO.SubmissionDTO;
 import es.dws.aulavisual.model.Submission;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
 import java.util.List;
 

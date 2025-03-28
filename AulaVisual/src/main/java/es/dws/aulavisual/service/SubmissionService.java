@@ -29,18 +29,22 @@ public class SubmissionService {
     private final SubmissionMapper submissionMapper;
     private final UserMapper userMapper;
     private final CourseMapper courseMapper;
+    private final CourseService courseService;
+    private final UserService userService;
 
-    public SubmissionService(SubmissionRepository submissionRepository, SubmissionMapper submissionMapper, UserMapper userMapper, CourseMapper courseMapper) {
+    public SubmissionService(SubmissionRepository submissionRepository, SubmissionMapper submissionMapper, UserMapper userMapper, CourseMapper courseMapper, CourseService courseService, UserService userService) {
         this.submissionRepository = submissionRepository;
         this.submissionMapper = submissionMapper;
         this.userMapper = userMapper;
         this.courseMapper = courseMapper;
+        this.courseService = courseService;
+        this.userService = userService;
     }
 
     public void save(CourseDTO courseDTO, UserDTO userDTO, MultipartFile submission) {
 
-        User user = userMapper.toDomain(userDTO);
-        Course course = courseMapper.toDomain(courseDTO);
+        User user = userService.findById(userDTO.id());
+        Course course = courseService.findById(courseDTO.id());
         submissionRepository.save(new Submission(course, user, transformSubmission(submission)));
     }
 
@@ -59,29 +63,29 @@ public class SubmissionService {
 
     public SubmissionDTO findByUserAndCourse(UserDTO userDTO, CourseDTO courseDTO) {
 
-        User user = userMapper.toDomain(userDTO);
-        Course course = courseMapper.toDomain(courseDTO);
+        User user = userService.findById(userDTO.id());
+        Course course = courseService.findById(courseDTO.id());
         return submissionMapper.toDTO(submissionRepository.findByStudentAndCourse(user, course).orElseThrow());
     }
 
     public boolean userMadeSubmission(UserDTO userDTO, CourseDTO courseDTO) {
 
-        User user = userMapper.toDomain(userDTO);
-        Course course = courseMapper.toDomain(courseDTO);
+        User user = userService.findById(userDTO.id());
+        Course course = courseService.findById(courseDTO.id());
         Optional <Submission> submission = submissionRepository.findByStudentAndCourse(user, course);
         return submission.isPresent();
     }
 
     public List<SubmissionDTO> getSubmissions(CourseDTO courseDTO, boolean isGraded) {
 
-        Course course = courseMapper.toDomain(courseDTO);
+        Course course = courseService.findById(courseDTO.id());
         return submissionMapper.toDTOs(submissionRepository.findSubmissionByCourseAndGraded(course, isGraded));
     }
 
     public void gradeSubmission(CourseDTO courseDTO, UserDTO studentDTO, float grade) {
 
-        Course course = courseMapper.toDomain(courseDTO);
-        User student = userMapper.toDomain(studentDTO);
+        Course course = courseService.findById(courseDTO.id());
+        User student = userService.findById(studentDTO.id());
         Optional <Submission> searchSubmission = submissionRepository.findByStudentAndCourse(student, course);
         if(searchSubmission.isPresent()) {
 
@@ -93,8 +97,8 @@ public class SubmissionService {
 
     public ResponseEntity <Object> getSubmission(CourseDTO courseDTO, UserDTO studentDTO) {
 
-        User student = userMapper.toDomain(studentDTO);
-        Course course = courseMapper.toDomain(courseDTO);
+        User student = userService.findById(studentDTO.id());
+        Course course = courseService.findById(courseDTO.id());
         Optional <Submission> searchSubmission = submissionRepository.findByStudentAndCourse(student, course);
         if(searchSubmission.isPresent()) {
 
@@ -115,8 +119,8 @@ public class SubmissionService {
 
     public void deleteSubmission(UserDTO studentDTO, CourseDTO courseDTO) {
 
-        User student = userMapper.toDomain(studentDTO);
-        Course course = courseMapper.toDomain(courseDTO);
+        User student = userService.findById(studentDTO.id());
+        Course course = courseService.findById(courseDTO.id());
         Optional <Submission> searchSubmission = submissionRepository.findByStudentAndCourse(student, course);
         searchSubmission.ifPresent(submissionRepository::delete);
     }

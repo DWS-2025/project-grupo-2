@@ -3,6 +3,8 @@ package es.dws.aulavisual.service;
 import java.sql.Blob;
 
 import es.dws.aulavisual.DTO.CourseDTO;
+import es.dws.aulavisual.DTO.ModuleSimpleDTO;
+import es.dws.aulavisual.Mapper.ModuleMapper;
 import es.dws.aulavisual.model.Course;
 import es.dws.aulavisual.model.Module;
 import es.dws.aulavisual.repository.ModuleRepository;
@@ -16,6 +18,7 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.http.ResponseEntity;
@@ -26,15 +29,21 @@ public class ModuleService {
 
     private final ModuleRepository moduleRepository;
     private final CourseMapper courseMapper;
+    private final UserService userService;
+    private final CourseService courseService;
+    private final ModuleMapper moduleMapper;
 
-    public ModuleService(ModuleRepository moduleRepository, CourseMapper courseMapper) {
+    public ModuleService(ModuleRepository moduleRepository, CourseMapper courseMapper, UserService userService, CourseService courseService, ModuleMapper moduleMapper) {
         this.moduleRepository = moduleRepository;
         this.courseMapper = courseMapper;
+        this.userService = userService;
+        this.courseService = courseService;
+        this.moduleMapper = moduleMapper;
     }
 
     public void save(CourseDTO courseDTO, String name, int position, MultipartFile content) {
 
-        Course course = courseMapper.toDomain(courseDTO);
+        Course course = courseService.findById(courseDTO.id());
         Module module = new Module(course, name, position, transformImage(content));
         moduleRepository.save(module);
     }
@@ -49,21 +58,22 @@ public class ModuleService {
         }
     }
 
-    public Optional<Module> findById(long id) {
+    public ModuleSimpleDTO findById(long id) {
 
-        return moduleRepository.findById(id);
+        return moduleMapper.toSimpleDTO(moduleRepository.findById(id).orElseThrow());
     }
 
-    public List<Module> getModulesByCourse(CourseDTO courseDTO) {
+    public List<ModuleSimpleDTO> getModulesByCourse(CourseDTO courseDTO) {
 
-        Course course = courseMapper.toDomain(courseDTO);
-        return moduleRepository.findByCourse(course, Sort.by(Sort.Direction.ASC, "position"));
+        Course course = courseService.findById(courseDTO.id());
+        return moduleMapper.toSimpleDTOs(moduleRepository.findByCourse(course, Sort.by(Sort.Direction.ASC, "position")));
     }
 
-    public ResponseEntity<Object> viewModule(Module module) {
+    public ResponseEntity<Object> viewModule(ModuleSimpleDTO moduleDTO) {
 
         try {
 
+            Module module = moduleRepository.findById(moduleDTO.id()).orElseThrow();
             Blob content = module.getContent();
             Resource file = new InputStreamResource(content.getBinaryStream());
             return ResponseEntity.ok().header(HttpHeaders.CONTENT_TYPE, "text/markdown")
@@ -76,26 +86,34 @@ public class ModuleService {
         }
     }
 
-    public void delete(Module module) {
+    public void delete(ModuleSimpleDTO moduleDTO, long courseId) {
 
-        moduleRepository.delete(module);
+        Module module = moduleRepository.findById(moduleDTO.id()).orElseThrow();
+        Course course = module.getCourse();
+        if (courseId != course.getId()){
+
+            throw new NoSuchElementException("No such Course");
+        }
+        course.getmodules().remove(module);
+        courseService.save(course);
+        moduleRepository.deleteById(module.getId());
     }
 
     public boolean positionExists(CourseDTO courseDto, int position) {
 
-        Course course = courseMapper.toDomain(courseDto);
+        Course course = courseService.findById(courseDto.id());
         return moduleRepository.existsByCourseAndPosition(course, position);
     }
 
-    public Optional<Module> findFirstModule(CourseDTO courseDTO) {
+    public ModuleSimpleDTO findFirstModule(CourseDTO courseDTO) {
 
-        Course course = courseMapper.toDomain(courseDTO);
-        return moduleRepository.findFirstModule(course.getId());
+        Course course = courseService.findById(courseDTO.id());
+        return moduleMapper.toSimpleDTO(moduleRepository.findFirstModule(course.getId()).orElseThrow());
     }
 
     public List<Integer> getAvailablePositions(CourseDTO courseDTO) {
 
-        Course course = courseMapper.toDomain(courseDTO);
+        Course course = courseService.findById(courseDTO.id());
         int maxPosition = moduleRepository.findlastModuleId(course.getId());
         List<Integer> positions = new ArrayList<>();
         List<Module> modules = moduleRepository.findByCourse(course);

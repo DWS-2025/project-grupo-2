@@ -1,6 +1,7 @@
 package es.dws.aulavisual.controller;
 
 import es.dws.aulavisual.DTO.CourseDTO;
+import es.dws.aulavisual.DTO.ModuleSimpleDTO;
 import es.dws.aulavisual.DTO.UserDTO;
 import es.dws.aulavisual.service.ModuleService;
 import es.dws.aulavisual.service.UserService;
@@ -47,7 +48,7 @@ public class CourseManagementController {
                 model.addAttribute("admin", user.realName());
                 model.addAttribute("userId", Long.parseLong(userId));
                 model.addAttribute("availableTeachers", userService.getAvaliableTeachers());
-                List <Course> courses = courseService.getCourses();
+                List <CourseDTO> courses = courseService.getCourses();
                 model.addAttribute("courses", courses);
                 return "courses-management/manageCourses";
             }
@@ -102,13 +103,7 @@ public class CourseManagementController {
             UserDTO user = userService.findByIdDTO(Long.parseLong(userId));
             if(user.role() == 0) {
 
-                Optional<Module> searchModule = moduleService.findById(id);
-                if(searchModule.isEmpty()) {
-
-                    model.addAttribute("message", "Módulo no encontrado");
-                    return "error";
-                }
-                Module module = searchModule.get();
+                ModuleSimpleDTO module = moduleService.findById(id);
                 model.addAttribute("courseId", courseId);
                 model.addAttribute("module", module);
                 return "courses-management/modulePreview";
@@ -133,14 +128,9 @@ public class CourseManagementController {
             UserDTO user = userService.findByIdDTO(Long.parseLong(userId));
             CourseDTO course = courseService.findByIdDTO(courseId);
 
-            Optional <Module> searchModule = moduleService.findById(id);
-            if(searchModule.isEmpty()) {
+            ModuleSimpleDTO module = moduleService.findById(id);
 
-                return ResponseEntity.status(404).body("Module not found");
-            }
-            Module module = searchModule.get();
-
-            if(user.role() == 0 || course.teacher().id().equals(user.id()) || courseService.userIsInCourse(user, course)) {
+            if(user.role() == 0 || course.teacher().id() == user.id() || courseService.userIsInCourse(user, course)) {
 
                 return moduleService.viewModule(module);
             }else{
@@ -190,16 +180,10 @@ public class CourseManagementController {
 
                 return "redirect:/";
             }
-            CourseDTO courseDTO = courseService.findByIdDTO(courseId);
-            Optional <Module> searchModule = moduleService.findById(id);
-            if(searchModule.isEmpty()) {
+            //CourseDTO courseDTO = courseService.findByIdDTO(courseId);
+            ModuleSimpleDTO module = moduleService.findById(id);
 
-                model.addAttribute("message", "Módulo no encontrado");
-                return "error";
-            }
-            Module module = searchModule.get();
-
-            moduleService.delete(module);
+            moduleService.delete(module, courseId);
             return "redirect:/admin/courses/{courseId}/modules";
         }catch (NoSuchElementException e) {
 
@@ -300,7 +284,7 @@ public class CourseManagementController {
                     model.addAttribute("message", "El profesor ya tiene un curso asignado");
                     return "error";
                 }
-                courseService.saveDTO(courseDTO);
+                courseDTO = courseService.saveDTO(courseDTO);
                 courseService.assignTeacher(teacherDTO, courseDTO);
             } else {
 

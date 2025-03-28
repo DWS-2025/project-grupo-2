@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 
 import es.dws.aulavisual.DTO.CourseDTO;
 import es.dws.aulavisual.DTO.TeacherInfoDTO;
+import es.dws.aulavisual.DTO.UserCreationDTO;
 import es.dws.aulavisual.DTO.UserDTO;
 import es.dws.aulavisual.Mapper.UserMapper;
 import es.dws.aulavisual.model.Course;
@@ -49,9 +50,13 @@ public class UserService {
         return userRepository.saveAndFlush(user);
     }
 
-    public UserDTO saveDTO(UserDTO userDTO) {
+    public UserDTO saveDTO(UserCreationDTO userDTO) {
 
-        User user = userRepository.findById(userDTO.id()).orElseThrow();
+        User user = userMapper.toDomain(userDTO.userDTO());
+        user.setPasswordHash(hashPassword(userDTO.password()));
+        user.setUserName(userDTO.userDTO().userName());
+        user.setRealName(userDTO.userDTO().realName());
+        user.setSurname(userDTO.userDTO().surname());
         return userMapper.toDTO(save(user));
     }
 
@@ -69,19 +74,17 @@ public class UserService {
             return;
         }
         User userToDelete = user.get();
-//        List<Course> courses = userToDelete.getCourses();
-//        for (Course course : courses) {
-//
-//            course.getStudents().remove(userToDelete);
-//            courseService.save(course);
-//        }
-//
-//        if(userToDelete.getRole() == 1) {
-//
-//            Course course = userToDelete.getCourseTeaching();
-//            course.setTeacher(null);
-//            courseService.save(course);
-//        }
+        List<Course> courses = userToDelete.getCourses();
+        for (Course course : courses) {
+
+            course.getStudents().remove(userToDelete);
+        }
+
+        if(userToDelete.getRole() == 1) {
+
+            Course course = userToDelete.getCourseTeaching();
+            course.setTeacher(null);
+        }
         userRepository.deleteById(id);
     }
 
@@ -152,9 +155,9 @@ public class UserService {
         return false;
     }
 
-    public void saveImage(UserDTO userDTO, URI location, InputStream inputStream, long size) {
+    public void saveImage(long userId, URI location, InputStream inputStream, long size) {
 
-        User user = userMapper.toDomain(userDTO);
+        User user = userRepository.findById(userId).orElseThrow();
 
         user.setImage(location.toString());
         user.setImageFile(BlobProxy.generateProxy(inputStream, size));
@@ -163,7 +166,7 @@ public class UserService {
 
     public ResponseEntity <Object> loadImage(UserDTO userDTO) {
 
-        User user = userMapper.toDomain(userDTO);
+        User user = userRepository.findById(userDTO.id()).orElseThrow();
 
         try {
 
@@ -187,7 +190,7 @@ public class UserService {
 
     public List <UserDTO> getAllUsersExceptSelfFiltered(UserDTO currentUserDTO, Example <User> example) {
 
-        User currentUser = userMapper.toDomain(currentUserDTO);
+        User currentUser = userRepository.findById(currentUserDTO.id()).orElseThrow();
         List<User> users = userRepository.findAll(example);
         users.remove(currentUser);
         return users.stream().map(userMapper::toDTO).collect(Collectors.toList());
@@ -195,7 +198,7 @@ public class UserService {
 
     public boolean updateRole(UserDTO userDTO, int newRole) {
 
-        User user = userMapper.toDomain(userDTO);
+        User user = userRepository.findById(userDTO.id()).orElseThrow();
         if(newRole >= 0 && newRole <= 2) {
 
             user.setRole(newRole);
@@ -212,7 +215,7 @@ public class UserService {
         for (User user : users) {
 
             user.getCourses().remove(course);
-            userRepository.save(user);
+            //userRepository.save(user);
         }
     }
 
@@ -248,5 +251,16 @@ public class UserService {
     public UserDTO findByUserName(String userName) {
 
         return userMapper.toDTO(userRepository.findByUserName(userName).orElseThrow());
+    }
+
+    public UserDTO updateDTO(Long id, UserCreationDTO userCreationDTO) {
+
+        User user = userRepository.findById(id).orElseThrow();
+        user.setRealName(userCreationDTO.userDTO().realName());
+        user.setSurname(userCreationDTO.userDTO().surname());
+        user.setUserName(userCreationDTO.userDTO().userName());
+        user.setCampus(userCreationDTO.userDTO().campus());
+        user.setRole(userCreationDTO.userDTO().role());
+        return userMapper.toDTO(userRepository.save(user));
     }
 }

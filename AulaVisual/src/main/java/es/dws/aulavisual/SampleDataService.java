@@ -23,15 +23,13 @@ public class SampleDataService {
     private final CourseService courseService;
     private final UserService userService;
     private final ModuleService moduleService;
-    private final UserMapper userMapper;
     private final CourseMapper courseMapper;
 
-    public SampleDataService(CourseService courseService, UserService userService, ModuleService moduleService, UserMapper userMapper, CourseMapper courseMapper) {
+    public SampleDataService(CourseService courseService, UserService userService, ModuleService moduleService, CourseMapper courseMapper) {
 
         this.courseService = courseService;
         this.userService = userService;
         this.moduleService = moduleService;
-        this.userMapper = userMapper;
         this.courseMapper = courseMapper;
     }
 
@@ -44,7 +42,7 @@ public class SampleDataService {
             userService.saveDTO("teacher3", "teacher3", "teacher3", "teacher3", "Zaun", 1);
 
             userService.saveDTO("asd", "asd", "asd", "asd", "Zaun", 0);
-            var usertest2DTO_aux = userService.saveDTO("test2", "test2", "test2", "test2", "Zaun", 2);
+            userService.saveDTO("test2", "test2", "test2", "test2", "Zaun", 2);
             userService.saveDTO("test3", "test3", "test3", "test3", "Zaun", 2);
             userService.saveDTO("test4", "test4", "test4", "test4", "Zaun", 2);
 
@@ -62,15 +60,14 @@ public class SampleDataService {
             courseService.assignTeacher(teacher1, courseMapper.toDTO(course1));
             courseService.assignTeacher(teacher2, courseMapper.toDTO(course2));
             courseService.assignTeacher(teacher3, courseMapper.toDTO(course3));
-            var course1DTO_aux = courseMapper.toDTO(course1);
-            courseService.addUserToCourse(course1DTO_aux, usertest2DTO_aux);
-//            courseService.addUserToCourse(courseMapper.toDTO(course2), userService.findByUserName("test3"));
-//            courseService.addUserToCourse(courseMapper.toDTO(course3), userService.findByUserName("test4"));
-//
-//            CourseDTO course1DTO = courseMapper.toDTO(course1);
-//            moduleService.save(course1DTO, "Intro", 1, convertMDToMultipart("files/courses/course-0/module0-Intro.md"));
-//            moduleService.save(course1DTO, "Campeones", 2, convertMDToMultipart("files/courses/course-0/module1-Champions.md"));
-//            moduleService.save(course1DTO, "Delete Me", 3, convertMDToMultipart("files/courses/course-0/module2-Delete_me.md"));
+            courseService.addUserToCourse(courseMapper.toDTO(course1), userService.findByUserName("test2"));
+            courseService.addUserToCourse(courseMapper.toDTO(course2), userService.findByUserName("test3"));
+            courseService.addUserToCourse(courseMapper.toDTO(course3), userService.findByUserName("test4"));
+
+            CourseDTO course1DTO = courseMapper.toDTO(course1);
+            moduleService.save(course1DTO, "Intro", 1, convertMDToMultipart("files/courses/course-0/module0-Intro.md"));
+            moduleService.save(course1DTO, "Campeones", 2, convertMDToMultipart("files/courses/course-0/module1-Champions.md"));
+            moduleService.save(course1DTO, "Delete Me", 3, convertMDToMultipart("files/courses/course-0/module2-Delete_me.md"));
         }catch (NoSuchElementException e) {
             System.out.println("Error creating sample data");
         }
