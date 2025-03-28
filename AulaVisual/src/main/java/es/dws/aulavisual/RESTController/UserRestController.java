@@ -89,4 +89,11 @@ public class UserRestController {
             return image;
         }
     }
+
+    @DeleteMapping("/{id}/")
+    public ResponseEntity<UserDTO> deleteUser(@PathVariable Long id) {
+
+        UserDTO deletedUser = userService.deleteById(id);
+        return ResponseEntity.ok().body(deletedUser);
+    }
 }
