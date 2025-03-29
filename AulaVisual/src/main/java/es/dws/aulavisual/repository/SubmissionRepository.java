@@ -16,4 +16,6 @@ public interface SubmissionRepository extends CrudRepository <Submission, Long> 
     Optional<Submission> findByStudentAndCourse(User student, Course course);
 
     List <Submission> findSubmissionByCourseAndGraded(Course course, boolean graded);
+
+    List<Submission> findSubmissionByCourse(Course course);
 }

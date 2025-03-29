@@ -4,8 +4,6 @@ import es.dws.aulavisual.DTO.CourseDTO;
 import es.dws.aulavisual.DTO.SubmissionDTO;
 import es.dws.aulavisual.DTO.UserDTO;
 import es.dws.aulavisual.Mapper.SubmissionMapper;
-import es.dws.aulavisual.Mapper.UserMapper;
-import es.dws.aulavisual.Mapper.CourseMapper;
 import es.dws.aulavisual.model.Course;
 import es.dws.aulavisual.model.Submission;
 import es.dws.aulavisual.repository.SubmissionRepository;
@@ -27,16 +25,12 @@ public class SubmissionService {
 
     private final SubmissionRepository submissionRepository;
     private final SubmissionMapper submissionMapper;
-    private final UserMapper userMapper;
-    private final CourseMapper courseMapper;
     private final CourseService courseService;
     private final UserService userService;
 
-    public SubmissionService(SubmissionRepository submissionRepository, SubmissionMapper submissionMapper, UserMapper userMapper, CourseMapper courseMapper, CourseService courseService, UserService userService) {
+    public SubmissionService(SubmissionRepository submissionRepository, SubmissionMapper submissionMapper, CourseService courseService, UserService userService) {
         this.submissionRepository = submissionRepository;
         this.submissionMapper = submissionMapper;
-        this.userMapper = userMapper;
-        this.courseMapper = courseMapper;
         this.courseService = courseService;
         this.userService = userService;
     }
@@ -125,5 +119,11 @@ public class SubmissionService {
         student.getSubmissions().remove(submission);
         course.getSubmissions().remove(submission);
         submissionRepository.delete(submission);
+    }
+
+    public List<SubmissionDTO> getCourseSubmissions(long courseId) {
+
+        Course course = courseService.findById(courseId);
+        return submissionMapper.toDTOs(submissionRepository.findSubmissionByCourse(course));
     }
 }
