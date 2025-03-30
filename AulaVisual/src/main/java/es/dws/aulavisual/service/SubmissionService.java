@@ -8,6 +8,9 @@ import es.dws.aulavisual.model.Course;
 import es.dws.aulavisual.model.Submission;
 import es.dws.aulavisual.repository.SubmissionRepository;
 import es.dws.aulavisual.model.User;
+
+import java.io.InputStream;
+import java.net.URI;
 import java.util.List;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
@@ -40,6 +43,13 @@ public class SubmissionService {
         User user = userService.findById(userDTO.id());
         Course course = courseService.findById(courseDTO.id());
         submissionRepository.save(new Submission(course, user, transformSubmission(submission)));
+    }
+
+    public SubmissionDTO save(SubmissionDTO submissionDTO) {
+
+        Course course = courseService.findById(submissionDTO.course().id());
+        User user = userService.findById(submissionDTO.student().id());
+        return submissionMapper.toDTO(submissionRepository.save(new Submission(course, user, null)));
     }
 
     private Blob transformSubmission(MultipartFile submission) {
@@ -81,12 +91,7 @@ public class SubmissionService {
         Course course = courseService.findById(courseDTO.id());
         User student = userService.findById(studentDTO.id());
         Optional <Submission> searchSubmission = submissionRepository.findByStudentAndCourse(student, course);
-        if(searchSubmission.isPresent()) {
-
-            Submission submission = searchSubmission.get();
-            submission.setGrade(grade);
-            submissionRepository.save(submission);
-        }
+        searchSubmission.ifPresent(submission -> grade(submission, grade));
     }
 
     public ResponseEntity <Object> getSubmission(CourseDTO courseDTO, UserDTO studentDTO) {
@@ -97,16 +102,7 @@ public class SubmissionService {
         if(searchSubmission.isPresent()) {
 
             Submission submission = searchSubmission.get();
-            Blob content = submission.getSubmission();
-            try {
-                Resource file = new InputStreamResource(content.getBinaryStream());
-                return ResponseEntity.ok().header(HttpHeaders.CONTENT_TYPE, "application/pdf")
-                        .contentLength(content.length()).body(file);
-
-            }catch (Exception e) {
-                System.out.println("Error loading submission: " + e.getMessage());
-                return ResponseEntity.notFound().build();
-            }
+            return getSubmissionContent(submission);
         }
         return ResponseEntity.notFound().build();
     }
@@ -116,14 +112,73 @@ public class SubmissionService {
         User student = userService.findById(studentDTO.id());
         Course course = courseService.findById(courseDTO.id());
         Submission submission = submissionRepository.findByStudentAndCourse(student, course).orElseThrow();
-        student.getSubmissions().remove(submission);
-        course.getSubmissions().remove(submission);
-        submissionRepository.delete(submission);
+        delete(submission);
     }
 
     public List<SubmissionDTO> getCourseSubmissions(long courseId) {
 
         Course course = courseService.findById(courseId);
         return submissionMapper.toDTOs(submissionRepository.findSubmissionByCourse(course));
+    }
+
+    public List<SubmissionDTO> getUserSubmissions(long userId) {
+
+        User user = userService.findById(userId);
+        return submissionMapper.toDTOs(submissionRepository.findSubmissionByStudent(user));
+    }
+
+    public void uploadSubmissionContent(long id, URI location, InputStream inputStream, long size) {
+
+        Submission submission = submissionRepository.findById(id).orElseThrow();
+
+        submission.setContent(location.toString());
+        submission.setSubmission(BlobProxy.generateProxy(inputStream, size));
+        submissionRepository.save(submission);
+    }
+
+    public ResponseEntity <Object> getSubmission(long id) {
+
+        Submission submission = submissionRepository.findById(id).orElseThrow();
+        return getSubmissionContent(submission);
+    }
+
+    private ResponseEntity <Object> getSubmissionContent(Submission submission) {
+
+        Blob content = submission.getSubmission();
+        try {
+            Resource file = new InputStreamResource(content.getBinaryStream());
+            return ResponseEntity.ok().header(HttpHeaders.CONTENT_TYPE, "application/pdf")
+                    .contentLength(content.length()).body(file);
+
+        }catch (Exception e) {
+            System.out.println("Error loading submission: " + e.getMessage());
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    public SubmissionDTO gradeSubmission(long id, float grade) {
+
+        Submission submission = submissionRepository.findById(id).orElseThrow();
+        return grade(submission, grade);
+    }
+
+    private SubmissionDTO grade(Submission submission, float grade) {
+
+        submission.setGrade(grade);
+        return submissionMapper.toDTO(submissionRepository.save(submission));
+    }
+
+    public SubmissionDTO deleteSubmission(long id) {
+
+        Submission submission = submissionRepository.findById(id).orElseThrow();
+        return delete(submission);
+    }
+
+    private SubmissionDTO delete(Submission submission) {
+
+        submission.getStudent().getSubmissions().remove(submission);
+        submission.getCourse().getSubmissions().remove(submission);
+        submissionRepository.delete(submission);
+        return submissionMapper.toDTO(submission);
     }
 }
