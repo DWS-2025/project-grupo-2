@@ -42,7 +42,7 @@ public class UserRestController {
         return ResponseEntity.created(location).body(userDTO);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/{id}/")
     public ResponseEntity<UserDTO> updateUser(@PathVariable Long id, @RequestBody UserCreationDTO userCreationDTO) {
 
         UserDTO userDTO = userService.updateDTO(id, userCreationDTO);
@@ -50,7 +50,7 @@ public class UserRestController {
         return ResponseEntity.created(location).body(userDTO);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/{id}/")
     public ResponseEntity<UserDTO> getUserById(@PathVariable Long id) {
 
         return ResponseEntity.ok(userService.findByIdDTO(id));
@@ -88,5 +88,12 @@ public class UserRestController {
 
             return image;
         }
+    }
+
+    @DeleteMapping("/{id}/")
+    public ResponseEntity<UserDTO> deleteUser(@PathVariable Long id) {
+
+        UserDTO deletedUser = userService.deleteById(id);
+        return ResponseEntity.ok().body(deletedUser);
     }
 }

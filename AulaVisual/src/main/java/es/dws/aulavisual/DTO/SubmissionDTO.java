@@ -6,6 +6,7 @@ public record SubmissionDTO(
         UserSimpleDTO student,
         CourseSimpleDTO course,
         boolean graded,
-        float grade
+        float grade,
+        String content
 ) {
 }

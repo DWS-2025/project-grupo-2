@@ -17,6 +17,8 @@ public class Submission {
     @ManyToOne()
     private Course course;
 
+    private String content = null;
+
     @Lob
     private Blob submission;
 
@@ -76,6 +78,22 @@ public class Submission {
     }
 
     public User getStudent () {
+
         return this.student;
+    }
+
+    public String getContent() {
+
+        return content;
+    }
+
+    public void setContent(String content) {
+
+        this.content = content;
+    }
+
+    public void setSubmission(Blob blob) {
+
+        this.submission = blob;
     }
 }

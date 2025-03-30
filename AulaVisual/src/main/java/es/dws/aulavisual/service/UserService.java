@@ -65,15 +65,9 @@ public class UserService {
         return userRepository.saveAndFlush(user);
     }
 
-    public void deleteById(long id) {
+    public UserDTO deleteById(long id) {
 
-        Optional<User> user = userRepository.findById(id);
-        if(user.isEmpty()) {
-
-            System.out.println("User not found");
-            return;
-        }
-        User userToDelete = user.get();
+        User userToDelete = userRepository.findById(id).orElseThrow();
         List<Course> courses = userToDelete.getCourses();
         for (Course course : courses) {
 
@@ -86,6 +80,7 @@ public class UserService {
             course.setTeacher(null);
         }
         userRepository.deleteById(id);
+        return userMapper.toDTO(userToDelete);
     }
 
     public void editUsername(long id, String newUsername) {
