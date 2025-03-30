@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.http.ResponseEntity;
 
@@ -44,7 +43,11 @@ public class ModuleService {
     public ModuleSimpleDTO save(CourseDTO courseDTO, String name, int position, MultipartFile content) {
 
         Course course = courseService.findById(courseDTO.id());
-        Module module = new Module(course, name, position, transformImage(content));
+        Blob blob = null;
+        if(content != null) {
+            blob = transformImage(content);
+        }
+        Module module = new Module(course, name, position, blob);
         return moduleMapper.toSimpleDTO(moduleRepository.save(module));
     }
 
