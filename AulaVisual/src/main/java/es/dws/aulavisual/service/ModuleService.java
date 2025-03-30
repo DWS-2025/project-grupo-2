@@ -41,11 +41,11 @@ public class ModuleService {
         this.moduleMapper = moduleMapper;
     }
 
-    public void save(CourseDTO courseDTO, String name, int position, MultipartFile content) {
+    public ModuleSimpleDTO save(CourseDTO courseDTO, String name, int position, MultipartFile content) {
 
         Course course = courseService.findById(courseDTO.id());
         Module module = new Module(course, name, position, transformImage(content));
-        moduleRepository.save(module);
+        return moduleMapper.toSimpleDTO(moduleRepository.save(module));
     }
 
     private Blob transformImage(MultipartFile image) {
@@ -136,5 +136,17 @@ public class ModuleService {
         }
         positions.add(maxPosition+1);
         return positions;
+    }
+
+    public List<ModuleSimpleDTO> getModulesByCourseId(Long id){
+
+        Course course = courseService.findById(id);
+        return moduleMapper.toSimpleDTOs(moduleRepository.findByCourse(course, Sort.by(Sort.Direction.ASC, "position")));
+    }
+
+    public ModuleSimpleDTO saveDTO(Long courseId, ModuleSimpleDTO moduleSimpleDTO) {
+
+
+        return save(courseService.findByIdDTO(courseId), moduleSimpleDTO.name(), moduleSimpleDTO.position(), null);
     }
 }

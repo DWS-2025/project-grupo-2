@@ -43,8 +43,8 @@ public class CourseRestController {
     @PostMapping("courses/")
     public ResponseEntity<CourseDTO> createCourse(@RequestBody CourseDTO courseDTO) {
 
-        CourseDTO courseDTO1 = courseService.saveDTO(courseDTO);
-        return ResponseEntity.ok(courseDTO1);
+        CourseDTO createCourseDTO = courseService.saveDTO(courseDTO);
+        return ResponseEntity.ok(createCourseDTO);
     }
 
     @GetMapping("course/{id}/users/")
