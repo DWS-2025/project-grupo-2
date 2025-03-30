@@ -1,7 +1,9 @@
 package es.dws.aulavisual.service;
 
 import es.dws.aulavisual.DTO.CourseDTO;
+import es.dws.aulavisual.DTO.CourseInfoDTO;
 import es.dws.aulavisual.DTO.UserDTO;
+import es.dws.aulavisual.DTO.UserSimpleDTO;
 import es.dws.aulavisual.Mapper.CourseMapper;
 import es.dws.aulavisual.model.Course;
 import es.dws.aulavisual.repository.CourseRepository;
@@ -131,9 +133,10 @@ public class CourseService {
         }
     }
 
-    public List<CourseDTO> courseOfUser(UserDTO userDTO) {
+    public List<CourseDTO> courseOfUser(Long id) {
 
-        User user = userService.findById(userDTO.id());
+        User user = userService.findById(id);
+        UserDTO userDTO = userMapper.toDTO(user);
         List<Course> normalCourses = courseRepository.searchCoursesByStudentsContaining(user);
         normalCourses.addAll(courseOfTeacher(userDTO));
         return courseMapper.toDTOs(normalCourses);
@@ -151,5 +154,19 @@ public class CourseService {
 
         User user = userService.findById(userDTO.id());
         return courseRepository.searchCoursesByTeacherId(user.getId());
+    }
+
+    public List<CourseInfoDTO> courseInfoOfUser(Long id) {
+
+        User user = userService.findById(id);
+        List<Course> normalCourses = courseRepository.searchCoursesByStudentsContaining(user);
+        return courseMapper.toInfoDTOs(normalCourses);
+    }
+
+    public List<UserSimpleDTO> getAllStudentsfromCourse(Long id) {
+
+        Course course = courseRepository.findById(id).orElseThrow();
+        List<User> students = course.getStudents();
+        return userMapper.toSimpleDTOs(students);
     }
 }

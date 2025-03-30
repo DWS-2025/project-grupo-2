@@ -39,7 +39,7 @@ public class MainCoursesController {
                 return "redirect:/login";
             }
             UserDTO user = userService.findByIdDTO(Long.parseLong(userId));
-            List <CourseDTO> userCourses = courseService.courseOfUser(user);
+            List <CourseDTO> userCourses = courseService.courseOfUser(user.id());
             List <CourseDTO> availableCourses = courseService.notCourseOfUser(user);
 
 

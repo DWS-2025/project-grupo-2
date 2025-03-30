@@ -9,10 +9,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import es.dws.aulavisual.DTO.CourseDTO;
-import es.dws.aulavisual.DTO.TeacherInfoDTO;
-import es.dws.aulavisual.DTO.UserCreationDTO;
-import es.dws.aulavisual.DTO.UserDTO;
+import es.dws.aulavisual.DTO.*;
 import es.dws.aulavisual.Mapper.UserMapper;
 import es.dws.aulavisual.model.Course;
 import es.dws.aulavisual.model.User;
