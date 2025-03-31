@@ -375,9 +375,8 @@ public class CourseManagementController {
 
         CourseDTO course = courseService.findByIdDTO(courseId);
 
-        ResponseEntity <Object> response = courseService.loadImage(course);
+        return courseService.loadImage(course);
 
-        return Objects.requireNonNullElseGet(response, () -> ResponseEntity.notFound().build());
     }
 
     @PostMapping("/admin/courses/{courseId}/addStudent")

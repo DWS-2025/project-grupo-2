@@ -47,10 +47,13 @@ public class SampleDataService {
             userService.saveDTO("test4", "test4", "test4", "test4", "Zaun", 2);
 
             Course course1 = new Course("League of Legends", "Aprende a jugar al LOL", "Haz una redacción sobre el control de oleadas", convertPNGToMultipart("files/courses/course-0/img.png"));
+            course1.setImage("/api/course/1/image");
             courseService.save(course1);
             Course course2 = new Course("Padel", "Comienza a disfrutar de hacer ejercicio", "Explica las reglas del padel", convertPNGToMultipart("files/courses/course-1/img.png"));
+            course2.setImage("/api/course/2/image");
             courseService.save(course2);
             Course course3 = new Course("Recetas de Cocina", "Aprende a cocinar recetas increíblemente sabrosas", "Haz una receta que incluya huevos, pasta y tomate", convertPNGToMultipart("files/courses/course-2/img.png"));
+            course3.setImage("/api/course/3/image");
             courseService.save(course3);
 
 

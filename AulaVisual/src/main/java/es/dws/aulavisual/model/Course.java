@@ -78,7 +78,7 @@ public class Course {
 
     private Blob transformImage(MultipartFile imageCourse) {
 
-        if(imageCourse == null ||imageCourse.isEmpty()){
+        if(imageCourse == null || imageCourse.isEmpty()){
 
             return null;
         }else{
