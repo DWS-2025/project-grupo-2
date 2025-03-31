@@ -1,5 +1,6 @@
 package es.dws.aulavisual.service;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.security.NoSuchAlgorithmException;
@@ -16,6 +17,7 @@ import es.dws.aulavisual.model.User;
 import es.dws.aulavisual.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.hibernate.engine.jdbc.BlobProxy;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Example;
@@ -165,8 +167,14 @@ public class UserService {
             Blob image = user.getImageFile();
             if(image == null) {
 
-                System.out.println("User has no image");
-                return null;
+                try {
+                    ClassPathResource resource = new ClassPathResource("static/images/user-default.png");
+                    byte [] imageBytes = resource.getInputStream().readAllBytes();
+                    return ResponseEntity.ok().header(HttpHeaders.CONTENT_TYPE, "image/png").body(imageBytes);
+                } catch (IOException e) {
+
+                    return ResponseEntity.status(500).body("Internal Server Error");
+                }
             }else{
 
                 Resource file = new InputStreamResource(image.getBinaryStream());

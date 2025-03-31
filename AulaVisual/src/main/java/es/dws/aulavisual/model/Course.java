@@ -1,6 +1,7 @@
 package es.dws.aulavisual.model;
 
 import java.io.IOException;
+import java.net.URI;
 import java.sql.Blob;
 import jakarta.persistence.*;
 import org.hibernate.engine.jdbc.BlobProxy;
@@ -22,8 +23,10 @@ public class Course {
     @OneToOne()
     private User teacher = null;
 
+    private String image = null;
+
     @Lob
-    private Blob imageCourse;
+    private Blob imageCourse = null;
 
     @ManyToMany(fetch = FetchType.EAGER)
     private final List <User> students = new ArrayList<>();
@@ -94,7 +97,7 @@ public class Course {
         return students;
     }
 
-    public Blob getImage() {
+    public Blob getImageCourse() {
 
         return imageCourse;
     }
@@ -112,5 +115,20 @@ public class Course {
     public List<Submission> getSubmissions() {
 
         return this.submissions;
+    }
+
+    public void setImage(String location) {
+
+        this.image = location;
+    }
+
+    public void setImageCourse(Blob blob) {
+
+        this.imageCourse = blob;
+    }
+
+    public String getImage() {
+
+        return this.image;
     }
 }

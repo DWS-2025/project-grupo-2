@@ -13,6 +13,9 @@ import es.dws.aulavisual.service.CourseService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.net.URI;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
@@ -252,7 +255,7 @@ public class CourseManagementController {
     }
 
     @PostMapping("/admin/courses/addCourse")
-    public String addCourse(Model model, CourseDTO courseDTO, @RequestParam long teacherId, MultipartFile image, @CookieValue(value = "userId", defaultValue = "") String userId) {
+    public String addCourse(Model model, CourseDTO courseDTO, @RequestParam long teacherId, MultipartFile imageCourse, @CookieValue(value = "userId", defaultValue = "") String userId) {
 
         try {
             if (userId.isEmpty()) {
@@ -277,7 +280,7 @@ public class CourseManagementController {
                 return "error";
             }
 
-            if (image != null && !image.isEmpty()) {
+            if (imageCourse != null && !imageCourse.isEmpty()) {
 
                 if (teacherDTO.courseTeaching() != null) {
 
@@ -286,13 +289,15 @@ public class CourseManagementController {
                 }
                 courseDTO = courseService.saveDTO(courseDTO);
                 courseService.assignTeacher(teacherDTO, courseDTO);
+                URI location = URI.create(String.format("/course/" + courseDTO.id() + "/image/"));
+                courseService.uploadImage(courseDTO.id(), location, imageCourse.getInputStream(), imageCourse.getSize());
             } else {
 
                 model.addAttribute("message", "La imagen es obligatoria");
                 return "error";
             }
             return "redirect:/admin/courses";
-        } catch (NoSuchElementException e) {
+        } catch (NoSuchElementException | IOException e) {
 
             model.addAttribute("message", e.getMessage());
             return "error";

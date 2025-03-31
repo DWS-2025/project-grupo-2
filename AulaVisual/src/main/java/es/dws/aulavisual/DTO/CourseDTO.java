@@ -10,6 +10,7 @@ public record CourseDTO(
         String description,
         String task,
         TeacherInfoDTO teacher,
-        List<UserSimpleDTO> students
+        List<UserSimpleDTO> students,
+        String image
 ) {
 }

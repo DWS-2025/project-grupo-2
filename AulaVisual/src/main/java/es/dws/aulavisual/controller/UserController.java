@@ -181,22 +181,7 @@ public class UserController {
 
                 userId = Long.toString(id);
             }
-            ResponseEntity <Object> image = userService.loadImage(currentUser);
-
-            if(image == null) {
-
-                try {
-                    ClassPathResource resource = new ClassPathResource("static/images/user-default.png");
-                    byte [] imageBytes = resource.getInputStream().readAllBytes();
-                    return ResponseEntity.ok().header(HttpHeaders.CONTENT_TYPE, "image/png").body(imageBytes);
-                } catch (IOException e) {
-
-                    return ResponseEntity.status(500).body("Internal Server Error");
-                }
-            }else {
-
-                return image;
-            }
+            return userService.loadImage(currentUser);
         }catch (NoSuchElementException e) {
 
             return ResponseEntity.status(404).body("Not Found");
