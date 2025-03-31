@@ -373,9 +373,7 @@ public class CourseManagementController {
     @GetMapping("/courses/{courseId}/getImage")
     public ResponseEntity <Object> getImage(@PathVariable Long courseId) {
 
-        CourseDTO course = courseService.findByIdDTO(courseId);
-
-        return courseService.loadImage(course);
+        return courseService.loadImage(courseId);
 
     }
 

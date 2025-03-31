@@ -116,11 +116,11 @@ public class CourseService {
         teacher.setCourseTeaching(null);
     }
 
-    public ResponseEntity<Object> loadImage(CourseDTO courseDTO){
+    public ResponseEntity<Object> loadImage(Long id){
 
         try {
 
-            Course course = courseRepository.findById(courseDTO.id()).orElseThrow();
+            Course course = courseRepository.findById(id).orElseThrow();
             Blob image = course.getImageCourse();
             if(image == null) {
 

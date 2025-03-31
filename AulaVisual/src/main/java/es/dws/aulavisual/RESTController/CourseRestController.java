@@ -4,8 +4,13 @@ import es.dws.aulavisual.DTO.*;
 import es.dws.aulavisual.service.CourseService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.net.URI;
 import java.util.List;
+
+import static org.springframework.web.servlet.support.ServletUriComponentsBuilder.fromCurrentRequest;
 
 @RestController
 @RequestMapping("/api/")
@@ -61,6 +66,25 @@ public class CourseRestController {
         courseService.deleteCourse(id);
         return ResponseEntity.ok(courseDTO);
     }
+
+    @PutMapping("course/{id}/image/")
+    public ResponseEntity<Object> uploadImage(@PathVariable Long id, @RequestParam("image") MultipartFile image) {
+
+        try {
+            URI location = fromCurrentRequest().path("").buildAndExpand(id).toUri();
+            courseService.uploadImage(id, location, image.getInputStream(), image.getSize());
+            return ResponseEntity.created(location).body(location);
+        } catch (IOException e){
+            return ResponseEntity.badRequest().body("Error uploading image: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("course/{id}/image/")
+    public ResponseEntity<Object> loadImage(@PathVariable Long id) {
+
+        return courseService.loadImage(id);
+    }
+
 
 //    @PutMapping("course/{id}/")
 //    public ResponseEntity<CourseDTO> addTeacherToCourse(@PathVariable Long id, @RequestBody TeacherInfoDTO teacherInfoDTO) {
