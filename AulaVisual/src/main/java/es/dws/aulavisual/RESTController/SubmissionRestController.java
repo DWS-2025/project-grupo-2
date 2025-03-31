@@ -55,7 +55,7 @@ public class SubmissionRestController {
         return ResponseEntity.ok(createdSubmission);
     }
 
-    @PostMapping("submission/{id}/content")
+    @PutMapping("submission/{id}/content")
     public ResponseEntity<Object> uploadSubmissionContent(@PathVariable long id, @RequestParam("file") MultipartFile file) {
 
         try {
