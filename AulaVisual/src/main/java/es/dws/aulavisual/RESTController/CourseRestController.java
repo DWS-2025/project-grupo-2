@@ -9,6 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.net.URI;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import static org.springframework.web.servlet.support.ServletUriComponentsBuilder.fromCurrentRequest;
 
@@ -82,15 +83,24 @@ public class CourseRestController {
     @GetMapping("course/{id}/image/")
     public ResponseEntity<Object> loadImage(@PathVariable Long id) {
 
-        return courseService.loadImage(id);
+        try{
+            return courseService.loadImage(id);
+        } catch (NoSuchElementException e){
+            return ResponseEntity.badRequest().body("Error loading image: " + e.getMessage());
+        }
     }
 
 
-//    @PutMapping("course/{id}/")
-//    public ResponseEntity<CourseDTO> addTeacherToCourse(@PathVariable Long id, @RequestBody TeacherInfoDTO teacherInfoDTO) {
-//
-//        CourseDTO courseDTO = courseService.findByIdDTO(id);
-//        courseService.assignTeacher(teacherInfoDTO, courseDTO);
-//        return ResponseEntity.ok(courseDTO);
-//    }
+    @PutMapping("course/{id}/")
+    public ResponseEntity<Object> addTeacherToCourse(@PathVariable Long id, @RequestBody TeacherInfoDTO teacherInfoDTO) {
+
+        CourseDTO courseDTO = courseService.findByIdDTO(id);
+        try{
+            courseService.assignTeacher(teacherInfoDTO.id(), courseDTO);
+            return ResponseEntity.ok(courseDTO);
+        } catch (IllegalArgumentException e){
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+
+    }
 }

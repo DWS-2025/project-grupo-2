@@ -245,9 +245,9 @@ public class CourseManagementController {
             }
 
             courseService.saveDTO(courseDTO);
-            courseService.assignTeacher(teacherDTO, courseDTO);
+            courseService.assignTeacher(teacherDTO.id(), courseDTO);
             return "redirect:/admin/courses";
-        }catch (NoSuchElementException e){
+        }catch (NoSuchElementException | IllegalArgumentException e){
 
             model.addAttribute("message", e.getMessage());
             return "error";
@@ -288,7 +288,7 @@ public class CourseManagementController {
                     return "error";
                 }
                 courseDTO = courseService.saveDTO(courseDTO);
-                courseService.assignTeacher(teacherDTO, courseDTO);
+                courseService.assignTeacher(teacherDTO.id(), courseDTO);
                 URI location = URI.create(String.format("/course/" + courseDTO.id() + "/image/"));
                 courseService.uploadImage(courseDTO.id(), location.toString(), imageCourse.getInputStream(), imageCourse.getSize());
             } else {
@@ -297,7 +297,7 @@ public class CourseManagementController {
                 return "error";
             }
             return "redirect:/admin/courses";
-        } catch (NoSuchElementException | IOException e) {
+        } catch (NoSuchElementException | IOException | IllegalArgumentException e) {
 
             model.addAttribute("message", e.getMessage());
             return "error";

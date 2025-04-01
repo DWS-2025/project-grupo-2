@@ -219,9 +219,9 @@ public class UserService {
         }
     }
 
-    void addCourseToTeacher(UserDTO userDTO, Course course) {
+    void addCourseToTeacher(long id, Course course) {
 
-        User user = userRepository.findById(userDTO.id()).orElseThrow();
+        User user = userRepository.findById(id).orElseThrow();
         user.setCourseTeaching(course);
         userRepository.save(user);
     }
