@@ -8,6 +8,7 @@ import org.hibernate.engine.jdbc.BlobProxy;
 import org.springframework.web.multipart.MultipartFile;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 public class Course {
@@ -130,5 +131,19 @@ public class Course {
     public String getImage() {
 
         return this.image;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+
+        if(o == null || getClass() != o.getClass()) return false;
+        Course course = (Course) o;
+        return Objects.equals(id, course.id);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hashCode(id);
     }
 }

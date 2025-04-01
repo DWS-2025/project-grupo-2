@@ -1,6 +1,7 @@
 package es.dws.aulavisual.model;
 
 import java.sql.Blob;
+import java.util.Objects;
 
 import jakarta.persistence.*;
 
@@ -95,5 +96,19 @@ public class Submission {
     public void setSubmission(Blob blob) {
 
         this.submission = blob;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+
+        if(o == null || getClass() != o.getClass()) return false;
+        Submission that = (Submission) o;
+        return Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hashCode(id);
     }
 }

@@ -3,6 +3,7 @@ package es.dws.aulavisual.model;
 import java.sql.Blob;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import jakarta.persistence.*;
 
@@ -148,6 +149,21 @@ public class User {
     }
 
     public List<Submission> getSubmissions() {
+
         return submissions;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+
+        if(o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return Objects.equals(id, user.id);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hashCode(id);
     }
 }

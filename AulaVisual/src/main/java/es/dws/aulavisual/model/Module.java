@@ -2,6 +2,7 @@ package es.dws.aulavisual.model;
 
 import jakarta.persistence.*;
 import java.sql.Blob;
+import java.util.Objects;
 
 @Entity
 public class Module {
@@ -72,5 +73,19 @@ public class Module {
     public void setContent(Blob content) {
 
         this.content = content;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+
+        if(o == null || getClass() != o.getClass()) return false;
+        Module module = (Module) o;
+        return Objects.equals(id, module.id);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hashCode(id);
     }
 }
