@@ -182,10 +182,10 @@ public class CourseService {
         return userMapper.toSimpleDTOs(students);
     }
 
-    public void uploadImage(long courseId, URI location, InputStream inputStream, long size) {
+    public void uploadImage(long courseId, String location, InputStream inputStream, long size) {
 
         Course course = courseRepository.findById(courseId).orElseThrow();
-        course.setImage(location.toString());
+        course.setImage(location);
         course.setImageCourse(BlobProxy.generateProxy(inputStream, size));
         courseRepository.save(course);
     }

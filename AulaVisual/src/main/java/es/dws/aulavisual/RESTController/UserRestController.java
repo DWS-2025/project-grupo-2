@@ -60,9 +60,9 @@ public class UserRestController {
     public ResponseEntity<Object> uploadImage(@PathVariable Long id, @RequestParam("image") MultipartFile image) {
 
         try {
-            URI location = fromCurrentRequest().path("").buildAndExpand(id).toUri();
+            String location = fromCurrentRequest().path("").buildAndExpand(id).toUri().getPath();
             userService.saveImage(id, location, image.getInputStream(), image.getSize());
-            return ResponseEntity.created(location).body(location);
+            return ResponseEntity.created(URI.create(location)).body(location);
         }catch (IOException e){
 
             return ResponseEntity.badRequest().body("Error uploading image: " + e.getMessage());

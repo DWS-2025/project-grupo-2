@@ -149,11 +149,11 @@ public class UserService {
         return false;
     }
 
-    public void saveImage(long userId, URI location, InputStream inputStream, long size) {
+    public void saveImage(long userId, String location, InputStream inputStream, long size) {
 
         User user = userRepository.findById(userId).orElseThrow();
 
-        user.setImage(location.toString());
+        user.setImage(location);
         user.setImageFile(BlobProxy.generateProxy(inputStream, size));
         userRepository.save(user);
     }

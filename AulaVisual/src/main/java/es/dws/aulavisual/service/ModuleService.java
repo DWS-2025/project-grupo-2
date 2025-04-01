@@ -164,10 +164,10 @@ public class ModuleService {
         return save(courseService.findByIdDTO(courseId), moduleSimpleDTO.name(), moduleSimpleDTO.position(), null);
     }
 
-    public void uploadModuleContent(long id, URI location, InputStream inputStream, long size) {
+    public void uploadModuleContent(long id, String location, InputStream inputStream, long size) {
 
         Module module = moduleRepository.findById(id).orElseThrow();
-        module.setContentLocation(location.toString());
+        module.setContentLocation(location);
         module.setContent(BlobProxy.generateProxy(inputStream, size));
         moduleRepository.save(module);
     }

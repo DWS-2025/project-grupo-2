@@ -47,9 +47,9 @@ public class ModuleRestController {
     public ResponseEntity <Object> updateModuleContent(@PathVariable long id, @RequestParam("content") MultipartFile content) {
 
         try {
-            URI location = fromCurrentRequest().path("").buildAndExpand(id).toUri();
+            String location = fromCurrentRequest().path("").buildAndExpand(id).toUri().getPath();
             moduleService.uploadModuleContent(id, location, content.getInputStream(), content.getSize());
-            return ResponseEntity.created(location).body(location);
+            return ResponseEntity.created(URI.create(location)).body(location);
         }catch (IOException e) {
 
             throw new RuntimeException("Error processing file", e);

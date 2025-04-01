@@ -290,7 +290,7 @@ public class CourseManagementController {
                 courseDTO = courseService.saveDTO(courseDTO);
                 courseService.assignTeacher(teacherDTO, courseDTO);
                 URI location = URI.create(String.format("/course/" + courseDTO.id() + "/image/"));
-                courseService.uploadImage(courseDTO.id(), location, imageCourse.getInputStream(), imageCourse.getSize());
+                courseService.uploadImage(courseDTO.id(), location.toString(), imageCourse.getInputStream(), imageCourse.getSize());
             } else {
 
                 model.addAttribute("message", "La imagen es obligatoria");

@@ -59,9 +59,9 @@ public class SubmissionRestController {
     public ResponseEntity<Object> uploadSubmissionContent(@PathVariable long id, @RequestParam("file") MultipartFile file) {
 
         try {
-            URI location = fromCurrentRequest().path("").buildAndExpand(id).toUri();
+            String location = fromCurrentRequest().path("").buildAndExpand(id).toUri().getPath();
             submissionService.uploadSubmissionContent(id, location, file.getInputStream(), file.getSize());
-            return ResponseEntity.created(location).body(location);
+            return ResponseEntity.created(URI.create(location)).body(location);
         }catch (IOException e){
 
             return ResponseEntity.badRequest().body("Error uploading submission content: " + e.getMessage());
@@ -79,10 +79,13 @@ public class SubmissionRestController {
         }
     }
 
+    public record gradeUpdate(
+            Float grade
+    ){}
     @PutMapping("submission/{id}/grade")
-    public ResponseEntity<SubmissionDTO> gradeSubmission(@PathVariable long id, @RequestParam float grade) {
+    public ResponseEntity<SubmissionDTO> gradeSubmission(@PathVariable long id, @RequestBody gradeUpdate grade) {
 
-        SubmissionDTO submissionDTO = submissionService.gradeSubmission(id, grade);
+        SubmissionDTO submissionDTO = submissionService.gradeSubmission(id, grade.grade());
         return ResponseEntity.ok(submissionDTO);
     }
 
