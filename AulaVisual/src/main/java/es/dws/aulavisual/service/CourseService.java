@@ -1,15 +1,20 @@
 package es.dws.aulavisual.service;
 
-import es.dws.aulavisual.DTO.CourseDTO;
-import es.dws.aulavisual.DTO.UserDTO;
+import es.dws.aulavisual.DTO.*;
 import es.dws.aulavisual.Mapper.CourseMapper;
 import es.dws.aulavisual.model.Course;
 import es.dws.aulavisual.repository.CourseRepository;
 import es.dws.aulavisual.model.User;
+import org.hibernate.engine.jdbc.BlobProxy;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
 import java.sql.Blob;
 
 import org.springframework.http.ResponseEntity;
@@ -35,13 +40,16 @@ public class CourseService {
         this.courseMapper = courseMapper;
     }
 
-    public void assignTeacher(UserDTO teacherDTO, CourseDTO courseDTO) {
+    public void assignTeacher(long id, CourseDTO courseDTO) {
 
         Course course = courseRepository.findById(courseDTO.id()).orElseThrow();
-        User teacher = userService.findById(teacherDTO.id());
+        User teacher = userService.findById(id);
+        if(teacher.getRole() != 1 || teacher.getCourseTeaching() != null) {
+            throw new IllegalArgumentException("Teacher is not valid");
+        }
         course.setTeacher(teacher);
         courseRepository.save(course);
-        userService.addCourseToTeacher(teacherDTO, course);
+        userService.addCourseToTeacher(teacher.getId(), course);
     }
 
     public CourseDTO saveDTO(CourseDTO courseDTO) {
@@ -108,16 +116,22 @@ public class CourseService {
         teacher.setCourseTeaching(null);
     }
 
-    public ResponseEntity<Object> loadImage(CourseDTO courseDTO){
+    public ResponseEntity<Object> loadImage(Long id){
 
+        Course course = courseRepository.findById(id).orElseThrow();
         try {
 
-            Course course = courseRepository.findById(courseDTO.id()).orElseThrow();
-            Blob image = course.getImage();
+            Blob image = course.getImageCourse();
             if(image == null) {
 
-                System.out.println("course has no image");
-                return null;
+                try {
+                    ClassPathResource resource = new ClassPathResource("static/images/course-default.png");
+                    byte [] imageBytes = resource.getInputStream().readAllBytes();
+                    return ResponseEntity.ok().header(HttpHeaders.CONTENT_TYPE, "image/png").body(imageBytes);
+                } catch (IOException e) {
+
+                    return ResponseEntity.status(500).body("Internal Server Error");
+                }
             }else{
 
                 Resource file = new InputStreamResource(image.getBinaryStream());
@@ -131,9 +145,10 @@ public class CourseService {
         }
     }
 
-    public List<CourseDTO> courseOfUser(UserDTO userDTO) {
+    public List<CourseDTO> courseOfUser(Long id) {
 
-        User user = userService.findById(userDTO.id());
+        User user = userService.findById(id);
+        UserDTO userDTO = userMapper.toDTO(user);
         List<Course> normalCourses = courseRepository.searchCoursesByStudentsContaining(user);
         normalCourses.addAll(courseOfTeacher(userDTO));
         return courseMapper.toDTOs(normalCourses);
@@ -151,5 +166,27 @@ public class CourseService {
 
         User user = userService.findById(userDTO.id());
         return courseRepository.searchCoursesByTeacherId(user.getId());
+    }
+
+    public List<CourseInfoDTO> courseInfoOfUser(Long id) {
+
+        User user = userService.findById(id);
+        List<Course> normalCourses = courseRepository.searchCoursesByStudentsContaining(user);
+        return courseMapper.toInfoDTOs(normalCourses);
+    }
+
+    public List<UserSimpleDTO> getAllStudentsfromCourse(Long id) {
+
+        Course course = courseRepository.findById(id).orElseThrow();
+        List<User> students = course.getStudents();
+        return userMapper.toSimpleDTOs(students);
+    }
+
+    public void uploadImage(long courseId, String location, InputStream inputStream, long size) {
+
+        Course course = courseRepository.findById(courseId).orElseThrow();
+        course.setImage(location);
+        course.setImageCourse(BlobProxy.generateProxy(inputStream, size));
+        courseRepository.save(course);
     }
 }

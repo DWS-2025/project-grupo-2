@@ -47,19 +47,22 @@ public class SampleDataService {
             userService.saveDTO("test4", "test4", "test4", "test4", "Zaun", 2);
 
             Course course1 = new Course("League of Legends", "Aprende a jugar al LOL", "Haz una redacción sobre el control de oleadas", convertPNGToMultipart("files/courses/course-0/img.png"));
+            course1.setImage("/api/course/1/image");
             courseService.save(course1);
             Course course2 = new Course("Padel", "Comienza a disfrutar de hacer ejercicio", "Explica las reglas del padel", convertPNGToMultipart("files/courses/course-1/img.png"));
+            course2.setImage("/api/course/2/image");
             courseService.save(course2);
             Course course3 = new Course("Recetas de Cocina", "Aprende a cocinar recetas increíblemente sabrosas", "Haz una receta que incluya huevos, pasta y tomate", convertPNGToMultipart("files/courses/course-2/img.png"));
+            course3.setImage("/api/course/3/image");
             courseService.save(course3);
 
 
             UserDTO teacher1 = userService.findByUserName("teacher1");
             UserDTO teacher2 = userService.findByUserName("teacher2");
             UserDTO teacher3 = userService.findByUserName("teacher3");
-            courseService.assignTeacher(teacher1, courseMapper.toDTO(course1));
-            courseService.assignTeacher(teacher2, courseMapper.toDTO(course2));
-            courseService.assignTeacher(teacher3, courseMapper.toDTO(course3));
+            courseService.assignTeacher(teacher1.id(), courseMapper.toDTO(course1));
+            courseService.assignTeacher(teacher2.id(), courseMapper.toDTO(course2));
+            courseService.assignTeacher(teacher3.id(), courseMapper.toDTO(course3));
             courseService.addUserToCourse(courseMapper.toDTO(course1), userService.findByUserName("test2"));
             courseService.addUserToCourse(courseMapper.toDTO(course2), userService.findByUserName("test3"));
             courseService.addUserToCourse(courseMapper.toDTO(course3), userService.findByUserName("test4"));
@@ -68,7 +71,7 @@ public class SampleDataService {
             moduleService.save(course1DTO, "Intro", 1, convertMDToMultipart("files/courses/course-0/module0-Intro.md"));
             moduleService.save(course1DTO, "Campeones", 2, convertMDToMultipart("files/courses/course-0/module1-Champions.md"));
             moduleService.save(course1DTO, "Delete Me", 3, convertMDToMultipart("files/courses/course-0/module2-Delete_me.md"));
-        }catch (NoSuchElementException e) {
+        }catch (NoSuchElementException | IllegalArgumentException e) {
             System.out.println("Error creating sample data");
         }
     }

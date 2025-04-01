@@ -127,11 +127,11 @@ public class SubmissionService {
         return submissionMapper.toDTOs(submissionRepository.findSubmissionByStudent(user));
     }
 
-    public void uploadSubmissionContent(long id, URI location, InputStream inputStream, long size) {
+    public void uploadSubmissionContent(long id, String location, InputStream inputStream, long size) {
 
         Submission submission = submissionRepository.findById(id).orElseThrow();
 
-        submission.setContent(location.toString());
+        submission.setContent(location);
         submission.setSubmission(BlobProxy.generateProxy(inputStream, size));
         submissionRepository.save(submission);
     }

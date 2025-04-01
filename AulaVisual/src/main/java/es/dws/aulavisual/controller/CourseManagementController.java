@@ -13,6 +13,9 @@ import es.dws.aulavisual.service.CourseService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.net.URI;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
@@ -130,9 +133,9 @@ public class CourseManagementController {
 
             ModuleSimpleDTO module = moduleService.findById(id);
 
-            if(user.role() == 0 || course.teacher().id() == user.id() || courseService.userIsInCourse(user, course)) {
+            if(user.role() == 0 || course.teacher().id().equals(user.id()) || courseService.userIsInCourse(user, course)) {
 
-                return moduleService.viewModule(module);
+                return moduleService.viewModule(module.id());
             }else{
 
                 return ResponseEntity.status(403).body("Unauthorized");
@@ -242,9 +245,9 @@ public class CourseManagementController {
             }
 
             courseService.saveDTO(courseDTO);
-            courseService.assignTeacher(teacherDTO, courseDTO);
+            courseService.assignTeacher(teacherDTO.id(), courseDTO);
             return "redirect:/admin/courses";
-        }catch (NoSuchElementException e){
+        }catch (NoSuchElementException | IllegalArgumentException e){
 
             model.addAttribute("message", e.getMessage());
             return "error";
@@ -252,7 +255,7 @@ public class CourseManagementController {
     }
 
     @PostMapping("/admin/courses/addCourse")
-    public String addCourse(Model model, CourseDTO courseDTO, @RequestParam long teacherId, MultipartFile image, @CookieValue(value = "userId", defaultValue = "") String userId) {
+    public String addCourse(Model model, CourseDTO courseDTO, @RequestParam long teacherId, MultipartFile imageCourse, @CookieValue(value = "userId", defaultValue = "") String userId) {
 
         try {
             if (userId.isEmpty()) {
@@ -277,7 +280,7 @@ public class CourseManagementController {
                 return "error";
             }
 
-            if (image != null && !image.isEmpty()) {
+            if (imageCourse != null && !imageCourse.isEmpty()) {
 
                 if (teacherDTO.courseTeaching() != null) {
 
@@ -285,14 +288,16 @@ public class CourseManagementController {
                     return "error";
                 }
                 courseDTO = courseService.saveDTO(courseDTO);
-                courseService.assignTeacher(teacherDTO, courseDTO);
+                courseService.assignTeacher(teacherDTO.id(), courseDTO);
+                URI location = URI.create(String.format("/course/" + courseDTO.id() + "/image/"));
+                courseService.uploadImage(courseDTO.id(), location.toString(), imageCourse.getInputStream(), imageCourse.getSize());
             } else {
 
                 model.addAttribute("message", "La imagen es obligatoria");
                 return "error";
             }
             return "redirect:/admin/courses";
-        } catch (NoSuchElementException e) {
+        } catch (NoSuchElementException | IOException | IllegalArgumentException e) {
 
             model.addAttribute("message", e.getMessage());
             return "error";
@@ -368,11 +373,8 @@ public class CourseManagementController {
     @GetMapping("/courses/{courseId}/getImage")
     public ResponseEntity <Object> getImage(@PathVariable Long courseId) {
 
-        CourseDTO course = courseService.findByIdDTO(courseId);
+        return courseService.loadImage(courseId);
 
-        ResponseEntity <Object> response = courseService.loadImage(course);
-
-        return Objects.requireNonNullElseGet(response, () -> ResponseEntity.notFound().build());
     }
 
     @PostMapping("/admin/courses/{courseId}/addStudent")

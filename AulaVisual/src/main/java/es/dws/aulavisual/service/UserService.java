@@ -1,5 +1,6 @@
 package es.dws.aulavisual.service;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.security.NoSuchAlgorithmException;
@@ -9,16 +10,14 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import es.dws.aulavisual.DTO.CourseDTO;
-import es.dws.aulavisual.DTO.TeacherInfoDTO;
-import es.dws.aulavisual.DTO.UserCreationDTO;
-import es.dws.aulavisual.DTO.UserDTO;
+import es.dws.aulavisual.DTO.*;
 import es.dws.aulavisual.Mapper.UserMapper;
 import es.dws.aulavisual.model.Course;
 import es.dws.aulavisual.model.User;
 import es.dws.aulavisual.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.hibernate.engine.jdbc.BlobProxy;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Example;
@@ -150,11 +149,11 @@ public class UserService {
         return false;
     }
 
-    public void saveImage(long userId, URI location, InputStream inputStream, long size) {
+    public void saveImage(long userId, String location, InputStream inputStream, long size) {
 
         User user = userRepository.findById(userId).orElseThrow();
 
-        user.setImage(location.toString());
+        user.setImage(location);
         user.setImageFile(BlobProxy.generateProxy(inputStream, size));
         userRepository.save(user);
     }
@@ -168,8 +167,14 @@ public class UserService {
             Blob image = user.getImageFile();
             if(image == null) {
 
-                System.out.println("User has no image");
-                return null;
+                try {
+                    ClassPathResource resource = new ClassPathResource("static/images/user-default.png");
+                    byte [] imageBytes = resource.getInputStream().readAllBytes();
+                    return ResponseEntity.ok().header(HttpHeaders.CONTENT_TYPE, "image/png").body(imageBytes);
+                } catch (IOException e) {
+
+                    return ResponseEntity.status(500).body("Internal Server Error");
+                }
             }else{
 
                 Resource file = new InputStreamResource(image.getBinaryStream());
@@ -214,9 +219,9 @@ public class UserService {
         }
     }
 
-    void addCourseToTeacher(UserDTO userDTO, Course course) {
+    void addCourseToTeacher(long id, Course course) {
 
-        User user = userRepository.findById(userDTO.id()).orElseThrow();
+        User user = userRepository.findById(id).orElseThrow();
         user.setCourseTeaching(course);
         userRepository.save(user);
     }
