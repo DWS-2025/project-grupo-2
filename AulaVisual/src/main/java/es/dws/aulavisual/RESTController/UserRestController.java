@@ -2,6 +2,7 @@ package es.dws.aulavisual.RESTController;
 
 import es.dws.aulavisual.DTO.UserCreationDTO;
 import es.dws.aulavisual.DTO.UserDTO;
+import org.springframework.data.domain.Page;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -9,9 +10,11 @@ import org.springframework.web.bind.annotation.*;
 import es.dws.aulavisual.service.UserService;
 import org.springframework.web.multipart.MultipartFile;
 
+import org.springframework.data.domain.Pageable;
 import java.io.IOException;
 import java.net.URI;
 import java.util.List;
+import java.util.Optional;
 
 import static org.springframework.web.servlet.support.ServletUriComponentsBuilder.fromCurrentRequest;
 
@@ -27,10 +30,9 @@ public class UserRestController {
     }
 
     @GetMapping("/")
-    public ResponseEntity<List<UserDTO>> users() {
+    public Page<UserDTO> users(Pageable pageable, @RequestParam(required = false) Optional<String> campus, @RequestParam(required = false) Optional<Integer> role, @RequestParam(required = false) Optional<Boolean> removeSelf, @RequestParam (required = false) Optional<Long> id) {
 
-        List<UserDTO> users = userService.getAllUsers();
-        return ResponseEntity.ok(users);
+        return userService.getAllUsers(pageable, campus, role, removeSelf, id);
     }
 
     @PostMapping("/")

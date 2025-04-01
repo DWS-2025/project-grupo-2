@@ -224,29 +224,8 @@ public class UserController {
 
                 UserDTO currentUser = userService.findByIdDTO(Long.parseLong(userId));
                 if(currentUser.role() == 0) {
-
-                    User exampleUser = new User();
-                    Example <User> example;
-                    if(role.isEmpty()){
-
-                        if(campus.isPresent() && !campus.get().isEmpty()) {
-
-                            exampleUser.setCampus(campus.get());
-                        }
-                        ExampleMatcher matcher = ExampleMatcher.matching().withIgnorePaths("id", "role");
-                        example = Example.of(exampleUser, matcher);
-                    }else{
-
-                        exampleUser.setRole(role.get());
-                        if(campus.isPresent() && !campus.get().isEmpty()) {
-
-                            exampleUser.setCampus(campus.get());
-                        }
-                        ExampleMatcher matcher = ExampleMatcher.matching().withIgnorePaths("id");
-                        example = Example.of(exampleUser, matcher);
-                    }
                     model.addAttribute("admin", currentUser.userName());
-                    model.addAttribute("users", userService.getAllUsersExceptSelfFiltered(currentUser, example));
+                    model.addAttribute("users", userService.getAllUsers());
                     model.addAttribute("userId", Long.parseLong(userId));
                     return "/users/adminPanel";
                 }else {

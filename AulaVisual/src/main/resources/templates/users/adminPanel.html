@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" >
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Panel Administración</title>
@@ -24,8 +24,7 @@
         {{#users}}
         <form action="/admin/users/{{id}}/delete" method="post" id="delete-user-{{id}}"></form>
         {{/users}}
-        <form action="/admin" method="get">
-            <!-- Add two dropdowns to ilter by role and campus allowing multiple aoptions-->
+        <form id="filterForm" action="/admin" method="get">
             <div>
                 <label for="role">Filtrar por rol:</label>
                 <select id="role" name="role">
@@ -44,7 +43,7 @@
                     <option value="Zaun">Zaun</option>
                 </select>
             </div>
-            <input type="submit" value="Filtrar">
+            <input type="button" value="Filtrar" onclick="applyFilters()">
         </form>
         <div id="users">
             <h2>Usuarios</h2>
@@ -62,30 +61,84 @@
                     <th>Gestionar Roles</th>
                 </tr>
                 </thead>
-                <tbody>
-                {{#users}}
-                <tr class="tableItems">
-                    <td class="center">{{id}}</td>
-                    <td class="center">{{realName}}</td>
-                    <td class="center">{{surname}}</td>
-                    <td class="center">{{userName}}</td>
-                    <td class="center">{{campus}}</td>
-                    <td class="center">{{role}}</td>
-                    <td class="center">
-                        <a href="/admin/users/{{id}}">Editar</a>
-                    </td>
-                    <td>
-                        <input type="submit" value="Eliminar" form="delete-user-{{id}}">
-                    </td>
-                    <td class="center">
-                        <a href="/admin/users/{{id}}/roles">Gestionar Roles</a>
-                    </td>
-                </tr>
-                {{/users}}
+                <tbody id="usersBody">
+                <!-- Usuarios se cargarán aquí -->
                 </tbody>
             </table>
+            <div id="pagination">
+                <button id="prevPage">Anterior</button>
+                <span id="pageInfo"></span>
+                <button id="nextPage">Siguiente</button>
+            </div>
         </div>
     </div>
 </section>
+<script>
+    let currentPage = 0;
+    let totalPages = 0;
+
+    function loadUsers(page) {
+        const role = document.getElementById('role').value;
+        const campus = document.getElementById('campus').value;
+        const removeSelf = true;
+        const userId = {{userId}};
+        const url = new URL('/api/users/', window.location.origin);
+        url.searchParams.append('page', page);
+        url.searchParams.append('size', 7);
+        if (campus) url.searchParams.append('campus', campus);
+        if (role) url.searchParams.append('role', role);
+        if (removeSelf) url.searchParams.append('removeSelf', removeSelf);
+        if (userId) url.searchParams.append('userId', userId);
+
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                const usersBody = document.getElementById('usersBody');
+                usersBody.innerHTML = '';
+                data.content.forEach(user => {
+                    usersBody.innerHTML += `
+                        <tr class="tableItems">
+                            <td class="center">${user.id}</td>
+                            <td class="center">${user.realName}</td>
+                            <td class="center">${user.surname}</td>
+                            <td class="center">${user.userName}</td>
+                            <td class="center">${user.campus}</td>
+                            <td class="center">${user.role}</td>
+                            <td class="center"><a href="/admin/users/${user.id}">Editar</a></td>
+                            <td><input type="submit" value="Eliminar" form="delete-user-${user.id}"></td>
+                            <td class="center"><a href="/admin/users/${user.id}/roles">Gestionar Roles</a></td>
+                        </tr>
+                    `;
+                });
+
+                totalPages = data.page.totalPages;
+                document.getElementById('pageInfo').innerText = `Página ${currentPage + 1} de ${totalPages}`;
+                document.getElementById('prevPage').disabled = data.first;
+                document.getElementById('nextPage').disabled = data.last;
+            });
+    }
+
+    function applyFilters() {
+        currentPage = 0;
+        loadUsers(currentPage);
+    }
+
+    document.getElementById('prevPage').addEventListener('click', () => {
+        if (currentPage > 0) {
+            currentPage--;
+            loadUsers(currentPage);
+        }
+    });
+
+    document.getElementById('nextPage').addEventListener('click', () => {
+        if (currentPage < totalPages - 1) {
+            currentPage++;
+            loadUsers(currentPage);
+        }
+    });
+
+    // Cargar la primera página al cargar la página
+    loadUsers(currentPage);
+</script>
 </body>
 </html>
