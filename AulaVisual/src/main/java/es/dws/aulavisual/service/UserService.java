@@ -17,10 +17,13 @@ import es.dws.aulavisual.model.User;
 import es.dws.aulavisual.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.hibernate.engine.jdbc.BlobProxy;
+import org.springframework.data.domain.ExampleMatcher;
+import org.springframework.data.domain.Page;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Example;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -236,6 +239,38 @@ public class UserService {
     public List<UserDTO> getAllUsers() {
 
         return userMapper.toDTOs(userRepository.findAll());
+    }
+
+    public Page<UserDTO> getAllUsers(Pageable pageable, Optional<String> campus, Optional<Integer> role, Optional<Boolean> removeSelf, Optional<Long> userId) {
+
+
+
+        User exampleUser = new User();
+        Example <User> example;
+        if(role.isEmpty()){
+
+            if(campus.isPresent() && !campus.get().isEmpty()) {
+
+                exampleUser.setCampus(campus.get());
+            }
+            ExampleMatcher matcher = ExampleMatcher.matching().withIgnorePaths("id", "role");
+            example = Example.of(exampleUser, matcher);
+        }else {
+
+            exampleUser.setRole(role.get());
+            if (campus.isPresent() && !campus.get().isEmpty()) {
+
+                exampleUser.setCampus(campus.get());
+            }
+            ExampleMatcher matcher = ExampleMatcher.matching().withIgnorePaths("id");
+            example = Example.of(exampleUser, matcher);
+        }
+
+        Page<UserDTO> users = userRepository.findAll(example, pageable).map(userMapper::toDTO);
+        if (removeSelf.isPresent() && removeSelf.get() && userId.isPresent()) {
+            users = (Page<UserDTO>) users.filter(user -> !user.id().equals(userId.get()));
+        }
+        return users;
     }
 
     public UserDTO findByIdDTO(long id) {

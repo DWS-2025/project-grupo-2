@@ -71,6 +71,11 @@ public class SampleDataService {
             moduleService.save(course1DTO, "Intro", 1, convertMDToMultipart("files/courses/course-0/module0-Intro.md"));
             moduleService.save(course1DTO, "Campeones", 2, convertMDToMultipart("files/courses/course-0/module1-Champions.md"));
             moduleService.save(course1DTO, "Delete Me", 3, convertMDToMultipart("files/courses/course-0/module2-Delete_me.md"));
+
+            for(int i = 0; i < 50; i++){
+
+                userService.saveDTO("testPage" + i, "testPage" + i, "testPage" + i, "testPage" +i, "Zaun", 2);
+            }
         }catch (NoSuchElementException | IllegalArgumentException e) {
             System.out.println("Error creating sample data");
         }
