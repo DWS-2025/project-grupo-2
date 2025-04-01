@@ -1,5 +1,7 @@
 package es.dws.aulavisual.service;
 
+import java.io.InputStream;
+import java.net.URI;
 import java.sql.Blob;
 
 import es.dws.aulavisual.DTO.CourseDTO;
@@ -10,6 +12,7 @@ import es.dws.aulavisual.model.Module;
 import es.dws.aulavisual.repository.ModuleRepository;
 import es.dws.aulavisual.Mapper.CourseMapper;
 import org.hibernate.engine.jdbc.BlobProxy;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Sort;
@@ -72,15 +75,23 @@ public class ModuleService {
         return moduleMapper.toSimpleDTOs(moduleRepository.findByCourse(course, Sort.by(Sort.Direction.ASC, "position")));
     }
 
-    public ResponseEntity<Object> viewModule(ModuleSimpleDTO moduleDTO) {
+    public ResponseEntity<Object> viewModule(long id) {
 
         try {
 
-            Module module = moduleRepository.findById(moduleDTO.id()).orElseThrow();
+            Module module = moduleRepository.findById(id).orElseThrow();
             Blob content = module.getContent();
-            Resource file = new InputStreamResource(content.getBinaryStream());
-            return ResponseEntity.ok().header(HttpHeaders.CONTENT_TYPE, "text/markdown")
-                    .contentLength(content.length()).body(file);
+            if(content == null) {
+
+                ClassPathResource resource = new ClassPathResource("static/md/default.md");
+                byte [] imageBytes = resource.getInputStream().readAllBytes();
+                return ResponseEntity.ok().header(HttpHeaders.CONTENT_TYPE, "text/markdown").body(imageBytes);
+            }else{
+
+                Resource file = new InputStreamResource(content.getBinaryStream());
+                return ResponseEntity.ok().header(HttpHeaders.CONTENT_TYPE, "text/markdown")
+                        .contentLength(content.length()).body(file);
+            }
 
         } catch (Exception e) {
 
@@ -151,5 +162,13 @@ public class ModuleService {
 
 
         return save(courseService.findByIdDTO(courseId), moduleSimpleDTO.name(), moduleSimpleDTO.position(), null);
+    }
+
+    public void uploadModuleContent(long id, URI location, InputStream inputStream, long size) {
+
+        Module module = moduleRepository.findById(id).orElseThrow();
+        module.setContentLocation(location.toString());
+        module.setContent(BlobProxy.generateProxy(inputStream, size));
+        moduleRepository.save(module);
     }
 }

@@ -7,7 +7,8 @@ public record ModuleSimpleDTO(
         String name,
         int position,
         String description,
-        CourseSimpleDTO course
+        CourseSimpleDTO course,
+        String contentLocation
 ) {
 
 }

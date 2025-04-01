@@ -16,6 +16,7 @@ public class Module {
     private String name;
     private int position;
 
+    private String contentLocation;
     @Lob
     private Blob content;
 
@@ -56,5 +57,20 @@ public class Module {
     public Course getCourse() {
 
         return this.course;
+    }
+
+    public String getContentLocation() {
+
+        return contentLocation;
+    }
+
+    public void setContentLocation(String contentLocation) {
+
+        this.contentLocation = contentLocation;
+    }
+
+    public void setContent(Blob content) {
+
+        this.content = content;
     }
 }

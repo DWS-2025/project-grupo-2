@@ -133,9 +133,9 @@ public class CourseManagementController {
 
             ModuleSimpleDTO module = moduleService.findById(id);
 
-            if(user.role() == 0 || course.teacher().id() == user.id() || courseService.userIsInCourse(user, course)) {
+            if(user.role() == 0 || course.teacher().id().equals(user.id()) || courseService.userIsInCourse(user, course)) {
 
-                return moduleService.viewModule(module);
+                return moduleService.viewModule(module.id());
             }else{
 
                 return ResponseEntity.status(403).body("Unauthorized");
