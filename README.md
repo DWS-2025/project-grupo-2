@@ -11,6 +11,4 @@
 <div align="center">
 👨‍🎓 Jaime García González
 👨‍🎓 Victor Ruiz Muñoz
-👨‍🎓 Beatriz Sanz Granados
-👨‍🎓 Carla Gómez Cabanillas
 </div>
