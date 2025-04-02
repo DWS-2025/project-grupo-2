@@ -84,7 +84,7 @@
         const userId = {{userId}};
         const url = new URL('/api/users/', window.location.origin);
         url.searchParams.append('page', page);
-        url.searchParams.append('size', 7);
+        url.searchParams.append('size', 5);
         if (campus) url.searchParams.append('campus', campus);
         if (role) url.searchParams.append('role', role);
         if (removeSelf) url.searchParams.append('removeSelf', removeSelf);
