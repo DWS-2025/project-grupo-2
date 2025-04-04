@@ -244,7 +244,6 @@ public class CourseManagementController {
                 return "error";
             }
 
-            courseService.saveDTO(courseDTO);
             courseService.assignTeacher(teacherDTO.id(), courseDTO);
             return "redirect:/admin/courses";
         }catch (NoSuchElementException | IllegalArgumentException e){

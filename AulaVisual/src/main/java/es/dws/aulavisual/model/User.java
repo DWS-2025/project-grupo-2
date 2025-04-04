@@ -15,7 +15,7 @@ public class User {
     private Long id;
 
     @ManyToMany(mappedBy = "students", fetch = FetchType.EAGER)
-    private final List<Course> courses = new ArrayList <>();
+    private List<Course> courses = new ArrayList <>();
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "student")
     private List<Submission> submissions;
@@ -151,6 +151,11 @@ public class User {
     public List<Submission> getSubmissions() {
 
         return submissions;
+    }
+
+    public void clearCourses() {
+
+        this.courses.clear();
     }
 
     @Override
