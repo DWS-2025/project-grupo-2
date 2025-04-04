@@ -3,7 +3,7 @@
 
 
 <div align="center">
-  <img src="https://github.com/DWS-2025/project-grupo-2/blob/main/AulaVisual/src/main/resources/static/images/1.svg" alt="AulaVisual"/>
+  <img src="https://github.com/DWS-2025/project-grupo-2/blob/main/content/images/logoAulaVisual.svg" alt="AulaVisual"/>
 </div>  
 
 <h3 align="center">Lenguajes && Herramientas</h3>
