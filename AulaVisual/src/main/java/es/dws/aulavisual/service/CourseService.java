@@ -40,7 +40,7 @@ public class CourseService {
         this.courseMapper = courseMapper;
     }
 
-    public void assignTeacher(long id, CourseDTO courseDTO) {
+    public CourseDTO assignTeacher(long id, CourseDTO courseDTO) {
 
         Course course = courseRepository.findById(courseDTO.id()).orElseThrow();
         User teacher = userService.findById(id);
@@ -50,6 +50,7 @@ public class CourseService {
         course.setTeacher(teacher);
         courseRepository.save(course);
         userService.addCourseToTeacher(teacher.getId(), course);
+        return courseMapper.toDTO(course);
     }
 
     public CourseDTO saveDTO(CourseDTO courseDTO) {
