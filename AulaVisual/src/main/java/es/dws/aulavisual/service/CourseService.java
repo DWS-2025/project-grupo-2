@@ -76,10 +76,6 @@ public class CourseService {
         courseRepository.save(course);
     }
 
-    void removeUserFromCourse(Course course, User user) {
-
-        course.getStudents().remove(user);
-    }
 
     public List<CourseDTO> getCourses() {
 
@@ -189,5 +185,25 @@ public class CourseService {
         course.setImage(location);
         course.setImageCourse(BlobProxy.generateProxy(inputStream, size));
         courseRepository.save(course);
+    }
+
+    public boolean updateRole(UserDTO userDTO, int newRole) {
+
+        User user = userService.findById(userDTO.id());
+        if(newRole >= 0 && newRole <= 2) {
+
+            user.setRole(newRole);
+            if(newRole == 0 || newRole == 1) {
+
+                user.getCourses().forEach(course -> {
+                    course.getStudents().remove(user);
+                    courseRepository.save(course);
+                });
+                user.clearCourses();
+            }
+            userService.save(user);
+            return true;
+        }
+        return false;
     }
 }

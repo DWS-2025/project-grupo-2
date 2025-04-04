@@ -1,19 +1,16 @@
 package es.dws.aulavisual.controller;
 
 import es.dws.aulavisual.DTO.UserDTO;
+import es.dws.aulavisual.service.CourseService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.data.domain.Example;
-import org.springframework.data.domain.ExampleMatcher;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import es.dws.aulavisual.service.UserService;
 import org.springframework.web.multipart.MultipartFile;
-import es.dws.aulavisual.model.User;
+
 import java.io.IOException;
 import java.net.URI;
 import java.util.NoSuchElementException;
@@ -23,9 +20,12 @@ import java.util.Optional;
 public class UserController {
 
     private final UserService userService;
-    public UserController(UserService userService) {
+    private final CourseService courseService;
+
+    public UserController(UserService userService, CourseService courseService) {
 
         this.userService = userService;
+        this.courseService = courseService;
     }
 
     @GetMapping("/login")
@@ -338,7 +338,7 @@ public class UserController {
                 if(currentUser.role() == 0) {
 
                     UserDTO user = userService.findByIdDTO(id);
-                    if(userService.updateRole(user, role)){
+                    if(courseService.updateRole(user, role)){
 
                         return "redirect:/admin";
                     }else {

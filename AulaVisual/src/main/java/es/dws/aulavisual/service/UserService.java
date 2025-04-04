@@ -191,37 +191,6 @@ public class UserService {
         }
     }
 
-    public List <UserDTO> getAllUsersExceptSelfFiltered(UserDTO currentUserDTO, Example <User> example) {
-
-        User currentUser = userRepository.findById(currentUserDTO.id()).orElseThrow();
-        List<User> users = userRepository.findAll(example);
-        users.remove(currentUser);
-        return users.stream().map(userMapper::toDTO).collect(Collectors.toList());
-    }
-
-    public boolean updateRole(UserDTO userDTO, int newRole) {
-
-        User user = userRepository.findById(userDTO.id()).orElseThrow();
-        if(newRole >= 0 && newRole <= 2) {
-
-            user.setRole(newRole);
-            userRepository.save(user);
-            return true;
-        }
-        return false;
-    }
-
-    void removeAllUsersFromCourse(Course course) {
-
-        List<User> users = userRepository.findAll();
-
-        for (User user : users) {
-
-            user.getCourses().remove(course);
-            //userRepository.save(user);
-        }
-    }
-
     void addCourseToTeacher(long id, Course course) {
 
         User user = userRepository.findById(id).orElseThrow();
