@@ -96,8 +96,8 @@ public class CourseRestController {
 
         CourseDTO courseDTO = courseService.findByIdDTO(id);
         try{
-            courseService.assignTeacher(teacherInfoDTO.id(), courseDTO);
-            return ResponseEntity.ok(courseDTO);
+            CourseDTO newCourseDTO = courseService.assignTeacher(teacherInfoDTO.id(), courseDTO);
+            return ResponseEntity.ok(newCourseDTO);
         } catch (IllegalArgumentException e){
             return ResponseEntity.badRequest().body(e.getMessage());
         }
