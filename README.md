@@ -71,7 +71,7 @@ El usuario es dueño de su destino, así como el fuego lo es de su llama: nace e
 </div>
 
 <h1>TOP 4+1 COMMITS by Mineja2017</h1>
-  <p>En el reino del código, donde cada línea es un verso de una antigua saga, te presentamos el top 5 de nuestros commits legendarios:</p>
+  <p>En el reino del código, donde cada línea es un verso de una antigua saga, te presentamos el top 2+3 de nuestros commits legendarios:</p>
 
   <h2>1. La edad de la API</h2>
   <p><strong>Commit:</strong> <a href="https://github.com/DWS-2025/project-grupo-2/commit/9537df222fd5989173f697be5d7166ab903db266#diff-f5bcc571ffc6d7e94042ed98e6d3bd30e3e82e550a31b607ee4fee5829aab980">9537df2</a></p>
@@ -93,7 +93,7 @@ El usuario es dueño de su destino, así como el fuego lo es de su llama: nace e
   <p><strong>Mensaje:</strong> Divine Intervention – Compile and works (Most of it)</p>
   <p>Descripción: Una auténtica intervención celestial. En este commit, los dioses del desarrollo se manifestaron y otorgaron la bendición de compilar sin errores, transformando el caos en armonía.</p>
 
-  <h2>5. La Gloriosa Doxumentación</h2>
+  <h2>3,5 + 1,5. La Gloriosa Documentación</h2>
   <p><strong>Commit:</strong> <a href="https://github.com/DWS-2025/project-grupo-2/commit/afd6293dbf3e9724b8c00e87530d7e174dc9d558">afd6293</a></p>
   <p><strong>Mensaje:</strong> Created documentation</p>
   <p>Descripción: Del coro de Ilúvatar y los Ainur brotan Eä (El universo) y esta documentación que ayudará al futuro concilio blanco (developers) en el uso de la API previamente implementada.</p>
@@ -120,7 +120,7 @@ El usuario es dueño de su destino, así como el fuego lo es de su llama: nace e
   <p><strong>Mensaje:</strong> Compiling errors</p>
   <p>Descripción: ModuleMapper, el vínculo sagrado entre la lógica del dominio y su proyección en el reino de los datos, fue forjado con la precisión de un enano artesano.</p>
 
-  <h2>5. El Cierre del Grimorio</h2>
+  <h2>2*2 + 1. El Cierre del Grimorio</h2>
   <p><strong>Commit:</strong> <a href="https://github.com/DWS-2025/project-grupo-2/commit/46a44414f2aee4d5eba99a43239ffc480c53be58">46a4441</a></p>
   <p><strong>Mensaje:</strong> Update README.md</p>
   <p>Descripción: Este commit marca el fin de la escritura del códice. No fue un gran cambio en el código, sino un cambio en el alma del proyecto. La espada ha sido envainada; ahora, se canta la historia.</p>
