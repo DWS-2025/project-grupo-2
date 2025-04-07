@@ -181,4 +181,10 @@ public class SubmissionService {
         submissionRepository.delete(submission);
         return submissionMapper.toDTO(submission);
     }
+
+    public boolean hasSubmission(long userId, long courseId) {
+        User user = userService.findById(userId);
+        Course course = courseService.findById(courseId);
+        return submissionRepository.findByStudentAndCourse(user, course).isPresent();
+    }
 }

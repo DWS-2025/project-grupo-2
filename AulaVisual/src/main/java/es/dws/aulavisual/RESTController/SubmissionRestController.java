@@ -48,10 +48,15 @@ public class SubmissionRestController {
     }
 
     @PostMapping("submission/")
-    public ResponseEntity<SubmissionDTO> createSubmission(@RequestBody SubmissionDTO submissionDTO) {
+    public ResponseEntity<Object> createSubmission(@RequestBody SubmissionDTO submissionDTO) {
 
+        if (submissionDTO.student() == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        if(submissionService.hasSubmission(submissionDTO.student().id(), submissionDTO.course().id())) {
+            return ResponseEntity.badRequest().build();
+        }
         SubmissionDTO createdSubmission = submissionService.save(submissionDTO);
-
         return ResponseEntity.ok(createdSubmission);
     }
 
@@ -95,4 +100,12 @@ public class SubmissionRestController {
         SubmissionDTO submissionDTO = submissionService.deleteSubmission(id);
         return ResponseEntity.ok().body(submissionDTO);
     }
+
+    @GetMapping("course/{courseId}/submissions/{id}")
+    public ResponseEntity<SubmissionDTO> getSubmissionById(@PathVariable long courseId, @PathVariable long id) {
+
+        SubmissionDTO submissionDTO = submissionService.findById(id);
+        return ResponseEntity.ok(submissionDTO);
+    }
+
 }
