@@ -49,7 +49,7 @@ public class SubmissionController {
 
                     model.addAttribute("courseId", courseId);
                     model.addAttribute("courseName", courseDTO.name());
-                    if(!submissionService.userMadeSubmission(userDTO, courseDTO)){
+                    if(!submissionService.userMadeSubmission(userDTO.id(), courseDTO.id())){
 
                         model.addAttribute("submitted", false);
                         model.addAttribute("task", courseDTO.task());
@@ -127,7 +127,7 @@ public class SubmissionController {
 
                 if(courseService.userIsInCourse(studentDTO, courseDTO)){
 
-                    if(submissionService.userMadeSubmission(studentDTO, courseDTO)){
+                    if(submissionService.userMadeSubmission(studentDTO.id(), courseDTO.id())){
 
                         submissionService.gradeSubmission(courseDTO, studentDTO, grade);
                         return "redirect:/courses/" + courseId + "/grade";
@@ -166,7 +166,7 @@ public class SubmissionController {
 
                 if(courseService.userIsInCourse(student, courseDTO)) {
 
-                    if(submissionService.userMadeSubmission(student, courseDTO)) {
+                    if(submissionService.userMadeSubmission(student.id(), courseDTO.id())) {
 
                         return submissionService.getSubmission(courseDTO, student);
                     }else {
@@ -202,7 +202,7 @@ public class SubmissionController {
             }
             if(courseService.userIsInCourse(user, courseDTO)) {
 
-                if(!submissionService.userMadeSubmission(user, courseDTO)) {
+                if(!submissionService.userMadeSubmission(user.id(), courseDTO.id())) {
 
                     submissionService.save(courseDTO, user, submission);
                 }
@@ -229,7 +229,7 @@ public class SubmissionController {
 
             if(courseService.userIsInCourse(student, courseDTO)) {
 
-                if(submissionService.userMadeSubmission(student, courseDTO)) {
+                if(submissionService.userMadeSubmission(student.id(), courseDTO.id())) {
 
                     if(courseDTO.teacher().id().equals(user.id())) {
 

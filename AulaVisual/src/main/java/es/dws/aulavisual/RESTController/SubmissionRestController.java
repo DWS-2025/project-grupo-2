@@ -53,7 +53,7 @@ public class SubmissionRestController {
         if (submissionDTO.student() == null) {
             return ResponseEntity.badRequest().build();
         }
-        if(submissionService.hasSubmission(submissionDTO.student().id(), submissionDTO.course().id())) {
+        if(submissionService.userMadeSubmission(submissionDTO.student().id(), submissionDTO.course().id())) {
             return ResponseEntity.badRequest().build();
         }
         SubmissionDTO createdSubmission = submissionService.save(submissionDTO);
@@ -100,12 +100,4 @@ public class SubmissionRestController {
         SubmissionDTO submissionDTO = submissionService.deleteSubmission(id);
         return ResponseEntity.ok().body(submissionDTO);
     }
-
-    @GetMapping("course/{courseId}/submissions/{id}")
-    public ResponseEntity<SubmissionDTO> getSubmissionById(@PathVariable long courseId, @PathVariable long id) {
-
-        SubmissionDTO submissionDTO = submissionService.findById(id);
-        return ResponseEntity.ok(submissionDTO);
-    }
-
 }
