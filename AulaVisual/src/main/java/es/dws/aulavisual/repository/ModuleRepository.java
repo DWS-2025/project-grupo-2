@@ -24,7 +24,7 @@ public interface ModuleRepository extends JpaRepository <Module, Long> {
             nativeQuery = true)
     Optional<Module> findFirstModule(long course_id);
 
-    @Query(value = "SELECT position FROM Module WHERE course_id = course_id ORDER BY position DESC LIMIT 1;",
+    @Query(value = "SELECT position FROM Module WHERE course_id = :course_id ORDER BY position DESC LIMIT 1;",
             nativeQuery = true)
-    int findlastModuleId(long course_id);
+    Integer findlastModuleId(long course_id);
 }
