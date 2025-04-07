@@ -70,68 +70,62 @@ El usuario es dueño de su destino, así como el fuego lo es de su llama: nace e
   <img src="https://github.com/DWS-2025/project-grupo-2/blob/main/content/diagrams/Database_Diagram.svg" alt="Diagrama de Base de Datos"/>
 </div>
 
-# TOP 4+1 COMMITS by Mineja2017
+<h1>TOP 4+1 COMMITS by Mineja2017</h1>
+  <p>En el reino del código, donde cada línea es un verso de una antigua saga, te presentamos el top 5 de nuestros commits legendarios:</p>
 
-En el reino del código, donde cada línea es un verso de una antigua saga, te presentamos el top 5 de nuestros commits legendarios:
+  <h2>1. La edad de la API</h2>
+  <p><strong>Commit:</strong> <a href="https://github.com/DWS-2025/project-grupo-2/commit/9537df222fd5989173f697be5d7166ab903db266#diff-f5bcc571ffc6d7e94042ed98e6d3bd30e3e82e550a31b607ee4fee5829aab980">9537df2</a></p>
+  <p><strong>Mensaje:</strong> Diversas correciones.</p>
+  <p>Descripción: En una batalla épica contra el error, se sustituyó el uso de <code>==</code> por el método mágico <code>.equals()</code>. Un ajuste sutil pero decisivo, que aseguró que la lógica de eliminación de entregas opere con la precisión de la espada de Glamdring. Marca también el inicio de la edad de la API, estando su majestuosa obra terminada.</p>
 
-1. **La edad de la API**  
-   *Commit:* [9537df2](https://github.com/DWS-2025/project-grupo-2/commit/9537df222fd5989173f697be5d7166ab903db266#diff-f5bcc571ffc6d7e94042ed98e6d3bd30e3e82e550a31b607ee4fee5829aab980)  
-   *Mensaje:* Diversas correciones.  
-   *Descripción:* En una batalla épica contra el error, se sustituyó el uso de `==` por el método mágico `.equals()`. Un ajuste sutil pero decisivo, que aseguró que la lógica de eliminación de entregas opere con la precisión de la espada de Glamdring. Marca tambien el                    inicio de la edad de la API estando su majestuosa obra terminada. 
+  <h2>2. El Ritual de la Base de Datos</h2>
+  <p><strong>Commit:</strong> <a href="https://github.com/DWS-2025/project-grupo-2/commit/b3ea196586f7ae0b8923ee5c532e4e55e9d7c94f">b3ea196</a></p>
+  <p><strong>Mensaje:</strong> Functional Web apliation with DDBB</p>
+  <p>Descripción: Un hechizo de integración, donde la aplicación web se unificó con su base de datos. Como una alianza de las razas libres de la Tierra Media, se logró una sinergia perfecta entre el frontend y el backend.</p>
 
-2. **El Ritual de la Base de Datos**  
-   *Commit:* [b3ea196](https://github.com/DWS-2025/project-grupo-2/commit/b3ea196586f7ae0b8923ee5c532e4e55e9d7c94f) 
-   *Mensaje:* Functional Web apliation with DDBB  
-   *Descripción:* Un hechizo de integración, donde la aplicación web se unificó con su base de datos. Como una alianza de las razas libres de la Tierra Media, se logró una sinergia perfecta entre el frontend y el backend.
+  <h2>3. El Conjuro AJAX</h2>
+  <p><strong>Commit:</strong> <a href="https://github.com/DWS-2025/project-grupo-2/commit/6f43b74b702b7ad4042f506afabc0c057d767bb9">6f43b74</a></p>
+  <p><strong>Mensaje:</strong> AJAX pageable && filter</p>
+  <p>Descripción: Con la agilidad de un elfo y la precisión de un mago, este commit introdujo paginación y filtrado vía AJAX, permitiendo que los datos fluyan tan suaves como el río Anduin.</p>
 
-3. **El Conjuro AJAX**  
-   *Commit:* [6f43b74](https://github.com/DWS-2025/project-grupo-2/commit/6f43b74b702b7ad4042f506afabc0c057d767bb9)  
-   *Mensaje:* AJAX pageable && filter  
-   *Descripción:* Con la agilidad de un elfo y la precisión de un mago, este commit introdujo paginación y filtrado vía AJAX, permitiendo que los datos fluyan tan suaves como el río Anduin.
+  <h2>4. La Intervención Divina</h2>
+  <p><strong>Commit:</strong> <a href="https://github.com/DWS-2025/project-grupo-2/commit/cfe0e37dfe3751076ef951a45c00be537778b203">cfe0e37</a></p>
+  <p><strong>Mensaje:</strong> Divine Intervention – Compile and works (Most of it)</p>
+  <p>Descripción: Una auténtica intervención celestial. En este commit, los dioses del desarrollo se manifestaron y otorgaron la bendición de compilar sin errores, transformando el caos en armonía.</p>
 
-4. **La Intervención Divina**  
-   *Commit:* [cfe0e37](https://github.com/DWS-2025/project-grupo-2/commit/cfe0e37dfe3751076ef951a45c00be537778b203) 
-   *Mensaje:* Divine Intervention – Compile and works (Most of it)  
-   *Descripción:* Una auténtica intervención celestial. En este commit, los dioses del desarrollo se manifestaron y otorgaron la bendición de compilar sin errores, transformando el caos en armonía.
+  <h2>5. La Gloriosa Doxumentación</h2>
+  <p><strong>Commit:</strong> <a href="https://github.com/DWS-2025/project-grupo-2/commit/afd6293dbf3e9724b8c00e87530d7e174dc9d558">afd6293</a></p>
+  <p><strong>Mensaje:</strong> Created documentation</p>
+  <p>Descripción: Del coro de Ilúvatar y los Ainur brotan Eä (El universo) y esta documentación que ayudará al futuro concilio blanco (developers) en el uso de la API previamente implementada.</p>
 
-5. **El Misterio del Commit Fantasma**  
-   *Commit:* [afd6293](https://github.com/DWS-2025/project-grupo-2/commit/afd6293dbf3e9724b8c00e87530d7e174dc9d558) 
-   *Mensaje:* Created documentation 
-   *Descripción:* Del coro de Ilúvatar y los Ainur brotan Eä (El universo) y esta documentación que ayudará al futuro concilio blanco (developers) en el uso de la API previamente implementada 
+  <h1>TOP 3+2 COMMITS by Granusti44</h1>
 
-¡Que estas gestas inspiren tus propias aventuras en el mundo del desarrollo!
+  <h2>1. La Última Vigilia del Granusti</h2>
+  <p><strong>Commit:</strong> <a href="https://github.com/DWS-2025/project-grupo-2/commit/1adbeca4af5137a1ab7ce8d7c2250a28628162b2">1adbeca</a></p>
+  <p><strong>Mensaje:</strong> Oops</p>
+  <p>Descripción: En las sombrías horas de la madrugada, el gran mago (Granusti44) libró su batalla final contra el Balrog (Mineja2017), antes de la hora del destino final (La clase del día siguiente).</p>
 
-# TOP 3+2 COMMITS by Granusti44
+  <h2>2. La Alianza del Mapper de User</h2>
+  <p><strong>Commit:</strong> <a href="https://github.com/DWS-2025/project-grupo-2/commit/5a6572f7a087b14d4d1f2fffa1712bd74279ac46">5a6572f</a></p>
+  <p><strong>Mensaje:</strong> Finiching compiling errors</p>
+  <p>Descripción: Diversas clases fueron tocadas por la magia del UserMapper, permitiendo que la transformación a DTOs fluyera con precisión élfica.</p>
 
-1. **La Última Vigilia del Granusti**
-   *Commit:* [1adbeca](https://github.com/DWS-2025/project-grupo-2/commit/1adbeca4af5137a1ab7ce8d7c2250a28628162b2)
-   *Mensaje:* Oops
-   *Descripción:* En las sombrías horas de la madrugada, cargando con el peso de los últimos dos commits y cuando el reloj marcaba las 2:00 AM, el gran mago (Granusti44) a punto de perder la cordura libró su batalla final contra el Balrog (Mineja2017), antes de la hora del destino final (La clase del día siguiente).
+  <h2>3. El Despertar de la API</h2>
+  <p><strong>Commit:</strong> <a href="https://github.com/DWS-2025/project-grupo-2/commit/a8ae879f88e0253013b2da258453d43426e4c27a">a8ae879</a></p>
+  <p><strong>Mensaje:</strong> Api implementation finished</p>
+  <p>Descripción: El último endpoint fue sellado, marcando el fin de una era. La API REST despertó como un dragón sobre los campos de datos, lista para servir al reino con sabiduría y estructura.</p>
 
-2. **La Alianza del Mapper de User**
-   *Commit:* [5a6572f](https://github.com/DWS-2025/project-grupo-2/commit/5a6572f7a087b14d4d1f2fffa1712bd74279ac46)
-   *Mensaje:* Finiching compiling errors (El mago estaba loco y no podía escribir bien)
-   *Descripción:* En una jornada de reestructuración profunda, el desarrollador tejió una red de cambios sutiles pero cruciales: diversas clases fueron tocadas por la magia del UserMapper, permitiendo que la transformación a DTOs fluyera con precisión élfica.
+  <h2>4. El Legado del Módulo</h2>
+  <p><strong>Commit:</strong> <a href="https://github.com/DWS-2025/project-grupo-2/commit/9de45f7d9e3aa9f398c99997778497308e6e4e99">9de45f7</a></p>
+  <p><strong>Mensaje:</strong> Compiling errors</p>
+  <p>Descripción: ModuleMapper, el vínculo sagrado entre la lógica del dominio y su proyección en el reino de los datos, fue forjado con la precisión de un enano artesano.</p>
 
-3. **El Despertar de la API**
-   *Commit:* [a8ae879](https://github.com/DWS-2025/project-grupo-2/commit/a8ae879f88e0253013b2da258453d43426e4c27a)
-   *Mensaje:* Api implementation finished
-   *Descripción:* Y así, tras incontables jornadas de código y café, el último endpoint fue sellado, marcando el fin de una era de incertidumbre. La API REST despertó con toda su fuerza, como un dragón que alza el vuelo sobre los campos de datos, lista para servir al reino con sabiduría y estructura.
+  <h2>5. El Cierre del Grimorio</h2>
+  <p><strong>Commit:</strong> <a href="https://github.com/DWS-2025/project-grupo-2/commit/46a44414f2aee4d5eba99a43239ffc480c53be58">46a4441</a></p>
+  <p><strong>Mensaje:</strong> Update README.md</p>
+  <p>Descripción: Este commit marca el fin de la escritura del códice. No fue un gran cambio en el código, sino un cambio en el alma del proyecto. La espada ha sido envainada; ahora, se canta la historia.</p>
 
-4. **El Legado del Módulo**
-   *Commit:* [9de45f7](https://github.com/DWS-2025/project-grupo-2/commit/9de45f7d9e3aa9f398c99997778497308e6e4e99)
-   *Mensaje:* Compiling errors
-   *Descripción:* En las profundidades del repositorio, se alzó una nueva figura: ModuleMapper, el vínculo sagrado entre la lógica del dominio y su proyección en el reino de los datos. Con precisión de enano artesano, se forjó también su DTO, una gema pura que permitió al conocimiento modular viajar con seguridad a través del API.
-
-5. **El Cierre del Grimorio**
-   *Commit:* [46a4441](https://github.com/DWS-2025/project-grupo-2/commit/46a44414f2aee4d5eba99a43239ffc480c53be58)
-   *Mensaje:* Update README.md
-   *Descripción:* Aunque humilde en apariencia, este commit marca un hito trascendental: el fin de la escritura del códice. Las forjas de código se han enfriado, los hechizos han sido lanzados, y ahora comienza la etapa final: la preparación para la entrega.
-Como los elfos que partieron hacia Valinor tras siglos de guerras, los desarrolladores se alejan de la batalla técnica para vestir sus logros con presentaciones, documentos y artefactos dignos del Concilio Blanco.
-No fue un gran cambio en el código, sino un cambio en el alma del proyecto. La espada ha sido envainada; ahora, se canta la historia.
-
-Y así esta edad termina dejando paso a la siguiente, en la que, con mucha seguridad, viviremos muchas más aventuras épicas protegiendo lo que hemos contruido frente las temibles bestias de Morgoth.
-
+  <p><em>Y así esta edad termina dejando paso a la siguiente, en la que, con mucha seguridad, viviremos muchas más aventuras épicas protegiendo lo que hemos construido frente a las temibles bestias de Morgoth.</em></p>
 <h3 align="center">Miembros</h3>
 <div align="center">
   👨‍🎓 Jaime García González aka <a href="https://github.com/Mineja2017">Mineja2017</a>, j.garciago.2023@alumnos.urjc.es<br/>
