@@ -88,10 +88,10 @@ public class SampleDataService {
             FileInputStream input = new FileInputStream(file);
 
             return new MockMultipartFile(
-                    file.getName(),            // Nombre del archivo
-                    file.getName(),            // Nombre original del archivo
-                    "image/png",              // Tipo de contenido (ajustar según el formato de la imagen)
-                    input                      // Contenido del archivo
+                    file.getName(),            // File name
+                    file.getName(),            // Original name file
+                    "image/png",               // Content type (adjust by the image format)
+                    input                      // File content
             );
         }catch (Exception e){
 
@@ -106,10 +106,10 @@ public class SampleDataService {
             FileInputStream input = new FileInputStream(file);
 
             return new MockMultipartFile(
-                    file.getName(),            // Nombre del archivo
-                    file.getName(),            // Nombre original del archivo
-                    "text/markdown",              // Tipo de contenido (ajustar según el formato de la imagen)
-                    input                      // Contenido del archivo
+                    file.getName(),            // File name
+                    file.getName(),            // Original name file
+                    "text/markdown",           // Content type (adjust by the image format)
+                    input                      // File content
             );
         }catch (Exception e){
 

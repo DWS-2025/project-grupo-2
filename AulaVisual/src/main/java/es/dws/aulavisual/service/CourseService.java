@@ -103,7 +103,9 @@ public class CourseService {
 
         Course course = courseRepository.findById(courseId).orElseThrow();
 //      userService.removeAllUsersFromCourse(course);
-        removeCourseFromTeacher(course.getTeacher(), course);
+        if (course.getTeacher() != null) {
+            course.getTeacher().setCourseTeaching(null);
+        }
         courseRepository.deleteById(courseId);
         System.out.println("Hola");
     }
