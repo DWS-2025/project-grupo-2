@@ -160,7 +160,7 @@ public class UserController {
                 userService.saveImage(currentUser.id(), location.toString(), image.getInputStream(), image.getSize());
             }
 
-            return redirect;
+            return "redirect:" + redirect;
         }catch (NoSuchElementException | IOException  | java.net.URISyntaxException e) {
 
             model.addAttribute("message", e.getMessage());
