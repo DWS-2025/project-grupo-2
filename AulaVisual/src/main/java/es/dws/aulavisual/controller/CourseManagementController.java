@@ -146,7 +146,7 @@ public class CourseManagementController {
         }
     }
 
-    @PostMapping("/admin/courses/{courseId}/delete") //Cambiar a POST
+    @PostMapping("/admin/courses/{courseId}/delete")
     public String deleteCourse(@PathVariable long courseId, @CookieValue(value = "userId", defaultValue = "") String userId, Model model) {
 
         try {
@@ -161,7 +161,7 @@ public class CourseManagementController {
 //                return "redirect:/";
 //            }
             //CourseDTO course = courseService.findByIdDTO(courseId);
-            courseService.deleteCourse(courseId); //Mirar submisssions
+            courseService.deleteCourse(courseId);
             return "redirect:/admin/courses";
         }catch (NoSuchElementException e) {
 
@@ -170,7 +170,7 @@ public class CourseManagementController {
         }
     }
 
-    @PostMapping("/admin/courses/{courseId}/module/{id}/delete") //Cambiar a POST
+    @PostMapping("/admin/courses/{courseId}/module/{id}/delete")
     public String deleteModule(Model model, @PathVariable long courseId, @PathVariable long id, @CookieValue(value = "userId", defaultValue = "") String userId) {
 
         try {

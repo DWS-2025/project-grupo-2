@@ -241,7 +241,7 @@ public class UserController {
         }
     }
 
-    @PostMapping("/admin/users/{id}/delete") //Cambiar HTLML a POST
+    @PostMapping("/admin/users/{id}/delete")
     public String deleteUser(Model model, @CookieValue(value = "userId", defaultValue = "") String userId, @PathVariable long id) {
 
         try {
@@ -330,7 +330,7 @@ public class UserController {
         }
     }
 
-    @GetMapping("/admin/users/{id}/roles/{role}") //Cambiar HTLML a POST
+    @GetMapping("/admin/users/{id}/roles/{role}")
     public String updateUserRole(Model model, @CookieValue(value = "userId", defaultValue = "") String userId, @PathVariable long id, @PathVariable int role) {
 
         try {
