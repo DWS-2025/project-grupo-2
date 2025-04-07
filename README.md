@@ -70,8 +70,40 @@ El usuario es dueño de su destino, así como el fuego lo es de su llama: nace e
   <img src="https://github.com/DWS-2025/project-grupo-2/blob/main/content/diagrams/Database_Diagram.svg" alt="Diagrama de Base de Datos"/>
 </div>
 
+# TOP 4+1 COMMITS by Mineja2017
+
+En el reino del código, donde cada línea es un verso de una antigua saga, te presentamos el top 5 de nuestros commits legendarios:
+
+1. **La edad de la API**  
+   *Commit:* [9537df2](https://github.com/DWS-2025/project-grupo-2/commit/9537df222fd5989173f697be5d7166ab903db266#diff-f5bcc571ffc6d7e94042ed98e6d3bd30e3e82e550a31b607ee4fee5829aab980)  
+   *Mensaje:* Diversas correciones.  
+   *Descripción:* En una batalla épica contra el error, se sustituyó el uso de `==` por el método mágico `.equals()`. Un ajuste sutil pero decisivo, que aseguró que la lógica de eliminación de entregas opere con la precisión de la espada de Glamdring. Marca tambien el                    inicio de la edad de la API estando su majestuosa obra terminada. 
+
+2. **El Ritual de la Base de Datos**  
+   *Commit:* [b3ea196](https://github.com/DWS-2025/project-grupo-2/commit/b3ea196586f7ae0b8923ee5c532e4e55e9d7c94f) 
+   *Mensaje:* Functional Web apliation with DDBB  
+   *Descripción:* Un hechizo de integración, donde la aplicación web se unificó con su base de datos. Como una alianza de las razas libres de la Tierra Media, se logró una sinergia perfecta entre el frontend y el backend.
+
+3. **El Conjuro AJAX**  
+   *Commit:* [6f43b74](https://github.com/DWS-2025/project-grupo-2/commit/6f43b74b702b7ad4042f506afabc0c057d767bb9)  
+   *Mensaje:* AJAX pageable && filter  
+   *Descripción:* Con la agilidad de un elfo y la precisión de un mago, este commit introdujo paginación y filtrado vía AJAX, permitiendo que los datos fluyan tan suaves como el río Anduin.
+
+4. **La Intervención Divina**  
+   *Commit:* [cfe0e37](https://github.com/DWS-2025/project-grupo-2/commit/cfe0e37dfe3751076ef951a45c00be537778b203) 
+   *Mensaje:* Divine Intervention – Compile and works (Most of it)  
+   *Descripción:* Una auténtica intervención celestial. En este commit, los dioses del desarrollo se manifestaron y otorgaron la bendición de compilar sin errores, transformando el caos en armonía.
+
+5. **El Misterio del Commit Fantasma**  
+   *Commit:* [afd6293](https://github.com/DWS-2025/project-grupo-2/commit/afd6293dbf3e9724b8c00e87530d7e174dc9d558) 
+   *Mensaje:* Created documentation 
+   *Descripción:* Del coro de Ilúvatar y los Ainur brotan Eä (El universo) y esta documentación que ayudará al futuro concilio blanco (developers) en el uso de la API previamente implementada 
+
+¡Que estas gestas inspiren tus propias aventuras en el mundo del desarrollo!
+
+
 <h3 align="center">Miembros</h3>
 <div align="center">
-  👨‍🎓 Jaime García González aka Mineja2017, j.garciago.2023@alumnos.urjc.es<br/>
-  👨‍🎓 Victor Ruiz Muñoz aka Granusti44, v.ruiz.2022@alumnos.urjc.es
+  👨‍🎓 Jaime García González aka <a href="https://github.com/Mineja2017">Mineja2017</a>, j.garciago.2023@alumnos.urjc.es<br/>
+  👨‍🎓 Victor Ruiz Muñoz aka <a href="https://github.com/Gransuti44">Granusti44</a>, v.ruiz.2022@alumnos.urjc.es
 </div>
