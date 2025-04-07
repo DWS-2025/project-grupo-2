@@ -11,6 +11,7 @@ import es.dws.aulavisual.model.Course;
 import es.dws.aulavisual.model.Module;
 import es.dws.aulavisual.repository.ModuleRepository;
 import es.dws.aulavisual.Mapper.CourseMapper;
+import jakarta.persistence.criteria.CriteriaBuilder;
 import org.hibernate.engine.jdbc.BlobProxy;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.InputStreamResource;
@@ -128,8 +129,12 @@ public class ModuleService {
     public List<Integer> getAvailablePositions(CourseDTO courseDTO) {
 
         Course course = courseService.findById(courseDTO.id());
-        int maxPosition = moduleRepository.findlastModuleId(course.getId());
+        Integer maxPosition = moduleRepository.findlastModuleId(course.getId());
         List<Integer> positions = new ArrayList<>();
+        if(maxPosition == null) {
+            positions.add(1);
+            return positions;
+        }
         List<Module> modules = moduleRepository.findByCourse(course);
         boolean found = false;
 

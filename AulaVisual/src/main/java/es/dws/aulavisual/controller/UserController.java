@@ -160,7 +160,7 @@ public class UserController {
                 userService.saveImage(currentUser.id(), location.toString(), image.getInputStream(), image.getSize());
             }
 
-            return redirect;
+            return "redirect:" + redirect;
         }catch (NoSuchElementException | IOException  | java.net.URISyntaxException e) {
 
             model.addAttribute("message", e.getMessage());
@@ -253,6 +253,11 @@ public class UserController {
                 UserDTO currentUser = userService.findByIdDTO(Long.parseLong(userId));
                 if(currentUser.role() == 0) {
 
+                    if(id == Long.parseLong(userId)) {
+
+                        model.addAttribute("message", "No puedes eliminarte a ti mismo");
+                        return "error";
+                    }
                     userService.deleteById(id);
                     return "redirect:/admin";
 
