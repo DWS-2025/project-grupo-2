@@ -101,6 +101,36 @@ En el reino del código, donde cada línea es un verso de una antigua saga, te p
 
 ¡Que estas gestas inspiren tus propias aventuras en el mundo del desarrollo!
 
+# TOP 3+2 COMMITS by Granusti44
+
+1. **La Última Vigilia del Granusti**
+   *Commit:* [1adbeca](https://github.com/DWS-2025/project-grupo-2/commit/1adbeca4af5137a1ab7ce8d7c2250a28628162b2)
+   *Mensaje:* Oops
+   *Descripción:* En las sombrías horas de la madrugada, cargando con el peso de los últimos dos commits y cuando el reloj marcaba las 2:00 AM, el gran mago (Granusti44) a punto de perder la cordura libró su batalla final contra el Balrog (Mineja2017), antes de la hora del destino final (La clase del día siguiente).
+
+2. **La Alianza del Mapper de User**
+   *Commit:* [5a6572f](https://github.com/DWS-2025/project-grupo-2/commit/5a6572f7a087b14d4d1f2fffa1712bd74279ac46)
+   *Mensaje:* Finiching compiling errors (El mago estaba loco y no podía escribir bien)
+   *Descripción:* En una jornada de reestructuración profunda, el desarrollador tejió una red de cambios sutiles pero cruciales: diversas clases fueron tocadas por la magia del UserMapper, permitiendo que la transformación a DTOs fluyera con precisión élfica.
+
+3. **El Despertar de la API**
+   *Commit:* a8ae879(https://github.com/DWS-2025/project-grupo-2/commit/a8ae879f88e0253013b2da258453d43426e4c27a)
+   *Mensaje:* Api implementation finished
+   *Descripción:* Y así, tras incontables jornadas de código y café, el último endpoint fue sellado, marcando el fin de una era de incertidumbre. La API REST despertó con toda su fuerza, como un dragón que alza el vuelo sobre los campos de datos, lista para servir al reino con sabiduría y estructura.
+
+4. **El Legado del Módulo**
+   *Commit:* [9de45f7](https://github.com/DWS-2025/project-grupo-2/commit/9de45f7d9e3aa9f398c99997778497308e6e4e99)
+   *Mensaje:* Compiling errors
+   *Descripción:* En las profundidades del repositorio, se alzó una nueva figura: ModuleMapper, el vínculo sagrado entre la lógica del dominio y su proyección en el reino de los datos. Con precisión de enano artesano, se forjó también su DTO, una gema pura que permitió al conocimiento modular viajar con seguridad a través del API.
+
+5. **El Cierre del Grimorio**
+   *Commit:* [46a4441](https://github.com/DWS-2025/project-grupo-2/commit/46a44414f2aee4d5eba99a43239ffc480c53be58)
+   *Mensaje:* Update README.md
+   *Descripción:* Aunque humilde en apariencia, este commit marca un hito trascendental: el fin de la escritura del códice. Las forjas de código se han enfriado, los hechizos han sido lanzados, y ahora comienza la etapa final: la preparación para la entrega.
+Como los elfos que partieron hacia Valinor tras siglos de guerras, los desarrolladores se alejan de la batalla técnica para vestir sus logros con presentaciones, documentos y artefactos dignos del Concilio Blanco.
+No fue un gran cambio en el código, sino un cambio en el alma del proyecto. La espada ha sido envainada; ahora, se canta la historia.
+
+Y así esta edad termina dejando paso a la siguiente, en la que, con mucha seguridad, viviremos muchas más aventuras épicas protegiendo lo que hemos contruido contra las temibles bestias de Morgoth.
 
 <h3 align="center">Miembros</h3>
 <div align="center">
