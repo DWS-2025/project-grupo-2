@@ -64,10 +64,10 @@ public class CourseService {
         return courseRepository.save(course);
     }
 
-    public void addUserToCourse(CourseDTO courseDTO, UserDTO userDTO) {
+    public void addUserToCourse(long courseId, UserDTO userDTO) {
 
         // Course course = courseMapper.toDomain(courseDTO);
-        Course course = findById(courseDTO.id());
+        Course course = findById(courseId);
         //User user = userMapper.toDomain(userDTO);
         User user = userService.findById(userDTO.id());
         course.getStudents().add(user);

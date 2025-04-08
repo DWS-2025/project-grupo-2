@@ -288,7 +288,7 @@ public class CourseManagementController {
                 }
                 courseDTO = courseService.saveDTO(courseDTO);
                 courseService.assignTeacher(teacherDTO.id(), courseDTO);
-                URI location = URI.create(String.format("/course/" + courseDTO.id() + "/image/"));
+                URI location = URI.create(String.format("api/course/" + courseDTO.id() + "/image/"));
                 courseService.uploadImage(courseDTO.id(), location.toString(), imageCourse.getInputStream(), imageCourse.getSize());
             } else {
 
@@ -396,7 +396,7 @@ public class CourseManagementController {
                 model.addAttribute("message", "El estudiante ya está en el curso");
                 return "error";
             }
-            courseService.addUserToCourse(course, student);
+            courseService.addUserToCourse(course.id(), student);
 
             return "redirect:/admin/courses";
         }catch (NoSuchElementException e){

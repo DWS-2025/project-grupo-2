@@ -63,9 +63,9 @@ public class SampleDataService {
             courseService.assignTeacher(teacher1.id(), courseMapper.toDTO(course1));
             courseService.assignTeacher(teacher2.id(), courseMapper.toDTO(course2));
             courseService.assignTeacher(teacher3.id(), courseMapper.toDTO(course3));
-            courseService.addUserToCourse(courseMapper.toDTO(course1), userService.findByUserName("test2"));
-            courseService.addUserToCourse(courseMapper.toDTO(course2), userService.findByUserName("test3"));
-            courseService.addUserToCourse(courseMapper.toDTO(course3), userService.findByUserName("test4"));
+            courseService.addUserToCourse(course1.getId(), userService.findByUserName("test2"));
+            courseService.addUserToCourse(course2.getId(), userService.findByUserName("test3"));
+            courseService.addUserToCourse(course3.getId(), userService.findByUserName("test4"));
 
             CourseDTO course1DTO = courseMapper.toDTO(course1);
             moduleService.save(course1DTO, "Intro", 1, convertMDToMultipart("files/courses/course-0/module0-Intro.md"));

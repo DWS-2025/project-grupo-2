@@ -52,6 +52,9 @@ public class UserRestController {
 
         UserDTO userDTO = userService.updateDTO(id, userCreationDTO);
         courseService.updateRole(userDTO, userCreationDTO.userDTO().role());
+        for(int i = 0; i < userCreationDTO.userDTO().courses().size(); i++) {
+            courseService.addUserToCourse(userCreationDTO.userDTO().courses().get(i).id(), userDTO);
+        }
         URI location = fromCurrentRequest().path("").buildAndExpand(userDTO.id()).toUri();
         return ResponseEntity.created(location).body(userService.findByIdDTO(userDTO.id()));
     }
