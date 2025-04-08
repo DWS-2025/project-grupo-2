@@ -2,6 +2,7 @@ package es.dws.aulavisual.RESTController;
 
 import es.dws.aulavisual.DTO.UserCreationDTO;
 import es.dws.aulavisual.DTO.UserDTO;
+import es.dws.aulavisual.service.CourseService;
 import org.springframework.data.domain.Page;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpHeaders;
@@ -23,10 +24,12 @@ import static org.springframework.web.servlet.support.ServletUriComponentsBuilde
 public class UserRestController {
 
     private final UserService userService;
+    private final CourseService courseService;
 
-    public UserRestController(UserService userService) {
+    public UserRestController(UserService userService, CourseService courseService) {
 
         this.userService = userService;
+        this.courseService = courseService;
     }
 
     @GetMapping("/")
@@ -48,8 +51,9 @@ public class UserRestController {
     public ResponseEntity<UserDTO> updateUser(@PathVariable Long id, @RequestBody UserCreationDTO userCreationDTO) {
 
         UserDTO userDTO = userService.updateDTO(id, userCreationDTO);
+        courseService.updateRole(userDTO, userCreationDTO.userDTO().role());
         URI location = fromCurrentRequest().path("").buildAndExpand(userDTO.id()).toUri();
-        return ResponseEntity.created(location).body(userDTO);
+        return ResponseEntity.created(location).body(userService.findByIdDTO(userDTO.id()));
     }
 
     @GetMapping("/{id}/")

@@ -264,7 +264,6 @@ public class UserService {
         user.setSurname(userCreationDTO.userDTO().surname());
         user.setUserName(userCreationDTO.userDTO().userName());
         user.setCampus(userCreationDTO.userDTO().campus());
-        user.setRole(userCreationDTO.userDTO().role());
         return userMapper.toDTO(userRepository.save(user));
     }
 }
