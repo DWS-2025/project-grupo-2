@@ -72,10 +72,10 @@ public class SubmissionService {
         return submissionMapper.toDTO(submissionRepository.findByStudentAndCourse(user, course).orElseThrow());
     }
 
-    public boolean userMadeSubmission(UserDTO userDTO, CourseDTO courseDTO) {
+    public boolean userMadeSubmission(Long userId, Long courseId) {
 
-        User user = userService.findById(userDTO.id());
-        Course course = courseService.findById(courseDTO.id());
+        User user = userService.findById(userId);
+        Course course = courseService.findById(courseId);
         Optional <Submission> submission = submissionRepository.findByStudentAndCourse(user, course);
         return submission.isPresent();
     }
@@ -180,11 +180,5 @@ public class SubmissionService {
         submission.getCourse().getSubmissions().remove(submission);
         submissionRepository.delete(submission);
         return submissionMapper.toDTO(submission);
-    }
-
-    public boolean hasSubmission(long userId, long courseId) {
-        User user = userService.findById(userId);
-        Course course = courseService.findById(courseId);
-        return submissionRepository.findByStudentAndCourse(user, course).isPresent();
     }
 }
