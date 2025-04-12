@@ -111,7 +111,7 @@ public class UserController {
             return "redirect:/register";
         }catch (NoSuchElementException e) {
 
-            userService.saveDTO(name, surname, username, password, campus, 2);
+            userService.saveDTO(name, surname, username, password, campus, "USER");
             return "redirect:/login";
         }
     }

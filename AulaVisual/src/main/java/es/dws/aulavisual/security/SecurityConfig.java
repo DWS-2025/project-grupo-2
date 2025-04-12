@@ -7,11 +7,16 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler;
+import org.springframework.security.access.expression.method.MethodSecurityExpressionHandler;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -34,12 +39,29 @@ public class SecurityConfig {
 
 	@Bean
 	public PasswordEncoder passwordEncoder() {
+
 		return new BCryptPasswordEncoder();
 	}
 
 	@Bean
 	public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
 		return authConfig.getAuthenticationManager();
+	}
+
+	@Bean
+	static RoleHierarchy roleHierarchy() {
+		return RoleHierarchyImpl.withDefaultRolePrefix()
+				.role("ADMIN").implies("TEACHER")
+				.role("TEACHER").implies("USER")
+				.role("USER").implies("ANONYMOUS")
+				.build();
+	}
+
+	@Bean
+	static MethodSecurityExpressionHandler methodSecurityExpressionHandler(RoleHierarchy roleHierarchy) {
+		DefaultMethodSecurityExpressionHandler expressionHandler = new DefaultMethodSecurityExpressionHandler();
+		expressionHandler.setRoleHierarchy(roleHierarchy);
+		return expressionHandler;
 	}
 
 	@Bean
@@ -55,7 +77,10 @@ public class SecurityConfig {
 	@Bean
 	@Order(1)
 	public SecurityFilterChain apiFilterChain(HttpSecurity http) throws Exception {
-		
+
+		DefaultMethodSecurityExpressionHandler expressionHandler = new DefaultMethodSecurityExpressionHandler();
+		expressionHandler.setRoleHierarchy(roleHierarchy());
+
 		http.authenticationProvider(authenticationProvider());
 		
 		http
@@ -74,13 +99,13 @@ public class SecurityConfig {
 			);
 		
         // Disable Form login Authentication
-        http.formLogin(formLogin -> formLogin.disable());
+        http.formLogin(AbstractHttpConfigurer::disable);
 
         // Disable CSRF protection (it is difficult to implement in REST APIs)
-        http.csrf(csrf -> csrf.disable());
+        http.csrf(AbstractHttpConfigurer::disable);
 
         // Disable Basic Authentication
-        http.httpBasic(httpBasic -> httpBasic.disable());
+        http.httpBasic(AbstractHttpConfigurer::disable);
 
         // Stateless session
         http.sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
@@ -103,7 +128,6 @@ public class SecurityConfig {
 						.requestMatchers("/").permitAll()
 						.requestMatchers("/images/**").permitAll()
 						.requestMatchers("/css/**").permitAll()
-						.requestMatchers("/books/**").permitAll()
 						.requestMatchers("/error").permitAll()
 						// PRIVATE PAGES
 						.requestMatchers("/profile").hasAnyRole("USER")
@@ -114,7 +138,7 @@ public class SecurityConfig {
 				)
 				.formLogin(formLogin -> formLogin
 						.loginPage("/login")
-						.failureUrl("/loginerror")
+						.failureUrl("/error")
 						.defaultSuccessUrl("/")
 						.permitAll()
 				)
