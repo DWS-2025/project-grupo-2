@@ -7,6 +7,7 @@ import es.dws.aulavisual.Mapper.UserMapper;
 import es.dws.aulavisual.model.Course;
 import es.dws.aulavisual.service.CourseService;
 import es.dws.aulavisual.service.ModuleService;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.multipart.MultipartFile;
 import es.dws.aulavisual.service.UserService;
 import org.springframework.stereotype.Service;
@@ -37,14 +38,14 @@ public class SampleDataService {
     public void init() {
 
         try {
-            userService.saveDTO("teacher1", "teacher1", "teacher1", "teacher1", "Noxus", 1);
-            userService.saveDTO("teacher2", "teacher2", "teacher2", "teacher2", "Piltover", 1);
-            userService.saveDTO("teacher3", "teacher3", "teacher3", "teacher3", "Zaun", 1);
+            userService.saveDTO("teacher1", "teacher1", "teacher1", "teacher1", "Noxus", "TEACHER");
+            userService.saveDTO("teacher2", "teacher2", "teacher2", "teacher2", "Piltover", "TEACHER");
+            userService.saveDTO("teacher3", "teacher3", "teacher3", "teacher3", "Zaun", "TEACHER");
 
-            userService.saveDTO("asd", "asd", "asd", "asd", "Zaun", 0);
-            userService.saveDTO("test2", "test2", "test2", "test2", "Zaun", 2);
-            userService.saveDTO("test3", "test3", "test3", "test3", "Zaun", 2);
-            userService.saveDTO("test4", "test4", "test4", "test4", "Zaun", 2);
+            userService.saveDTO("asd", "asd", "asd", "asd", "Zaun", "ADMIN");
+            userService.saveDTO("test2", "test2", "test2", "test2", "Zaun", "USER");
+            userService.saveDTO("test3", "test3", "test3", "test3", "Zaun", "USER");
+            userService.saveDTO("test4", "test4", "test4", "test4", "Zaun", "USER");
 
             Course course1 = new Course("League of Legends", "Aprende a jugar al LOL", "Haz una redacción sobre el control de oleadas", convertPNGToMultipart("files/courses/course-0/img.png"));
             course1.setImage("/api/course/1/image");
@@ -74,7 +75,7 @@ public class SampleDataService {
 
             for(int i = 0; i < 50; i++){
 
-                userService.saveDTO("testPage" + i, "testPage" + i, "testPage" + i, "testPage" +i, "Zaun", 2);
+                userService.saveDTO("testPage" + i, "testPage" + i, "testPage" + i, "testPage" +i, "Zaun", "USER");
             }
         }catch (NoSuchElementException | IllegalArgumentException e) {
             System.out.println("Error creating sample data");
