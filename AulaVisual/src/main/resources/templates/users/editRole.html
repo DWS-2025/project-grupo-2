@@ -21,12 +21,15 @@
     <div class="centerRoles">
       <form action="/admin/users/{{id}}/roles/0">
       <input type="submit" class="roleButton" value="Convertir en administrador">
+        <input type="hidden" name="_csrf" value="{{token}}">
       </form>
       <form action="/admin/users/{{id}}/roles/1">
         <input type="submit" class="roleButton" value="Convertir en profesor">
+        <input type="hidden" name="_csrf" value="{{token}}">
       </form>
       <form action="/admin/users/{{id}}/roles/2">
         <input type="submit" class="roleButton" value="Convertir en alumno">
+        <input type="hidden" name="_csrf" value="{{token}}">
       </form>
     </div>
   </div>

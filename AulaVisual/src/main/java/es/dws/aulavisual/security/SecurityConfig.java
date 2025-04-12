@@ -126,8 +126,10 @@ public class SecurityConfig {
 				.authorizeHttpRequests(authorize -> authorize
 						// PUBLIC PAGES
 						.requestMatchers("/").permitAll()
+						.requestMatchers("/register").permitAll()
 						.requestMatchers("/images/**").permitAll()
 						.requestMatchers("/css/**").permitAll()
+						.requestMatchers("/js/**").permitAll()
 						.requestMatchers("/error").permitAll()
 						// PRIVATE PAGES
 						.requestMatchers("/profile").hasAnyRole("USER")
