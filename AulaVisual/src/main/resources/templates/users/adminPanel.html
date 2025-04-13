@@ -105,7 +105,7 @@
                             <td class="center">${user.campus}</td>
                             <td class="center">${user.role}</td>
                             <td class="center"><a href="/admin/users/${user.id}">Editar</a></td>
-                            <td><input type="submit" value="Eliminar" form="delete-user-${user.id}"></td>
+                            <td><input type="submit" value="Eliminar" form="delete-user-${user.id}"><input type="hidden" name="_csrf" value="{{token}}"></td>
                             <td class="center"><a href="/admin/users/${user.id}/roles">Gestionar Roles</a></td>
                         </tr>
                     `;

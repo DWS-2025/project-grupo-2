@@ -50,6 +50,7 @@
           <td class="center">
             <a href="/admin/courses/{{courseId}}/modules/{{id}}">Ver</a>
             <input type="submit" value="Eliminar Modulo" form="delete-module-{{id}}">
+            <input type="hidden" name="_csrf" value="{{token}}" form="delete-module-{{id}}">
           </td>
         </tr>
         {{/modules}}

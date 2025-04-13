@@ -60,11 +60,13 @@
                         <a href="/admin/courses/{{id}}/modules">Ver</a>
                         <form method="post" action="/admin/courses/{{id}}/delete">
                             <input type="submit" value= "Eliminar curso">
+                            <input type="hidden" name="_csrf" value="{{token}}">
                         </form>
                     </td>
                     <td>
                         <input type="text" id="studentId" name="studentId" form="add-student-form-{{id}}" required>
                         <button type="submit" form="add-student-form-{{id}}">Añadir</button>
+                        <input type="hidden" name="_csrf" value="{{token}}" form="add-student-form-{{id}}">
                     </td>
                     {{^teacher}}
                     <td>
@@ -76,6 +78,7 @@
                                 {{/availableTeachers}}
                             </select>
                             <button type="submit">Asignar</button>
+                            <input type="hidden" name="_csrf" value="{{token}}">
                         </form>
                     </td>
                     {{/teacher}}

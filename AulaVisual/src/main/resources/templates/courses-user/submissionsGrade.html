@@ -66,6 +66,7 @@
             </td>
             <td class="center">
                 <button type="submit" class="save" form="delete-user-{{student.id}}" name="delete">Devolver a borrador</button>
+                <input type="hidden" name="_csrf" value="{{token}}" form="delete-user-{{student.id}}">
             </td>
         </tr>
         {{/gradedSubmissions}}

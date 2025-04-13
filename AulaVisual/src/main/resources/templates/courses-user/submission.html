@@ -17,6 +17,7 @@
             <button type="reset" class="cancel">Borrar Todo</button>
             <button type="submit" class="save">Guardar</button>
         </div>
+        <input type="hidden" name="_csrf" value="{{token}}">
     </form>
     {{/submitted}}
     {{#submitted}}

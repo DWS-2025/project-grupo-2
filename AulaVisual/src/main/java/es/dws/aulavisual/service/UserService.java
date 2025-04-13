@@ -26,6 +26,7 @@ import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -33,22 +34,24 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository, UserMapper userMapper) {
+    public UserService(UserRepository userRepository, UserMapper userMapper, PasswordEncoder passwordEncoder) {
 
         this.userRepository = userRepository;
         this.userMapper = userMapper;
+        this.passwordEncoder = passwordEncoder;
     }
 
-    public UserDTO saveDTO(String name, String surname, String userName, String password, String campus, int role) {
+    public UserDTO saveDTO(String name, String surname, String userName, String password, String campus, String ...roles) {
 
-        String passwordHash = hashPassword(password);
-        return userMapper.toDTO(save(name, surname, userName, passwordHash, campus, role));
+        String passwordHash = passwordEncoder.encode(password);
+        return userMapper.toDTO(save(name, surname, userName, passwordHash, campus, roles));
     }
 
-    User save(String name, String surname, String userName, String passwordHash, String campus, int role) {
+    User save(String name, String surname, String userName, String passwordHash, String campus, String ...roles) {
 
-        User user = new User(name, surname, userName, passwordHash, campus, role);
+        User user = new User(name, surname, userName, passwordHash, campus, roles);
         return userRepository.saveAndFlush(user);
     }
 
