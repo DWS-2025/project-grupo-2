@@ -40,7 +40,7 @@ public class SubmissionController {
 
             if(userDTO.role() == 1){
 
-                return "redirect:/courses/" + courseId + "/grade";
+                return "redirect:/teacher/courses/" + courseId + "/submissions";
             }
 
             if(userDTO.role() == 2){
@@ -81,7 +81,7 @@ public class SubmissionController {
         }
     }
 
-    @GetMapping("/courses/{courseId}/grade")
+    @GetMapping("/teacher/courses/{courseId}/submissions")
     public String gradeCourseSubmission(Model model, @CookieValue(value = "userId", defaultValue = "") String userId, @PathVariable long courseId) {
 
         try {
@@ -110,7 +110,7 @@ public class SubmissionController {
         }
     }
 
-    @PostMapping("/courses/{courseId}/grade/{studentId}")
+    @PostMapping("/teacher/courses/{courseId}/grade/{studentId}")
     public String gradeCourseSubmission(Model model, @CookieValue(value = "userId", defaultValue = "") String userId, @PathVariable long courseId, @PathVariable long studentId, @RequestParam float grade) {
 
         try {
@@ -123,7 +123,7 @@ public class SubmissionController {
 
             UserDTO studentDTO = userService.findByIdDTO(studentId);
 
-            if(userDTO.role() == 1 && courseDTO.teacher().id() == userDTO.id()){
+            if(userDTO.role() == 1 && courseDTO.teacher().id().equals(userDTO.id())){
 
                 if(courseService.userIsInCourse(studentDTO, courseDTO)){
 

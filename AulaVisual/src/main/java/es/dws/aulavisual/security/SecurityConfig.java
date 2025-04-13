@@ -78,9 +78,6 @@ public class SecurityConfig {
 	@Order(1)
 	public SecurityFilterChain apiFilterChain(HttpSecurity http) throws Exception {
 
-		DefaultMethodSecurityExpressionHandler expressionHandler = new DefaultMethodSecurityExpressionHandler();
-		expressionHandler.setRoleHierarchy(roleHierarchy());
-
 		http.authenticationProvider(authenticationProvider());
 		
 		http
@@ -120,6 +117,9 @@ public class SecurityConfig {
 	@Order(1)
 	public SecurityFilterChain webFilterChain(HttpSecurity http) throws Exception {
 
+		DefaultMethodSecurityExpressionHandler expressionHandler = new DefaultMethodSecurityExpressionHandler();
+		expressionHandler.setRoleHierarchy(roleHierarchy());
+
 		http.authenticationProvider(authenticationProvider());
 
 		http
@@ -132,11 +132,9 @@ public class SecurityConfig {
 						.requestMatchers("/js/**").permitAll()
 						.requestMatchers("/error").permitAll()
 						// PRIVATE PAGES
-						.requestMatchers("/profile").hasAnyRole("USER")
-						.requestMatchers("/newbook").hasAnyRole("USER")
-						.requestMatchers("/editbook").hasAnyRole("USER")
-						.requestMatchers("/editbook/*").hasAnyRole("USER")
-						.requestMatchers("/removebook/*").hasAnyRole("ADMIN")
+						.requestMatchers("/admin/**").hasAnyRole("ADMIN")
+						.requestMatchers("/courses/**").hasAnyRole("USER")
+						.requestMatchers("/teacher/**").hasAnyRole("TEACHER")
 				)
 				.formLogin(formLogin -> formLogin
 						.loginPage("/login")
