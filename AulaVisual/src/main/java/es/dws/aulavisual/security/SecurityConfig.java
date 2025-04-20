@@ -114,7 +114,7 @@ public class SecurityConfig {
 	}
 
 	@Bean
-	@Order(1)
+	@Order(2)
 	public SecurityFilterChain webFilterChain(HttpSecurity http) throws Exception {
 
 		DefaultMethodSecurityExpressionHandler expressionHandler = new DefaultMethodSecurityExpressionHandler();
