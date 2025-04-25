@@ -1,7 +1,6 @@
 package es.dws.aulavisual.service;
 
 import java.io.InputStream;
-import java.net.URI;
 import java.sql.Blob;
 
 import es.dws.aulavisual.DTO.CourseDTO;
@@ -11,7 +10,6 @@ import es.dws.aulavisual.model.Course;
 import es.dws.aulavisual.model.Module;
 import es.dws.aulavisual.repository.ModuleRepository;
 import es.dws.aulavisual.Mapper.CourseMapper;
-import jakarta.persistence.criteria.CriteriaBuilder;
 import org.hibernate.engine.jdbc.BlobProxy;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.InputStreamResource;
@@ -120,16 +118,10 @@ public class ModuleService {
         return moduleRepository.existsByCourseAndPosition(course, position);
     }
 
-    public ModuleSimpleDTO findFirstModule(CourseDTO courseDTO) {
-
-        Course course = courseService.findById(courseDTO.id());
-        return moduleMapper.toSimpleDTO(moduleRepository.findFirstModule(course.getId()).orElseThrow());
-    }
-
     public List<Integer> getAvailablePositions(CourseDTO courseDTO) {
 
         Course course = courseService.findById(courseDTO.id());
-        Integer maxPosition = moduleRepository.findlastModuleId(course.getId());
+        Integer maxPosition = moduleRepository.findLastModuleId(course.getId());
         List<Integer> positions = new ArrayList<>();
         if(maxPosition == null) {
             positions.add(1);
