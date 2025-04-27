@@ -44,7 +44,7 @@ public class CourseService {
 
         Course course = courseRepository.findById(courseDTO.id()).orElseThrow();
         User teacher = userService.findById(id);
-        if(teacher.getRole() != 1 || teacher.getCourseTeaching() != null) {
+        if(!teacher.getRoles().equals("TEACHER") || teacher.getCourseTeaching() != null) {
             throw new IllegalArgumentException("Teacher is not valid");
         }
         course.setTeacher(teacher);
