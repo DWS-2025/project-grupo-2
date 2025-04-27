@@ -81,22 +81,7 @@ public class UserRestController {
     @GetMapping("/{id}/image/")
     public ResponseEntity<Object> loadImage(@PathVariable Long id) {
 
-        UserDTO userDTO = userService.findByIdDTO(id);
-        ResponseEntity<Object> image = userService.loadImage(userDTO);
-        if(image == null) {
-
-            try {
-                ClassPathResource resource = new ClassPathResource("static/images/user-default.png");
-                byte [] imageBytes = resource.getInputStream().readAllBytes();
-                return ResponseEntity.ok().header(HttpHeaders.CONTENT_TYPE, "image/png").body(imageBytes);
-            } catch (IOException e) {
-
-                return ResponseEntity.status(500).body("Internal Server Error");
-            }
-        }else {
-
-            return image;
-        }
+        return userService.loadImage(id);
     }
 
     @DeleteMapping("/{id}/")

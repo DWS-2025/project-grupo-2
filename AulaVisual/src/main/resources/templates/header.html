@@ -27,17 +27,20 @@
 
   {{#user}}
   <div class="header-right">
-    <img src="/user_pfp/{{userId}}" alt="Usuario" class="user-avatar">
+    <img src="/user_pfp/{{id}}" alt="Usuario" class="user-avatar">
     <ul class="navbar-nav mr-auto">
       <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           {{userName}}
         </a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-          <a class="dropdown-item" href="/profile/{{userId}}">Mi perfil</a>
+          <a class="dropdown-item" href="/profile/{{id}}">Mi perfil</a>
           <a class="dropdown-item" href="/courses">Mis cursos</a>
           <div class="dropdown-divider"></div>
-          <a class="dropdown-item" href="/logout">Log out</a>
+          <form action="/logout" method="post">
+            <button class="dropdown-item" type="submit">Cerrar sesión</button>
+            <input type="hidden" name="_csrf" value="{{token}}">
+            </form>
         </div>
       </li>
     </ul>

@@ -116,14 +116,14 @@ public class UserController {
         }
     }
 
-    @GetMapping("/logout")
-    public String logout(HttpServletResponse response) {
-
-        Cookie cookie = new Cookie("userId", "");
-        cookie.setMaxAge(0);
-        response.addCookie(cookie);
-        return "redirect:/";
-    }
+//    @GetMapping("/logout")
+//    public String logout(HttpServletResponse response) {
+//
+//        Cookie cookie = new Cookie("userId", "");
+//        cookie.setMaxAge(0);
+//        response.addCookie(cookie);
+//        return "redirect:/";
+//    }
 
     @PostMapping("/profile/update/{id}")
     public String updateUser(Model model, @PathVariable long id, @RequestParam String username, @RequestParam String prevPassword, @RequestParam String newPassword, MultipartFile image, @CookieValue(value = "userId", defaultValue = "") String userId) {
@@ -169,23 +169,10 @@ public class UserController {
     }
 
     @GetMapping("/user_pfp/{id}")
-    public ResponseEntity <Object> getUserPfp(@CookieValue(value = "userId", defaultValue = "") String userId, @PathVariable long id) {
+    public ResponseEntity <Object> getUserPfp(@PathVariable long id) {
 
-        try {
-            if(userId.isEmpty()) {
+        return userService.loadImage(id);
 
-                return ResponseEntity.status(401).body("Unauthorized");
-            }
-            UserDTO currentUser = userService.findByIdDTO(Long.parseLong(userId));
-            if(currentUser.role() == 0 && id != Long.parseLong(userId)) {
-
-                userId = Long.toString(id);
-            }
-            return userService.loadImage(currentUser);
-        }catch (NoSuchElementException e) {
-
-            return ResponseEntity.status(404).body("Not Found");
-        }
     }
 
     @GetMapping("/profile/{id}")

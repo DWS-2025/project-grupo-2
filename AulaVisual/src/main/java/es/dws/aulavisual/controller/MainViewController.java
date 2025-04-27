@@ -17,23 +17,8 @@ public class MainViewController {
     }
 
     @GetMapping("/")
-    public String index(@CookieValue(value = "userId", defaultValue = "") String userId, Model model) {
+    public String index() {
 
-        try{
-            if (!userId.isEmpty()){
-                UserDTO user = userService.findByIdDTO(Long.parseLong(userId));
-                model.addAttribute("user", true);
-                model.addAttribute("userId", Long.parseLong(userId));
-                model.addAttribute("userName", user.userName());
-            }else{
-
-                model.addAttribute("user", false);
-            }
-            return "index";
-        }catch (NoClassDefFoundError e){
-
-            model.addAttribute("user", false);
-            return "index";
-        }
+        return "index";
     }
 }

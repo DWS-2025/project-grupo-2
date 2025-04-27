@@ -180,7 +180,7 @@ nav ul li a {
     text-align: left;
 }
 
-.dropdown-menu a {
+.dropdown-menu a button{
     display: block;
     padding: 10px;
     text-decoration: none;
@@ -188,6 +188,12 @@ nav ul li a {
     transition: background 0.3s;
 }
 
-.dropdown-menu a:hover {
+.dropdown-menu a:hover button:hover {
     background: #f0f0f0;
+}
+
+.dropdown-item:active {
+
+    background: #f0f0f0;
+    color: black;
 }

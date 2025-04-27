@@ -26,6 +26,7 @@ import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -41,6 +42,11 @@ public class UserService {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
         this.passwordEncoder = passwordEncoder;
+    }
+
+    private User getLoggedUser(){
+
+        return userRepository.findByUserName(SecurityContextHolder.getContext().getAuthentication().getName()).orElseThrow();
     }
 
     public UserDTO saveDTO(String name, String surname, String userName, String password, String campus, String ...roles) {
@@ -164,13 +170,17 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public ResponseEntity <Object> loadImage(UserDTO userDTO) {
+    public ResponseEntity <Object> loadImage(long requestedId) {
 
-        User user = userRepository.findById(userDTO.id()).orElseThrow();
+        User loggedUser = getLoggedUser();
 
+        if(loggedUser.getId() != requestedId && !loggedUser.getRoles().contains("ADMIN")) {
+
+            return ResponseEntity.status(403).body("Forbidden");
+        }
         try {
 
-            Blob image = user.getImageFile();
+            Blob image = loggedUser.getImageFile();
             if(image == null) {
 
                 try {

@@ -140,6 +140,8 @@ public class SecurityConfig {
 						.requestMatchers("/admin/**").hasAnyRole("ADMIN")
 						.requestMatchers("/courses/**").hasAnyRole("USER")
 						.requestMatchers("/teacher/**").hasAnyRole("TEACHER")
+						.requestMatchers("/user_pfp/*").hasRole("USER")
+						.requestMatchers("/profile/**").hasAnyRole("USER")
 				)
 				.formLogin(formLogin -> formLogin
 						.loginPage("/login")
