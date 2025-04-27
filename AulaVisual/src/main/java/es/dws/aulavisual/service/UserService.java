@@ -76,22 +76,33 @@ public class UserService {
         return userRepository.saveAndFlush(user);
     }
 
-    public UserDTO deleteById(long id) {
+    public UserDTO deleteById(long adminId, long id) {
 
-        User userToDelete = userRepository.findById(id).orElseThrow();
-        List<Course> courses = userToDelete.getCourses();
-        for (Course course : courses) {
+        if(adminId == id) {
 
-            course.getStudents().remove(userToDelete);
+            throw new RuntimeException("No puedes eliminarte a ti mismo");
+        }else{
+
+            User admin = userRepository.findById(adminId).orElseThrow();
+            if(admin.getRoles().contains("ADMIN")){
+
+                User userToDelete = userRepository.findById(id).orElseThrow();
+                List<Course> courses = userToDelete.getCourses();
+                for (Course course : courses) {
+
+                    course.getStudents().remove(userToDelete);
+                }
+
+                if(userToDelete.getRole() == 1) {
+
+                    Course course = userToDelete.getCourseTeaching();
+                    course.setTeacher(null);
+                }
+                userRepository.deleteById(id);
+                return userMapper.toDTO(userToDelete);
+            }
+            throw new RuntimeException("No tienes permisos para eliminar este usuario");
         }
-
-        if(userToDelete.getRole() == 1) {
-
-            Course course = userToDelete.getCourseTeaching();
-            course.setTeacher(null);
-        }
-        userRepository.deleteById(id);
-        return userMapper.toDTO(userToDelete);
     }
 
     public void editUsername(long id, String newUsername) {
@@ -278,5 +289,10 @@ public class UserService {
         user.setUserName(userCreationDTO.userDTO().userName());
         user.setCampus(userCreationDTO.userDTO().campus());
         return userMapper.toDTO(userRepository.save(user));
+    }
+
+    public UserDTO getLoggedUserDTO() {
+
+        return userMapper.toDTO(getLoggedUser());
     }
 }

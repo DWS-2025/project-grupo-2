@@ -163,31 +163,16 @@ public class UserController {
     }
 
     @PostMapping("/admin/users/{id}/delete")
-    public String deleteUser(Model model, @CookieValue(value = "userId", defaultValue = "") String userId, @PathVariable long id) {
+    public String deleteUser(Model model, @PathVariable long id) {
 
         try {
-            if(userId.isEmpty()) {
 
-                return "redirect:/login";
-            }else {
+            UserDTO currentUser = (UserDTO) model.getAttribute("user");
 
-                UserDTO currentUser = userService.findByIdDTO(Long.parseLong(userId));
-                if(currentUser.role() == 0) {
+            userService.deleteById(currentUser.id(), id);
+            return "redirect:/admin";
 
-                    if(id == Long.parseLong(userId)) {
-
-                        model.addAttribute("message", "No puedes eliminarte a ti mismo");
-                        return "error";
-                    }
-                    userService.deleteById(id);
-                    return "redirect:/admin";
-
-                }else{
-
-                    return "redirect:/";
-                }
-            }
-        }catch (NoSuchElementException e) {
+        }catch (RuntimeException e) {
 
             model.addAttribute("message", e.getMessage());
             return "error";
