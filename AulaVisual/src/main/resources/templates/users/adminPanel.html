@@ -11,15 +11,20 @@
     <ul>
         <li><a href="/admin">Gestionar Usuarios</a></li>
         <li><a href="/admin/courses">Gestionar Cursos</a></li>
-        <li><a href="/profile/{{userId}}">Configuraciones</a></li>
-        <li class="logout"><a href="/logout">Cerrar Sesión</a></li>
+        <li><a href="/profile/{{user.id}}">Configuraciones</a></li>
+        <li class="logout">
+            <form action="/logout" method="post">
+                <button type="submit">Cerrar Sesión</button>
+                <input type="hidden" name="_csrf" value="{{token}}">
+            </form>
+        </li>
     </ul>
 </nav>
 <section id="content">
     <div id="container">
         <h1>Panel de Administración</h1>
         <div id="Welcome">
-            <p>Bienvenido, {{admin}}</p>
+            <p>Bienvenido, {{user.userName}}</p>
         </div>
         {{#users}}
         <form action="/admin/users/{{id}}/delete" method="post" id="delete-user-{{id}}"></form>
@@ -81,10 +86,10 @@
         const role = document.getElementById('role').value;
         const campus = document.getElementById('campus').value;
         const removeSelf = true;
-        const userId = {{userId}};
+        const userId = {{user.id}};
         const url = new URL('/api/users/', window.location.origin);
         url.searchParams.append('page', page);
-        url.searchParams.append('size', 5);
+        url.searchParams.append('size', 10);
         if (campus) url.searchParams.append('campus', campus);
         if (role) url.searchParams.append('role', role);
         if (removeSelf) url.searchParams.append('removeSelf', removeSelf);
@@ -95,18 +100,18 @@
             .then(data => {
                 const usersBody = document.getElementById('usersBody');
                 usersBody.innerHTML = '';
-                data.content.forEach(user => {
+                data.content.forEach(userlist => {
                     usersBody.innerHTML += `
                         <tr class="tableItems">
-                            <td class="center">${user.id}</td>
-                            <td class="center">${user.realName}</td>
-                            <td class="center">${user.surname}</td>
-                            <td class="center">${user.userName}</td>
-                            <td class="center">${user.campus}</td>
-                            <td class="center">${user.role}</td>
-                            <td class="center"><a href="/admin/users/${user.id}">Editar</a></td>
-                            <td><input type="submit" value="Eliminar" form="delete-user-${user.id}"><input type="hidden" name="_csrf" value="{{token}}"></td>
-                            <td class="center"><a href="/admin/users/${user.id}/roles">Gestionar Roles</a></td>
+                            <td class="center">${userlist.id}</td>
+                            <td class="center">${userlist.realName}</td>
+                            <td class="center">${userlist.surname}</td>
+                            <td class="center">${userlist.userName}</td>
+                            <td class="center">${userlist.campus}</td>
+                            <td class="center">${userlist.roles}</td>
+                            <td class="center"><a href="/profile/${userlist.id}">Editar</a></td>
+                            <td class="center"><a href="/admin/users/${userlist.id}/delete">Eliminar</a></td>
+                            <td class="center"><a href="/admin/users/${userlist.id}/roles">Gestionar Roles</a></td>
                         </tr>
                     `;
                 });

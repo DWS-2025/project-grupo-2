@@ -35,15 +35,14 @@ public class User {
     private String passwordHash;
     private int role; //0 for admin, 1 for teacher, 2 for student
 
-    @ElementCollection(fetch = FetchType.EAGER)
-    private List<String> roles;
+    private String roles;
 
-    public User(String realName, String surname, String userName, String passwordHash, String campus, String ...roles) {
+    public User(String realName, String surname, String userName, String passwordHash, String campus, String roles) {
         this.realName = realName;
         this.surname = surname;
         this.userName = userName;
         this.passwordHash = passwordHash;
-        this.roles = List.of(roles);
+        this.roles = roles;
         this.campus = campus;
         this.imageFile = null;
         this.image = null;
@@ -161,11 +160,12 @@ public class User {
         this.courses.clear();
     }
 
-    public List<String> getRoles() {
+    public String getRoles() {
         return roles;
     }
 
-    public void setRoles(List<String> roles) {
+    public void setRoles(String roles) {
+
         this.roles = roles;
     }
 

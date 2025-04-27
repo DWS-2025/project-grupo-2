@@ -13,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -29,55 +30,32 @@ public class UserController {
     }
 
     @GetMapping("/login")
-    public String login(@CookieValue(value = "userId", defaultValue = "") String userId) {
+    public String login(Model model) {
 
-        if(userId.isEmpty()) {
+        if (model.getAttribute("user") != null) {
 
-            return "login";
+            return "redirect:/login/success";
         }else {
 
-            return "redirect:/profile/" + userId;
+            return "login";
         }
     }
 
-    @PostMapping("/login")
-    public String userLogin(Model model, @RequestParam String username, @RequestParam String password, HttpServletResponse response) {
+    @GetMapping("/login/success")
+    public String succes(Model model) {
 
+        UserDTO currentUser = (UserDTO) model.getAttribute("user");
 
-        try {
-            if(!(username.isEmpty() && password.isEmpty())) {
+        if(currentUser != null) {
 
-                if(userService.login(username, password)) {
-
-                    UserDTO currentUser = userService.findByUserName(username);
-                    long userId = currentUser.id();
-                    // create a cookie
-                    Cookie cookie = new Cookie("userId", Long.toString(userId));
-                    cookie.setMaxAge(24 * 60 * 60); //1 day
-
-                    //add cookie to response
-                    response.addCookie(cookie);
-                    model.addAttribute("userName", username);
-                    if(currentUser.role() == 0) {
-
-                        return "redirect:/admin";
-                    }else {
-
-                        return "redirect:/courses";
-                    }
-                }
-
-                model.addAttribute("message", "Nombre de usuario o contraseña incorrectos");
-
-            }else {
-
-                model.addAttribute("message", "Todos los campos son obligatorios");
+            if(currentUser.roles().contains("ADMIN")) {
+            return "redirect:/admin";}
+            else {
+                return "redirect:/courses";
             }
-            return "error";
-        }catch (NoSuchElementException e){
+        }else{
 
-            model.addAttribute("message", e.getMessage());
-            return "error";
+            return "redirect:/login";
         }
     }
 
@@ -96,13 +74,12 @@ public class UserController {
                 if(!(campus.equals("Noxus") || campus.equals("Piltover") || campus.equals("Zaun"))) {
 
                     model.addAttribute("message", "Campus inválido");
-                    return "error";
                 }else{
 
                     UserDTO user = userService.findByUserName(username);
                     model.addAttribute("message", "Nombre de usuario ya en uso");
-                    return "error";
                 }
+                return "error";
             }else{
 
                 model.addAttribute("message", "Todos los campos son obligatorios");
@@ -116,32 +93,17 @@ public class UserController {
         }
     }
 
-    @GetMapping("/logout")
-    public String logout(HttpServletResponse response) {
-
-        Cookie cookie = new Cookie("userId", "");
-        cookie.setMaxAge(0);
-        response.addCookie(cookie);
-        return "redirect:/";
-    }
-
     @PostMapping("/profile/update/{id}")
-    public String updateUser(Model model, @PathVariable long id, @RequestParam String username, @RequestParam String prevPassword, @RequestParam String newPassword, MultipartFile image, @CookieValue(value = "userId", defaultValue = "") String userId) {
+    public String updateUser(Model model, @PathVariable long id, @RequestParam String username, @RequestParam String prevPassword, @RequestParam String newPassword, MultipartFile image) {
 
-        try {
-            String redirect = "/login";
-            if(userId.isEmpty()) {
 
-                return "redirect:" + redirect;
-            }
-            redirect = "/logout";
+        try{
+            boolean logout = true;
+            UserDTO currentUser = (UserDTO) model.getAttribute("user");
+            if(currentUser.roles().contains("ADMIN") && id != currentUser.id()) {
 
-            UserDTO currentUser = userService.findByIdDTO(Long.parseLong(userId));
-            if(currentUser.role() == 0 && id != Long.parseLong(userId)) {
-
-                userId = Long.toString(id);
-                currentUser = userService.findByIdDTO(Long.parseLong(userId));
-                redirect = "/admin";
+                currentUser = userService.findByIdDTO(id);
+                logout = false;
             }
 
             if(!username.equals(currentUser.userName())){
@@ -160,141 +122,69 @@ public class UserController {
                 userService.saveImage(currentUser.id(), location.toString(), image.getInputStream(), image.getSize());
             }
 
-            return "redirect:" + redirect;
-        }catch (NoSuchElementException | IOException  | java.net.URISyntaxException e) {
+            if(logout){
 
+                return "logout";
+            }else{
+
+                return "redirect:/admin";
+            }
+        }catch (URISyntaxException | IOException e) {
             model.addAttribute("message", e.getMessage());
             return "error";
         }
     }
 
     @GetMapping("/user_pfp/{id}")
-    public ResponseEntity <Object> getUserPfp(@CookieValue(value = "userId", defaultValue = "") String userId, @PathVariable long id) {
+    public ResponseEntity <Object> getUserPfp(@PathVariable long id) {
 
-        try {
-            if(userId.isEmpty()) {
+        return userService.loadImage(id);
 
-                return ResponseEntity.status(401).body("Unauthorized");
-            }
-            UserDTO currentUser = userService.findByIdDTO(Long.parseLong(userId));
-            if(currentUser.role() == 0 && id != Long.parseLong(userId)) {
-
-                userId = Long.toString(id);
-            }
-            return userService.loadImage(currentUser);
-        }catch (NoSuchElementException e) {
-
-            return ResponseEntity.status(404).body("Not Found");
-        }
     }
 
     @GetMapping("/profile/{id}")
-    public String getProfile(Model model, @CookieValue(value = "userId", defaultValue = "") String userId, @PathVariable long id) {
+    public String getProfile(Model model, @PathVariable long id) {
 
-        try {
-            if(userId.isEmpty()) {
 
-                return "redirect:/login";
+            UserDTO currentUser = (UserDTO) model.getAttribute("user");
+            if(currentUser.roles().contains("ADMIN") && id != currentUser.id()) {
+
+               currentUser = userService.findByIdDTO(id);
             }
-            UserDTO currentUser = userService.findByIdDTO(Long.parseLong(userId));
-            if(currentUser.role() == 0 && id != Long.parseLong(userId)) {
-
-                userId = Long.toString(id);
-                currentUser = userService.findByIdDTO(Long.parseLong(userId));
-                model.addAttribute("id", userId);
-            }
-            model.addAttribute("userName", currentUser.userName());
+            model.addAttribute("user", currentUser);
             return "/users/userPage";
-        }catch (NoSuchElementException e) {
-
-            model.addAttribute("message", e.getMessage());
-            return "error";
-        }
-
     }
 
     @GetMapping("/admin")
-    public String getAdmin(Model model, @CookieValue(value = "userId", defaultValue = "") String userId, @RequestParam(required = false) Optional<String> campus, @RequestParam(required = false) Optional<Integer> role) {
+    public String getAdmin(Model model) {
+
+        model.addAttribute("users", userService.getAllUsers());
+        return "/users/adminPanel";
+    }
+
+    @GetMapping("/admin/users/{id}/delete")
+    public String deleteUserPage(Model model, @PathVariable long id) {
 
         try {
-            if(userId.isEmpty()) {
-
-                return "redirect:/login";
-            }else {
-
-                UserDTO currentUser = userService.findByIdDTO(Long.parseLong(userId));
-                if(currentUser.role() == 0) {
-                    model.addAttribute("admin", currentUser.userName());
-                    model.addAttribute("users", userService.getAllUsers());
-                    model.addAttribute("userId", Long.parseLong(userId));
-                    return "/users/adminPanel";
-                }else {
-
-                    model.addAttribute("message", "No tienes permisos para acceder a esta página");
-                    return "error";
-                }
-            }
+            UserDTO student = userService.findByIdDTO(id);
+            model.addAttribute("student", student);
+            return "/users/deleteUser";
         }catch (NoSuchElementException e) {
-
             model.addAttribute("message", e.getMessage());
             return "error";
         }
     }
-
     @PostMapping("/admin/users/{id}/delete")
-    public String deleteUser(Model model, @CookieValue(value = "userId", defaultValue = "") String userId, @PathVariable long id) {
+    public String deleteUser(Model model, @PathVariable long id) {
 
         try {
-            if(userId.isEmpty()) {
 
-                return "redirect:/login";
-            }else {
+            UserDTO currentUser = (UserDTO) model.getAttribute("user");
 
-                UserDTO currentUser = userService.findByIdDTO(Long.parseLong(userId));
-                if(currentUser.role() == 0) {
+            userService.deleteById(currentUser.id(), id);
+            return "redirect:/admin";
 
-                    if(id == Long.parseLong(userId)) {
-
-                        model.addAttribute("message", "No puedes eliminarte a ti mismo");
-                        return "error";
-                    }
-                    userService.deleteById(id);
-                    return "redirect:/admin";
-
-                }else{
-
-                    return "redirect:/";
-                }
-            }
-        }catch (NoSuchElementException e) {
-
-            model.addAttribute("message", e.getMessage());
-            return "error";
-        }
-    }
-
-    @GetMapping("/admin/users/{id}")
-    public String editUser(Model model, @CookieValue(value = "userId", defaultValue = "") String userId, @PathVariable long id) {
-
-        try {
-            if(userId.isEmpty()) {
-
-                return "redirect:/login";
-            }else {
-
-                UserDTO currentUser = userService.findByIdDTO(Long.parseLong(userId));
-                if(currentUser.role() == 0) {
-
-                    UserDTO user = userService.findByIdDTO(id);
-                    model.addAttribute("user", user);
-                    model.addAttribute("userId", Long.parseLong(userId));
-                    return "redirect:/profile/" + id;
-                }else {
-
-                    return "redirect:/";
-                }
-            }
-        }catch (NoSuchElementException e) {
+        }catch (RuntimeException e) {
 
             model.addAttribute("message", e.getMessage());
             return "error";
@@ -302,27 +192,15 @@ public class UserController {
     }
 
     @GetMapping("/admin/users/{id}/roles")
-    public String editUserRole(Model model, @CookieValue(value = "userId", defaultValue = "") String userId, @PathVariable long id) {
+    public String editUserRole(Model model, @PathVariable long id) {
 
         try {
-            if(userId.isEmpty()) {
 
-                return "redirect:/login";
-            }else {
+            UserDTO user = userService.findByIdDTO(id);
+            model.addAttribute("student", user.realName() + " " + user.surname());
+            model.addAttribute("id", user.id());
+            return "/users/editRole";
 
-                UserDTO currentUser = userService.findByIdDTO(Long.parseLong(userId));
-                if(currentUser.role() == 0) {
-
-                    UserDTO user = userService.findByIdDTO(id);
-                    model.addAttribute("userId", Long.parseLong(userId));
-                    model.addAttribute("user", user.realName() + " " + user.surname());
-                    model.addAttribute("id", user.id());
-                    return "/users/editRole";
-                }else {
-
-                    return "redirect:/";
-                }
-            }
         }catch (NoSuchElementException e) {
 
             model.addAttribute("message", e.getMessage());
@@ -330,32 +208,21 @@ public class UserController {
         }
     }
 
-    @GetMapping("/admin/users/{id}/roles/{role}")
-    public String updateUserRole(Model model, @CookieValue(value = "userId", defaultValue = "") String userId, @PathVariable long id, @PathVariable int role) {
+    @PostMapping("/admin/users/{id}/roles/{role}")
+    public String updateUserRole(Model model, @PathVariable int role, @PathVariable long id) {
 
         try {
-            if(userId.isEmpty()) {
 
-                return "redirect:/login";
-            }else {
+                UserDTO user = userService.findByIdDTO(id);
+                if(courseService.updateRole(user, role)){
 
-                UserDTO currentUser = userService.findByIdDTO(Long.parseLong(userId));
-                if(currentUser.role() == 0) {
-
-                    UserDTO user = userService.findByIdDTO(id);
-                    if(courseService.updateRole(user, role)){
-
-                        return "redirect:/admin";
-                    }else {
-
-                        model.addAttribute("message", "Usuario o Rol inválido");
-                    }
                     return "redirect:/admin";
                 }else {
 
-                    return "redirect:/";
+                    model.addAttribute("message", "Usuario o Rol inválido");
+                    return "error";
                 }
-            }
+
         }catch (NoSuchElementException e) {
 
             model.addAttribute("message", e.getMessage());

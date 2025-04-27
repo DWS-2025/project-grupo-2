@@ -26,6 +26,7 @@ import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -43,13 +44,18 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public UserDTO saveDTO(String name, String surname, String userName, String password, String campus, String ...roles) {
+    User getLoggedUser(){
+
+        return userRepository.findByUserName(SecurityContextHolder.getContext().getAuthentication().getName()).orElseThrow();
+    }
+
+    public UserDTO saveDTO(String name, String surname, String userName, String password, String campus, String roles) {
 
         String passwordHash = passwordEncoder.encode(password);
         return userMapper.toDTO(save(name, surname, userName, passwordHash, campus, roles));
     }
 
-    User save(String name, String surname, String userName, String passwordHash, String campus, String ...roles) {
+    User save(String name, String surname, String userName, String passwordHash, String campus, String roles) {
 
         User user = new User(name, surname, userName, passwordHash, campus, roles);
         return userRepository.saveAndFlush(user);
@@ -70,22 +76,33 @@ public class UserService {
         return userRepository.saveAndFlush(user);
     }
 
-    public UserDTO deleteById(long id) {
+    public UserDTO deleteById(long adminId, long id) {
 
-        User userToDelete = userRepository.findById(id).orElseThrow();
-        List<Course> courses = userToDelete.getCourses();
-        for (Course course : courses) {
+        if(adminId == id) {
 
-            course.getStudents().remove(userToDelete);
+            throw new RuntimeException("No puedes eliminarte a ti mismo");
+        }else{
+
+            User admin = userRepository.findById(adminId).orElseThrow();
+            if(admin.getRoles().contains("ADMIN")){
+
+                User userToDelete = userRepository.findById(id).orElseThrow();
+                List<Course> courses = userToDelete.getCourses();
+                for (Course course : courses) {
+
+                    course.getStudents().remove(userToDelete);
+                }
+
+                if(userToDelete.getRole() == 1) {
+
+                    Course course = userToDelete.getCourseTeaching();
+                    course.setTeacher(null);
+                }
+                userRepository.deleteById(id);
+                return userMapper.toDTO(userToDelete);
+            }
+            throw new RuntimeException("No tienes permisos para eliminar este usuario");
         }
-
-        if(userToDelete.getRole() == 1) {
-
-            Course course = userToDelete.getCourseTeaching();
-            course.setTeacher(null);
-        }
-        userRepository.deleteById(id);
-        return userMapper.toDTO(userToDelete);
     }
 
     public void editUsername(long id, String newUsername) {
@@ -164,13 +181,17 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public ResponseEntity <Object> loadImage(UserDTO userDTO) {
+    public ResponseEntity <Object> loadImage(long requestedId) {
 
-        User user = userRepository.findById(userDTO.id()).orElseThrow();
+        User loggedUser = getLoggedUser();
 
+        if(loggedUser.getId() != requestedId && !loggedUser.getRoles().contains("ADMIN")) {
+
+            return ResponseEntity.status(403).body("Forbidden");
+        }
         try {
 
-            Blob image = user.getImageFile();
+            Blob image = loggedUser.getImageFile();
             if(image == null) {
 
                 try {
@@ -268,5 +289,10 @@ public class UserService {
         user.setUserName(userCreationDTO.userDTO().userName());
         user.setCampus(userCreationDTO.userDTO().campus());
         return userMapper.toDTO(userRepository.save(user));
+    }
+
+    public UserDTO getLoggedUserDTO() {
+
+        return userMapper.toDTO(getLoggedUser());
     }
 }

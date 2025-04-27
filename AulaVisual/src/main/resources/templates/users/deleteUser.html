@@ -17,18 +17,11 @@
 </nav>
 <section id="content">
   <div id="container">
-    <h1>{{student}}</h1>
+    <h1>¿Está seguro?</h1>
+    <h2>esta a punto de eliminar a {{student.realName}} {{student.surname}}</h2>
     <div class="centerRoles">
-      <form action="/admin/users/{{id}}/roles/0" method="post">
-      <input type="submit" class="roleButton" value="Convertir en administrador">
-        <input type="hidden" name="_csrf" value="{{token}}">
-      </form>
-      <form action="/admin/users/{{id}}/roles/1" method="post">
-        <input type="submit" class="roleButton" value="Convertir en profesor">
-        <input type="hidden" name="_csrf" value="{{token}}">
-      </form>
-      <form action="/admin/users/{{id}}/roles/2" method="post">
-        <input type="submit" class="roleButton" value="Convertir en alumno">
+      <form action="/admin/users/{{student.id}}/delete" method="post">
+      <input type="submit" class="roleButton" value="Confirmar">
         <input type="hidden" name="_csrf" value="{{token}}">
       </form>
     </div>

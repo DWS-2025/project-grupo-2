@@ -78,6 +78,11 @@ public class SecurityConfig {
 	@Order(1)
 	public SecurityFilterChain apiFilterChain(HttpSecurity http) throws Exception {
 
+		String commonPath = "/api/";
+
+		DefaultMethodSecurityExpressionHandler expressionHandler = new DefaultMethodSecurityExpressionHandler();
+		expressionHandler.setRoleHierarchy(roleHierarchy());
+
 		http.authenticationProvider(authenticationProvider());
 		
 		http
@@ -131,15 +136,18 @@ public class SecurityConfig {
 						.requestMatchers("/css/**").permitAll()
 						.requestMatchers("/js/**").permitAll()
 						.requestMatchers("/error").permitAll()
+						.requestMatchers("/login/success").permitAll()
 						// PRIVATE PAGES
 						.requestMatchers("/admin/**").hasAnyRole("ADMIN")
 						.requestMatchers("/courses/**").hasAnyRole("USER")
 						.requestMatchers("/teacher/**").hasAnyRole("TEACHER")
+						.requestMatchers("/user_pfp/*").hasAnyRole("USER")
+						.requestMatchers("/profile/**").hasAnyRole("USER")
 				)
 				.formLogin(formLogin -> formLogin
 						.loginPage("/login")
 						.failureUrl("/error")
-						.defaultSuccessUrl("/")
+						.defaultSuccessUrl("/login/success")
 						.permitAll()
 				)
 				.logout(logout -> logout
