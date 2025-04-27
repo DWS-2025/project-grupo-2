@@ -162,6 +162,18 @@ public class UserController {
         return "/users/adminPanel";
     }
 
+    @GetMapping("/admin/users/{id}/delete")
+    public String deleteUserPage(Model model, @PathVariable long id) {
+
+        try {
+            UserDTO student = userService.findByIdDTO(id);
+            model.addAttribute("student", student);
+            return "/users/deleteUser";
+        }catch (NoSuchElementException e) {
+            model.addAttribute("message", e.getMessage());
+            return "error";
+        }
+    }
     @PostMapping("/admin/users/{id}/delete")
     public String deleteUser(Model model, @PathVariable long id) {
 

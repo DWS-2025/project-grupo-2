@@ -89,7 +89,7 @@
         const userId = {{user.id}};
         const url = new URL('/api/users/', window.location.origin);
         url.searchParams.append('page', page);
-        url.searchParams.append('size', 5);
+        url.searchParams.append('size', 10);
         if (campus) url.searchParams.append('campus', campus);
         if (role) url.searchParams.append('role', role);
         if (removeSelf) url.searchParams.append('removeSelf', removeSelf);
@@ -110,7 +110,7 @@
                             <td class="center">${userlist.campus}</td>
                             <td class="center">${userlist.roles}</td>
                             <td class="center"><a href="/profile/${userlist.id}">Editar</a></td>
-                            <td><input type="submit" value="Eliminar" form="delete-user-${userlist.id}"><input type="hidden" name="_csrf" value="{{token}}"></td>
+                            <td class="center"><a href="/admin/users/${userlist.id}/delete">Eliminar</a></td>
                             <td class="center"><a href="/admin/users/${userlist.id}/roles">Gestionar Roles</a></td>
                         </tr>
                     `;
