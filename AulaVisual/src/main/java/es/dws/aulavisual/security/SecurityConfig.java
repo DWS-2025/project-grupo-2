@@ -78,6 +78,11 @@ public class SecurityConfig {
 	@Order(1)
 	public SecurityFilterChain apiFilterChain(HttpSecurity http) throws Exception {
 
+		String commonPath = "/api/";
+
+		DefaultMethodSecurityExpressionHandler expressionHandler = new DefaultMethodSecurityExpressionHandler();
+		expressionHandler.setRoleHierarchy(roleHierarchy());
+
 		http.authenticationProvider(authenticationProvider());
 		
 		http
