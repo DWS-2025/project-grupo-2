@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logout</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="icon" href="/images/1.svg" sizes="any" type="image/svg+xml">
+</head>
+<body>
+<form id="logoutForm" action="/logout" method="post">
+    <input type="hidden" name="_csrf" value="{{token}}">
+</form>
+<script>
+    document.getElementById('logoutForm').submit();
+</script>
+</body>
+</html>

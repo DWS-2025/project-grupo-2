@@ -13,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -93,22 +94,16 @@ public class UserController {
     }
 
     @PostMapping("/profile/update/{id}")
-    public String updateUser(Model model, @PathVariable long id, @RequestParam String username, @RequestParam String prevPassword, @RequestParam String newPassword, MultipartFile image, @CookieValue(value = "userId", defaultValue = "") String userId) {
+    public String updateUser(Model model, @PathVariable long id, @RequestParam String username, @RequestParam String prevPassword, @RequestParam String newPassword, MultipartFile image) {
 
-        try {
-            String redirect = "/login";
-            if(userId.isEmpty()) {
 
-                return "redirect:" + redirect;
-            }
-            redirect = "/logout";
+        try{
+            boolean logout = true;
+            UserDTO currentUser = (UserDTO) model.getAttribute("user");
+            if(currentUser.roles().contains("ADMIN") && id != currentUser.id()) {
 
-            UserDTO currentUser = userService.findByIdDTO(Long.parseLong(userId));
-            if(currentUser.role() == 0 && id != Long.parseLong(userId)) {
-
-                userId = Long.toString(id);
-                currentUser = userService.findByIdDTO(Long.parseLong(userId));
-                redirect = "/admin";
+                currentUser = userService.findByIdDTO(id);
+                logout = false;
             }
 
             if(!username.equals(currentUser.userName())){
@@ -127,9 +122,14 @@ public class UserController {
                 userService.saveImage(currentUser.id(), location.toString(), image.getInputStream(), image.getSize());
             }
 
-            return "redirect:" + redirect;
-        }catch (NoSuchElementException | IOException  | java.net.URISyntaxException e) {
+            if(logout){
 
+                return "logout";
+            }else{
+
+                return "redirect:/admin";
+            }
+        }catch (URISyntaxException | IOException e) {
             model.addAttribute("message", e.getMessage());
             return "error";
         }
