@@ -5,7 +5,6 @@ import java.util.List;
 
 import es.dws.aulavisual.model.User;
 import es.dws.aulavisual.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -32,7 +31,7 @@ public class RepositoryUserDetailsService implements UserDetailsService {
 
 		List<GrantedAuthority> roles = new ArrayList<>();
 
-		roles.add(new SimpleGrantedAuthority("ROLE_" + user.getRoles()));
+		roles.add(new SimpleGrantedAuthority("ROLE_" + user.getRole()));
 
 		return new org.springframework.security.core.userdetails.User(user.getUserName(),
 				user.getPasswordHash(), roles);

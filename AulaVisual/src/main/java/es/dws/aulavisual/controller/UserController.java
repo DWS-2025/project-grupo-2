@@ -48,7 +48,7 @@ public class UserController {
 
         if(currentUser != null) {
 
-            if(currentUser.roles().contains("ADMIN")) {
+            if(currentUser.role().equals("ADMIN")) {
             return "redirect:/admin";}
             else {
                 return "redirect:/courses";
@@ -100,7 +100,7 @@ public class UserController {
         try{
             boolean logout = true;
             UserDTO currentUser = (UserDTO) model.getAttribute("user");
-            if(currentUser.roles().contains("ADMIN") && id != currentUser.id()) {
+            if(currentUser.role().contains("ADMIN") && id != currentUser.id()) {
 
                 currentUser = userService.findByIdDTO(id);
                 logout = false;
@@ -147,7 +147,7 @@ public class UserController {
 
 
             UserDTO currentUser = (UserDTO) model.getAttribute("user");
-            if(currentUser.roles().contains("ADMIN") && id != currentUser.id()) {
+            if(currentUser.role().contains("ADMIN") && id != currentUser.id()) {
 
                currentUser = userService.findByIdDTO(id);
             }

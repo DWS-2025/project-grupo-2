@@ -2,7 +2,6 @@ package es.dws.aulavisual.service;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
 import java.security.NoSuchAlgorithmException;
 import java.security.MessageDigest;
 import java.sql.Blob;
@@ -15,7 +14,6 @@ import es.dws.aulavisual.Mapper.UserMapper;
 import es.dws.aulavisual.model.Course;
 import es.dws.aulavisual.model.User;
 import es.dws.aulavisual.repository.UserRepository;
-import jakarta.transaction.Transactional;
 import org.hibernate.engine.jdbc.BlobProxy;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.domain.Page;
@@ -84,7 +82,7 @@ public class UserService {
         }else{
 
             User admin = userRepository.findById(adminId).orElseThrow();
-            if(admin.getRoles().contains("ADMIN")){
+            if(admin.getRole().contains("ADMIN")){
 
                 User userToDelete = userRepository.findById(id).orElseThrow();
                 List<Course> courses = userToDelete.getCourses();
@@ -93,7 +91,7 @@ public class UserService {
                     course.getStudents().remove(userToDelete);
                 }
 
-                if(userToDelete.getRole() == 1) {
+                if(userToDelete.getRole().equals("TEACHER")) {
 
                     Course course = userToDelete.getCourseTeaching();
                     course.setTeacher(null);
@@ -185,7 +183,7 @@ public class UserService {
 
         User loggedUser = getLoggedUser();
 
-        if(loggedUser.getId() != requestedId && !loggedUser.getRoles().contains("ADMIN")) {
+        if(loggedUser.getId() != requestedId && !loggedUser.getRole().contains("ADMIN")) {
 
             return ResponseEntity.status(403).body("Forbidden");
         }
@@ -224,7 +222,7 @@ public class UserService {
 
     public List<UserDTO> getAvaliableTeachers() {
 
-        return userRepository.findAllByRoleAndCourseTeachingNull(1).stream()
+        return userRepository.findAllByRoleAndCourseTeachingNull("TEACHER").stream()
                 .map(userMapper::toDTO)
                 .collect(Collectors.toList());
     }
@@ -234,7 +232,7 @@ public class UserService {
         return userMapper.toDTOs(userRepository.findAll());
     }
 
-    public Page<UserDTO> getAllUsers(Pageable pageable, Optional<String> campus, Optional<Integer> role, Optional<Boolean> removeSelf, Optional<Long> userId) {
+    public Page<UserDTO> getAllUsers(Pageable pageable, Optional<String> campus, Optional<String> role, Optional<Boolean> removeSelf, Optional<Long> userId) {
 
 
 

@@ -33,7 +33,7 @@ public class UserRestController {
     }
 
     @GetMapping("/")
-    public Page<UserDTO> users(Pageable pageable, @RequestParam(required = false) Optional<String> campus, @RequestParam(required = false) Optional<Integer> role, @RequestParam(required = false) Optional<Boolean> removeSelf, @RequestParam (required = false) Optional<Long> id) {
+    public Page<UserDTO> users(Pageable pageable, @RequestParam(required = false) Optional<String> campus, @RequestParam(required = false) Optional<String> role, @RequestParam(required = false) Optional<Boolean> removeSelf, @RequestParam (required = false) Optional<Long> id) {
 
         return userService.getAllUsers(pageable, campus, role, removeSelf, id);
     }
@@ -51,7 +51,13 @@ public class UserRestController {
     public ResponseEntity<UserDTO> updateUser(@PathVariable Long id, @RequestBody UserCreationDTO userCreationDTO) {
 
         UserDTO userDTO = userService.updateDTO(id, userCreationDTO);
-        courseService.updateRole(userDTO, userCreationDTO.userDTO().role());
+        int newRole = switch (userDTO.role()) {
+            case "ADMIN" -> 0;
+            case "TEACHER" -> 1;
+            case "STUDENT" -> 2;
+            default -> -1;
+        };
+        courseService.updateRole(userDTO, newRole);
         for(int i = 0; i < userCreationDTO.userDTO().courses().size(); i++) {
             courseService.addUserToCourse(userCreationDTO.userDTO().courses().get(i).id(), userDTO);
         }

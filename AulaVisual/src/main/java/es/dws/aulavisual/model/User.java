@@ -33,16 +33,15 @@ public class User {
     private String surname;
     private String userName;
     private String passwordHash;
-    private int role; //0 for admin, 1 for teacher, 2 for student
 
-    private String roles;
+    private String role;
 
-    public User(String realName, String surname, String userName, String passwordHash, String campus, String roles) {
+    public User(String realName, String surname, String userName, String passwordHash, String campus, String role) {
         this.realName = realName;
         this.surname = surname;
         this.userName = userName;
         this.passwordHash = passwordHash;
-        this.roles = roles;
+        this.role = role;
         this.campus = campus;
         this.imageFile = null;
         this.image = null;
@@ -95,12 +94,12 @@ public class User {
         this.passwordHash = passwordHash;
     }
 
-    public int getRole() {
+    public String getRole() {
 
         return role;
     }
 
-    public void setRole(int role) {
+    public void setRole(String role) {
 
         this.role = role;
     }
@@ -158,15 +157,6 @@ public class User {
     public void clearCourses() {
 
         this.courses.clear();
-    }
-
-    public String getRoles() {
-        return roles;
-    }
-
-    public void setRoles(String roles) {
-
-        this.roles = roles;
     }
 
     @Override

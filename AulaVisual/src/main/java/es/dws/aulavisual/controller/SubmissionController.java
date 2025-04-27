@@ -38,12 +38,12 @@ public class SubmissionController {
 
             CourseDTO courseDTO = courseService.findByIdDTO(courseId);
 
-            if(userDTO.role() == 1){
+            if(userDTO.role().equals("TEACHER")){
 
                 return "redirect:/teacher/courses/" + courseId + "/submissions";
             }
 
-            if(userDTO.role() == 2){
+            if(userDTO.role().equals("STUDENT")){
 
                 if(courseService.userIsInCourse(userDTO, courseDTO)){
 
@@ -92,7 +92,7 @@ public class SubmissionController {
 
             CourseDTO courseDTO = courseService.findByIdDTO(courseId);
 
-            if(user.role() == 1){
+            if(user.role().equals("TEACHER")){
 
                 List<SubmissionDTO> submissions = submissionService.getSubmissions(courseDTO, false);
                 List<SubmissionDTO> graded = submissionService.getSubmissions(courseDTO, true);
@@ -123,7 +123,7 @@ public class SubmissionController {
 
             UserDTO studentDTO = userService.findByIdDTO(studentId);
 
-            if(userDTO.role() == 1 && courseDTO.teacher().id().equals(userDTO.id())){
+            if(userDTO.role().equals("TEACHER") && courseDTO.teacher().id().equals(userDTO.id())){
 
                 if(courseService.userIsInCourse(studentDTO, courseDTO)){
 
@@ -162,7 +162,7 @@ public class SubmissionController {
             CourseDTO courseDTO = courseService.findByIdDTO(courseId);
 
             UserDTO student = userService.findByIdDTO(studentId);
-            if(user.role() == 1 && courseDTO.teacher().id() == user.id()){
+            if(user.role().equals("TEACHER") && courseDTO.teacher().id() == user.id()){
 
                 if(courseService.userIsInCourse(student, courseDTO)) {
 

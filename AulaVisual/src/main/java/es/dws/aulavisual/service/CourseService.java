@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
 import java.sql.Blob;
 
 import org.springframework.http.ResponseEntity;
@@ -44,7 +43,7 @@ public class CourseService {
 
         Course course = courseRepository.findById(courseDTO.id()).orElseThrow();
         User teacher = userService.findById(id);
-        if(!teacher.getRoles().equals("TEACHER") || teacher.getCourseTeaching() != null) {
+        if(!teacher.getRole().equals("TEACHER") || teacher.getCourseTeaching() != null) {
             throw new IllegalArgumentException("Teacher is not valid");
         }
         course.setTeacher(teacher);
@@ -189,18 +188,18 @@ public class CourseService {
         courseRepository.save(course);
     }
 
-    public boolean updateRole(UserDTO userDTO, int newRole) {
+public boolean updateRole(UserDTO userDTO, int newRole) {
 
         User admin = userService.getLoggedUser();
-        if(admin.getRoles().contains("ADMIN") && admin.getId() != userDTO.id()) {
+        if(admin.getRole().contains("ADMIN") && admin.getId() != userDTO.id()) {
 
             User user = userService.findById(userDTO.id());
             if(newRole >= 0 && newRole <= 2) {
 
                 switch (newRole) {
-                    case 0 -> user.setRoles("ADMIN");
-                    case 1 -> user.setRoles("TEACHER");
-                    case 2 -> user.setRoles("STUDENT");
+                    case 0 -> user.setRole("ADMIN");
+                    case 1 -> user.setRole("TEACHER");
+                    case 2 -> user.setRole("STUDENT");
                 }
                 if(newRole == 0 || newRole == 1) {
 
