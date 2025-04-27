@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>{{userName}} Profile</title>
+    <title>{{user.userName}} Profile</title>
     <link rel="stylesheet" href="/css/userPage.css">
     <link rel="icon" href="/images/1.svg" sizes="any" type="image/svg+xml">
 </head>
@@ -10,7 +10,7 @@
 <div class="container">
     <img class="profile-img" src="/user_pfp/{{id}}" alt="profile image">
     <form id="userForm" action="/profile/update/{{id}}" method="post" enctype="multipart/form-data">
-        <input type="text" value="{{userName}}" id="username" name="username">
+        <input type="text" value="{{user.userName}}" id="username" name="username">
         <input type="password" placeholder="Contraseña Actual" id="prevPassword" name="prevPassword">
         <input type="password" placeholder="Nueva Contraseña" id="newPassword" name="newPassword">
         <input type="file" id="image" name="image" accept="image/png">

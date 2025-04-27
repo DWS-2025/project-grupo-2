@@ -73,13 +73,12 @@ public class UserController {
                 if(!(campus.equals("Noxus") || campus.equals("Piltover") || campus.equals("Zaun"))) {
 
                     model.addAttribute("message", "Campus inválido");
-                    return "error";
                 }else{
 
                     UserDTO user = userService.findByUserName(username);
                     model.addAttribute("message", "Nombre de usuario ya en uso");
-                    return "error";
                 }
+                return "error";
             }else{
 
                 model.addAttribute("message", "Todos los campos son obligatorios");
@@ -144,28 +143,16 @@ public class UserController {
     }
 
     @GetMapping("/profile/{id}")
-    public String getProfile(Model model, @CookieValue(value = "userId", defaultValue = "") String userId, @PathVariable long id) {
+    public String getProfile(Model model, @PathVariable long id) {
 
-        try {
-            if(userId.isEmpty()) {
 
-                return "redirect:/login";
+            UserDTO currentUser = (UserDTO) model.getAttribute("user");
+            if(currentUser.roles().contains("ADMIN") && id != currentUser.id()) {
+
+               currentUser = userService.findByIdDTO(id);
+                model.addAttribute("user", currentUser);
             }
-            UserDTO currentUser = userService.findByIdDTO(Long.parseLong(userId));
-            if(currentUser.role() == 0 && id != Long.parseLong(userId)) {
-
-                userId = Long.toString(id);
-                currentUser = userService.findByIdDTO(Long.parseLong(userId));
-                model.addAttribute("id", userId);
-            }
-            model.addAttribute("userName", currentUser.userName());
             return "/users/userPage";
-        }catch (NoSuchElementException e) {
-
-            model.addAttribute("message", e.getMessage());
-            return "error";
-        }
-
     }
 
     @GetMapping("/admin")
