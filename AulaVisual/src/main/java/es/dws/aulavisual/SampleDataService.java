@@ -38,11 +38,11 @@ public class SampleDataService {
     public void init() {
 
         try {
-            userService.saveDTO("teacher1", "teacher1", "teacher1", "teacher1", "Noxus", "USER", "TEACHER");
-            userService.saveDTO("teacher2", "teacher2", "teacher2", "teacher2", "Piltover", "USER", "TEACHER");
-            userService.saveDTO("teacher3", "teacher3", "teacher3", "teacher3", "Zaun", "USER", "TEACHER");
+            userService.saveDTO("teacher1", "teacher1", "teacher1", "teacher1", "Noxus", "TEACHER");
+            userService.saveDTO("teacher2", "teacher2", "teacher2", "teacher2", "Piltover", "TEACHER");
+            userService.saveDTO("teacher3", "teacher3", "teacher3", "teacher3", "Zaun", "TEACHER");
 
-            userService.saveDTO("asd", "asd", "asd", "asd", "Zaun", "USER", "TEACHER", "ADMIN");
+            userService.saveDTO("asd", "asd", "asd", "asd", "Zaun", "ADMIN");
             userService.saveDTO("test2", "test2", "test2", "test2", "Zaun", "USER");
             userService.saveDTO("test3", "test3", "test3", "test3", "Zaun", "USER");
             userService.saveDTO("test4", "test4", "test4", "test4", "Zaun", "USER");

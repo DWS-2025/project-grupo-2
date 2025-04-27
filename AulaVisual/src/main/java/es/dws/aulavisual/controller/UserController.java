@@ -180,27 +180,15 @@ public class UserController {
     }
 
     @GetMapping("/admin/users/{id}/roles")
-    public String editUserRole(Model model, @CookieValue(value = "userId", defaultValue = "") String userId, @PathVariable long id) {
+    public String editUserRole(Model model, @PathVariable long id) {
 
         try {
-            if(userId.isEmpty()) {
 
-                return "redirect:/login";
-            }else {
+            UserDTO user = userService.findByIdDTO(id);
+            model.addAttribute("student", user.realName() + " " + user.surname());
+            model.addAttribute("id", user.id());
+            return "/users/editRole";
 
-                UserDTO currentUser = userService.findByIdDTO(Long.parseLong(userId));
-                if(currentUser.role() == 0) {
-
-                    UserDTO user = userService.findByIdDTO(id);
-                    model.addAttribute("userId", Long.parseLong(userId));
-                    model.addAttribute("user", user.realName() + " " + user.surname());
-                    model.addAttribute("id", user.id());
-                    return "/users/editRole";
-                }else {
-
-                    return "redirect:/";
-                }
-            }
         }catch (NoSuchElementException e) {
 
             model.addAttribute("message", e.getMessage());
@@ -208,32 +196,21 @@ public class UserController {
         }
     }
 
-    @GetMapping("/admin/users/{id}/roles/{role}")
-    public String updateUserRole(Model model, @CookieValue(value = "userId", defaultValue = "") String userId, @PathVariable long id, @PathVariable int role) {
+    @PostMapping("/admin/users/{id}/roles/{role}")
+    public String updateUserRole(Model model, @PathVariable int role, @PathVariable long id) {
 
         try {
-            if(userId.isEmpty()) {
 
-                return "redirect:/login";
-            }else {
+                UserDTO user = userService.findByIdDTO(id);
+                if(courseService.updateRole(user, role)){
 
-                UserDTO currentUser = userService.findByIdDTO(Long.parseLong(userId));
-                if(currentUser.role() == 0) {
-
-                    UserDTO user = userService.findByIdDTO(id);
-                    if(courseService.updateRole(user, role)){
-
-                        return "redirect:/admin";
-                    }else {
-
-                        model.addAttribute("message", "Usuario o Rol inválido");
-                    }
                     return "redirect:/admin";
                 }else {
 
-                    return "redirect:/";
+                    model.addAttribute("message", "Usuario o Rol inválido");
+                    return "error";
                 }
-            }
+
         }catch (NoSuchElementException e) {
 
             model.addAttribute("message", e.getMessage());

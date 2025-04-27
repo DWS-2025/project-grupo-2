@@ -44,18 +44,18 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    private User getLoggedUser(){
+    User getLoggedUser(){
 
         return userRepository.findByUserName(SecurityContextHolder.getContext().getAuthentication().getName()).orElseThrow();
     }
 
-    public UserDTO saveDTO(String name, String surname, String userName, String password, String campus, String ...roles) {
+    public UserDTO saveDTO(String name, String surname, String userName, String password, String campus, String roles) {
 
         String passwordHash = passwordEncoder.encode(password);
         return userMapper.toDTO(save(name, surname, userName, passwordHash, campus, roles));
     }
 
-    User save(String name, String surname, String userName, String passwordHash, String campus, String ...roles) {
+    User save(String name, String surname, String userName, String passwordHash, String campus, String roles) {
 
         User user = new User(name, surname, userName, passwordHash, campus, roles);
         return userRepository.saveAndFlush(user);

@@ -191,20 +191,28 @@ public class CourseService {
 
     public boolean updateRole(UserDTO userDTO, int newRole) {
 
-        User user = userService.findById(userDTO.id());
-        if(newRole >= 0 && newRole <= 2) {
+        User admin = userService.getLoggedUser();
+        if(admin.getRoles().contains("ADMIN") && admin.getId() != userDTO.id()) {
 
-            user.setRole(newRole);
-            if(newRole == 0 || newRole == 1) {
+            User user = userService.findById(userDTO.id());
+            if(newRole >= 0 && newRole <= 2) {
 
-                user.getCourses().forEach(course -> {
-                    course.getStudents().remove(user);
-                    courseRepository.save(course);
-                });
-                user.clearCourses();
+                switch (newRole) {
+                    case 0 -> user.setRoles("ADMIN");
+                    case 1 -> user.setRoles("TEACHER");
+                    case 2 -> user.setRoles("STUDENT");
+                }
+                if(newRole == 0 || newRole == 1) {
+
+                    user.getCourses().forEach(course -> {
+                        course.getStudents().remove(user);
+                        courseRepository.save(course);
+                    });
+                    user.clearCourses();
+                }
+                userService.save(user);
+                return true;
             }
-            userService.save(user);
-            return true;
         }
         return false;
     }

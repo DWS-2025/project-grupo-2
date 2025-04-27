@@ -11,13 +11,13 @@
   <ul>
     <li><a href="/admin">Gestionar Usuarios</a></li>
     <li><a href="/admin/courses">Gestionar Cursos</a></li>
-    <li><a href="profile/{{userId}}">Configuraciones</a></li>
+    <li><a href="profile/{{user.id}}">Configuraciones</a></li>
     <li class="logout"><a href="/logout">Cerrar Sesión</a></li>
   </ul>
 </nav>
 <section id="content">
   <div id="container">
-    <h1>{{user}}</h1>
+    <h1>{{student}}</h1>
     <div class="centerRoles">
       <form action="/admin/users/{{id}}/roles/0">
       <input type="submit" class="roleButton" value="Convertir en administrador">
