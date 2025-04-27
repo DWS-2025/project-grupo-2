@@ -150,8 +150,8 @@ public class UserController {
             if(currentUser.roles().contains("ADMIN") && id != currentUser.id()) {
 
                currentUser = userService.findByIdDTO(id);
-                model.addAttribute("user", currentUser);
             }
+            model.addAttribute("user", currentUser);
             return "/users/userPage";
     }
 
@@ -173,34 +173,6 @@ public class UserController {
             return "redirect:/admin";
 
         }catch (RuntimeException e) {
-
-            model.addAttribute("message", e.getMessage());
-            return "error";
-        }
-    }
-
-    @GetMapping("/admin/users/{id}")
-    public String editUser(Model model, @CookieValue(value = "userId", defaultValue = "") String userId, @PathVariable long id) {
-
-        try {
-            if(userId.isEmpty()) {
-
-                return "redirect:/login";
-            }else {
-
-                UserDTO currentUser = userService.findByIdDTO(Long.parseLong(userId));
-                if(currentUser.role() == 0) {
-
-                    UserDTO user = userService.findByIdDTO(id);
-                    model.addAttribute("user", user);
-                    model.addAttribute("userId", Long.parseLong(userId));
-                    return "redirect:/profile/" + id;
-                }else {
-
-                    return "redirect:/";
-                }
-            }
-        }catch (NoSuchElementException e) {
 
             model.addAttribute("message", e.getMessage());
             return "error";

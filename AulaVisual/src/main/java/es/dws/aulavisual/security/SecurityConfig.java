@@ -138,7 +138,6 @@ public class SecurityConfig {
 						.requestMatchers("/error").permitAll()
 						.requestMatchers("/login/success").permitAll()
 						// PRIVATE PAGES
-						.requestMatchers("/admin").hasAnyRole("ADMIN")
 						.requestMatchers("/admin/**").hasAnyRole("ADMIN")
 						.requestMatchers("/courses/**").hasAnyRole("USER")
 						.requestMatchers("/teacher/**").hasAnyRole("TEACHER")
