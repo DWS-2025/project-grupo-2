@@ -100,18 +100,18 @@
             .then(data => {
                 const usersBody = document.getElementById('usersBody');
                 usersBody.innerHTML = '';
-                data.content.forEach(user => {
+                data.content.forEach(userlist => {
                     usersBody.innerHTML += `
                         <tr class="tableItems">
-                            <td class="center">${user.id}</td>
-                            <td class="center">${user.realName}</td>
-                            <td class="center">${user.surname}</td>
-                            <td class="center">${user.userName}</td>
-                            <td class="center">${user.campus}</td>
-                            <td class="center">${user.role}</td>
-                            <td class="center"><a href="/profile/${user.id}">Editar</a></td>
-                            <td><input type="submit" value="Eliminar" form="delete-user-${user.id}"><input type="hidden" name="_csrf" value="{{token}}"></td>
-                            <td class="center"><a href="/admin/users/${user.id}/roles">Gestionar Roles</a></td>
+                            <td class="center">${userlist.id}</td>
+                            <td class="center">${userlist.realName}</td>
+                            <td class="center">${userlist.surname}</td>
+                            <td class="center">${userlist.userName}</td>
+                            <td class="center">${userlist.campus}</td>
+                            <td class="center">${userlist.role}</td>
+                            <td class="center"><a href="/profile/${userlist.id}">Editar</a></td>
+                            <td><input type="submit" value="Eliminar" form="delete-user-${userlist.id}"><input type="hidden" name="_csrf" value="{{token}}"></td>
+                            <td class="center"><a href="/admin/users/${userlist.id}/roles">Gestionar Roles</a></td>
                         </tr>
                     `;
                 });
