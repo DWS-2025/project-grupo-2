@@ -116,15 +116,6 @@ public class UserController {
         }
     }
 
-//    @GetMapping("/logout")
-//    public String logout(HttpServletResponse response) {
-//
-//        Cookie cookie = new Cookie("userId", "");
-//        cookie.setMaxAge(0);
-//        response.addCookie(cookie);
-//        return "redirect:/";
-//    }
-
     @PostMapping("/profile/update/{id}")
     public String updateUser(Model model, @PathVariable long id, @RequestParam String username, @RequestParam String prevPassword, @RequestParam String newPassword, MultipartFile image, @CookieValue(value = "userId", defaultValue = "") String userId) {
 
