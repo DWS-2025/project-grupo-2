@@ -9,6 +9,7 @@ public record UserDTO(
         String surname,
         String userName,
         Integer role,
+        List<String> roles,
         String campus,
         List<CourseSimpleDTO> courses,
         CourseInfoDTO courseTeaching,

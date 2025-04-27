@@ -29,55 +29,32 @@ public class UserController {
     }
 
     @GetMapping("/login")
-    public String login(@CookieValue(value = "userId", defaultValue = "") String userId) {
+    public String login(Model model) {
 
-        if(userId.isEmpty()) {
+        if (model.getAttribute("user") != null) {
 
-            return "login";
+            return "redirect:/login/success";
         }else {
 
-            return "redirect:/profile/" + userId;
+            return "login";
         }
     }
 
-    @PostMapping("/login")
-    public String userLogin(Model model, @RequestParam String username, @RequestParam String password, HttpServletResponse response) {
+    @GetMapping("/login/success")
+    public String succes(Model model) {
 
+        UserDTO currentUser = (UserDTO) model.getAttribute("user");
 
-        try {
-            if(!(username.isEmpty() && password.isEmpty())) {
+        if(currentUser != null) {
 
-                if(userService.login(username, password)) {
-
-                    UserDTO currentUser = userService.findByUserName(username);
-                    long userId = currentUser.id();
-                    // create a cookie
-                    Cookie cookie = new Cookie("userId", Long.toString(userId));
-                    cookie.setMaxAge(24 * 60 * 60); //1 day
-
-                    //add cookie to response
-                    response.addCookie(cookie);
-                    model.addAttribute("userName", username);
-                    if(currentUser.role() == 0) {
-
-                        return "redirect:/admin";
-                    }else {
-
-                        return "redirect:/courses";
-                    }
-                }
-
-                model.addAttribute("message", "Nombre de usuario o contraseña incorrectos");
-
-            }else {
-
-                model.addAttribute("message", "Todos los campos son obligatorios");
+            if(currentUser.roles().contains("ADMIN")) {
+            return "redirect:/admin";}
+            else {
+                return "redirect:/courses";
             }
-            return "error";
-        }catch (NoSuchElementException e){
+        }else{
 
-            model.addAttribute("message", e.getMessage());
-            return "error";
+            return "redirect:/login";
         }
     }
 
@@ -192,31 +169,10 @@ public class UserController {
     }
 
     @GetMapping("/admin")
-    public String getAdmin(Model model, @CookieValue(value = "userId", defaultValue = "") String userId, @RequestParam(required = false) Optional<String> campus, @RequestParam(required = false) Optional<Integer> role) {
+    public String getAdmin(Model model) {
 
-        try {
-            if(userId.isEmpty()) {
-
-                return "redirect:/login";
-            }else {
-
-                UserDTO currentUser = userService.findByIdDTO(Long.parseLong(userId));
-                if(currentUser.role() == 0) {
-                    model.addAttribute("admin", currentUser.userName());
-                    model.addAttribute("users", userService.getAllUsers());
-                    model.addAttribute("userId", Long.parseLong(userId));
-                    return "/users/adminPanel";
-                }else {
-
-                    model.addAttribute("message", "No tienes permisos para acceder a esta página");
-                    return "error";
-                }
-            }
-        }catch (NoSuchElementException e) {
-
-            model.addAttribute("message", e.getMessage());
-            return "error";
-        }
+        model.addAttribute("users", userService.getAllUsers());
+        return "/users/adminPanel";
     }
 
     @PostMapping("/admin/users/{id}/delete")
