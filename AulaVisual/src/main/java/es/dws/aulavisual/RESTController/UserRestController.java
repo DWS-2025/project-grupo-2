@@ -12,9 +12,9 @@ import es.dws.aulavisual.service.UserService;
 import org.springframework.web.multipart.MultipartFile;
 
 import org.springframework.data.domain.Pageable;
+
 import java.io.IOException;
 import java.net.URI;
-import java.util.List;
 import java.util.Optional;
 
 import static org.springframework.web.servlet.support.ServletUriComponentsBuilder.fromCurrentRequest;
@@ -48,21 +48,23 @@ public class UserRestController {
     }
 
     @PutMapping("/{id}/")
-    public ResponseEntity<UserDTO> updateUser(@PathVariable Long id, @RequestBody UserCreationDTO userCreationDTO) {
+    public ResponseEntity<Object> updateUser(@PathVariable Long id, @RequestBody UserCreationDTO userCreationDTO) {
 
-        UserDTO userDTO = userService.updateDTO(id, userCreationDTO);
-        int newRole = switch (userDTO.role()) {
-            case "ADMIN" -> 0;
-            case "TEACHER" -> 1;
-            case "STUDENT" -> 2;
-            default -> -1;
-        };
-        courseService.updateRole(userDTO, newRole);
-        for(int i = 0; i < userCreationDTO.userDTO().courses().size(); i++) {
-            courseService.addUserToCourse(userCreationDTO.userDTO().courses().get(i).id(), userDTO);
+        try {
+            UserDTO userDTO = userService.updateDTO(id, userCreationDTO);
+            int newRole = switch (userDTO.role()) {
+                case "ADMIN" -> 0;
+                case "TEACHER" -> 1;
+                case "STUDENT" -> 2;
+                default -> -1;
+            };
+            userDTO = courseService.updateCourseRole(userDTO, newRole, userCreationDTO);
+            URI location = fromCurrentRequest().path("").buildAndExpand(userDTO.id()).toUri();
+            return ResponseEntity.created(location).body(userService.findByIdDTO(userDTO.id()));
+        }catch (RuntimeException e) {
+
+            return ResponseEntity.status(401).body("Unauthorized");
         }
-        URI location = fromCurrentRequest().path("").buildAndExpand(userDTO.id()).toUri();
-        return ResponseEntity.created(location).body(userService.findByIdDTO(userDTO.id()));
     }
 
     @GetMapping("/{id}/")
@@ -78,7 +80,7 @@ public class UserRestController {
             String location = fromCurrentRequest().path("").buildAndExpand(id).toUri().getPath();
             userService.saveImage(id, location, image.getInputStream(), image.getSize());
             return ResponseEntity.created(URI.create(location)).body(location);
-        }catch (IOException e){
+        }catch (RuntimeException | IOException e){
 
             return ResponseEntity.badRequest().body("Error uploading image: " + e.getMessage());
         }
@@ -93,7 +95,7 @@ public class UserRestController {
     @DeleteMapping("/{id}/")
     public ResponseEntity<UserDTO> deleteUser(@PathVariable Long id) {
 
-        UserDTO deletedUser = userService.deleteById(userService.getLoggedUserDTO().id(), id);
+        UserDTO deletedUser = userService.deleteById(id);
         return ResponseEntity.ok().body(deletedUser);
     }
 }

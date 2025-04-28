@@ -74,15 +74,15 @@ public class UserService {
         return userRepository.saveAndFlush(user);
     }
 
-    public UserDTO deleteById(long adminId, long id) {
+    public UserDTO deleteById(long id) {
 
-        if(adminId == id) {
+        User admin = getLoggedUser();
+        if(admin.getId() == id) {
 
             throw new RuntimeException("No puedes eliminarte a ti mismo");
         }else{
 
-            User admin = userRepository.findById(adminId).orElseThrow();
-            if(admin.getRole().contains("ADMIN")){
+            if(admin.getRole().equals("ADMIN")){
 
                 User userToDelete = userRepository.findById(id).orElseThrow();
                 List<Course> courses = userToDelete.getCourses();
@@ -105,33 +105,30 @@ public class UserService {
 
     public void editUsername(long id, String newUsername) {
 
-        Optional<User> user = userRepository.findById(id);
-        if(user.isEmpty()) {
+        User admin = getLoggedUser();
+        if(admin.getRole().equals("ADMIN") || admin.getId() == id) {
 
-            System.out.println("User not found");
-            return;
+            User userToEdit = userRepository.findById(id).orElseThrow();
+            userToEdit.setUserName(newUsername);
+            userRepository.save(userToEdit);
         }
-        User userToEdit = user.get();
-        userToEdit.setUserName(newUsername);
-        userRepository.save(userToEdit);
     }
 
     public void editPassword(long id, String newPassword, String previousPassword) {
 
-        Optional<User> user = userRepository.findById(id);
-        if(user.isEmpty()) {
+        User admin = getLoggedUser();
+        if(admin.getRole().equals("ADMIN") || admin.getId() == id) {
 
-            System.out.println("User not found");
-            return;
-        }
-        User userToEdit = user.get();
-        if(!userToEdit.getPasswordHash().equals(hashPassword(previousPassword))) {
 
-            System.out.println("Bad credentials");
-            return;
+            User userToEdit = userRepository.findById(id).orElseThrow();
+            if(!userToEdit.getPasswordHash().equals(hashPassword(previousPassword))) {
+
+                System.out.println("Bad credentials");
+                return;
+            }
+            userToEdit.setPasswordHash(hashPassword(newPassword));
+            userRepository.save(userToEdit);
         }
-        userToEdit.setPasswordHash(hashPassword(newPassword));
-        userRepository.save(userToEdit);
     }
 
     public String hashPassword(String password) {
@@ -151,32 +148,18 @@ public class UserService {
         }
     }
 
-    public boolean login(String userName, String password) {
-
-        Optional<User> chechUser = userRepository.findByUserName(userName);
-        if(chechUser.isEmpty()) {
-
-            System.out.println("User " + userName + " not found");
-            return false;
-        }
-        User user = chechUser.get();
-        String passwordHash = hashPassword(password);
-        if(user.getPasswordHash().equals(passwordHash)) {
-
-            System.out.println("User " + user.getUserName() + " logged in");
-            return true;
-        }
-        System.out.println("User " + user.getUserName() + " Bad Credentials");
-        return false;
-    }
-
     public void saveImage(long userId, String location, InputStream inputStream, long size) {
 
-        User user = userRepository.findById(userId).orElseThrow();
+        User admin = getLoggedUser();
+        if(admin.getRole().equals("ADMIN") || admin.getId() == userId){
 
-        user.setImage(location);
-        user.setImageFile(BlobProxy.generateProxy(inputStream, size));
-        userRepository.save(user);
+            User user = userRepository.findById(userId).orElseThrow();
+
+            user.setImage(location);
+            user.setImageFile(BlobProxy.generateProxy(inputStream, size));
+            userRepository.save(user);
+        }
+        throw new RuntimeException("No tienes permisos para editar este usuario");
     }
 
     public ResponseEntity <Object> loadImage(long requestedId) {
@@ -215,26 +198,28 @@ public class UserService {
 
     void addCourseToTeacher(long id, Course course) {
 
-        User user = userRepository.findById(id).orElseThrow();
-        user.setCourseTeaching(course);
-        userRepository.save(user);
+        User admin = getLoggedUser();
+        if(admin.getRole().equals("ADMIN")) {
+
+            User user = userRepository.findById(id).orElseThrow();
+            user.setCourseTeaching(course);
+            userRepository.save(user);
+        }
     }
 
     public List<UserDTO> getAvaliableTeachers() {
 
-        return userRepository.findAllByRoleAndCourseTeachingNull("TEACHER").stream()
-                .map(userMapper::toDTO)
-                .collect(Collectors.toList());
+        User admin = getLoggedUser();
+        if(admin.getRole().equals("ADMIN")) {
+            return userRepository.findAllByRoleAndCourseTeachingNull("TEACHER").stream()
+                    .map(userMapper::toDTO)
+                    .collect(Collectors.toList());
+        }
+        throw new RuntimeException("No tienes permisos para ver los profesores");
     }
 ///////////////////////////////////////////////////////////////////////////////////
-    public List<UserDTO> getAllUsers() {
-
-        return userMapper.toDTOs(userRepository.findAll());
-    }
 
     public Page<UserDTO> getAllUsers(Pageable pageable, Optional<String> campus, Optional<String> role, Optional<Boolean> removeSelf, Optional<Long> userId) {
-
-
 
         User exampleUser = new User();
         Example <User> example;
@@ -266,7 +251,12 @@ public class UserService {
 
     public UserDTO findByIdDTO(long id) {
 
-        return userMapper.toDTO(findById(id));
+        User admin = getLoggedUser();
+        if(admin.getRole().equals("ADMIN") || admin.getId() == id) {
+
+            return userMapper.toDTO(findById(id));
+        }
+        return userMapper.toDTO(findById(admin.getId()));
     }
 
     User findById(long id) {
@@ -281,16 +271,16 @@ public class UserService {
 
     public UserDTO updateDTO(Long id, UserCreationDTO userCreationDTO) {
 
-        User user = userRepository.findById(id).orElseThrow();
-        user.setRealName(userCreationDTO.userDTO().realName());
-        user.setSurname(userCreationDTO.userDTO().surname());
-        user.setUserName(userCreationDTO.userDTO().userName());
-        user.setCampus(userCreationDTO.userDTO().campus());
-        return userMapper.toDTO(userRepository.save(user));
-    }
+        User requestUser = getLoggedUser();
+        if(requestUser.getId() == id || requestUser.getRole().equals("ADMIN")) {
 
-    public UserDTO getLoggedUserDTO() {
-
-        return userMapper.toDTO(getLoggedUser());
+            User user = userRepository.findById(id).orElseThrow();
+            user.setRealName(userCreationDTO.userDTO().realName());
+            user.setSurname(userCreationDTO.userDTO().surname());
+            user.setUserName(userCreationDTO.userDTO().userName());
+            user.setCampus(userCreationDTO.userDTO().campus());
+            return userMapper.toDTO(userRepository.save(user));
+        }
+        throw new RuntimeException("No tienes permisos para editar este usuario");
     }
 }
