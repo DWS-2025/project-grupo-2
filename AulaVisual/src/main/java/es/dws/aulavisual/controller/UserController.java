@@ -158,8 +158,7 @@ public class UserController {
     @GetMapping("/admin")
     public String getAdmin(Model model) {
 
-        model.addAttribute("users", userService.getAllUsers());
-        return "/users/adminPanel";
+       return "/users/adminPanel";
     }
 
     @GetMapping("/admin/users/{id}/delete")
@@ -179,9 +178,7 @@ public class UserController {
 
         try {
 
-            UserDTO currentUser = (UserDTO) model.getAttribute("user");
-
-            userService.deleteById(currentUser.id(), id);
+            userService.deleteById(id);
             return "redirect:/admin";
 
         }catch (RuntimeException e) {

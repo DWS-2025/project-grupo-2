@@ -215,4 +215,19 @@ public boolean updateRole(UserDTO userDTO, int newRole) {
         }
         return false;
     }
+
+    public UserDTO updateCourseRole(UserDTO userDTO, int newRole, UserCreationDTO userCreationDTO){
+
+        if(updateRole(userDTO, newRole)){
+
+            for(int i = 0; i < userCreationDTO.userDTO().courses().size(); i++) {
+
+                addUserToCourse(userCreationDTO.userDTO().courses().get(i).id(), userDTO);
+            }
+
+            return userService.findByIdDTO(userDTO.id());
+        }
+        throw new RuntimeException("Usuario, rol inválidos o no se ha podido actualizar el rol");
+    }
 }
+
