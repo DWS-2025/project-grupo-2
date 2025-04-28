@@ -198,13 +198,10 @@ public class UserService {
 
     void addCourseToTeacher(long id, Course course) {
 
-        User admin = getLoggedUser();
-        if(admin.getRole().equals("ADMIN")) {
+        User user = userRepository.findById(id).orElseThrow();
+        user.setCourseTeaching(course);
+        userRepository.save(user);
 
-            User user = userRepository.findById(id).orElseThrow();
-            user.setCourseTeaching(course);
-            userRepository.save(user);
-        }
     }
 
     public List<UserDTO> getAvaliableTeachers() {
