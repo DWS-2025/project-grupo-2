@@ -9,7 +9,6 @@ import es.dws.aulavisual.Mapper.ModuleMapper;
 import es.dws.aulavisual.model.Course;
 import es.dws.aulavisual.model.Module;
 import es.dws.aulavisual.repository.ModuleRepository;
-import es.dws.aulavisual.Mapper.CourseMapper;
 import org.hibernate.engine.jdbc.BlobProxy;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.InputStreamResource;
@@ -29,15 +28,11 @@ import org.springframework.http.ResponseEntity;
 public class ModuleService {
 
     private final ModuleRepository moduleRepository;
-    private final CourseMapper courseMapper;
-    private final UserService userService;
     private final CourseService courseService;
     private final ModuleMapper moduleMapper;
 
-    public ModuleService(ModuleRepository moduleRepository, CourseMapper courseMapper, UserService userService, CourseService courseService, ModuleMapper moduleMapper) {
+    public ModuleService(ModuleRepository moduleRepository, CourseService courseService, ModuleMapper moduleMapper) {
         this.moduleRepository = moduleRepository;
-        this.courseMapper = courseMapper;
-        this.userService = userService;
         this.courseService = courseService;
         this.moduleMapper = moduleMapper;
     }
