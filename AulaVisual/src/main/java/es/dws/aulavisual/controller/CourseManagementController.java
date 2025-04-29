@@ -338,7 +338,7 @@ public class CourseManagementController {
                 return "redirect:/login";
             }
             UserDTO user = userService.findByIdDTO(Long.parseLong(userId));
-            if(user.role().equals("ADMIN")) {
+            if(!user.role().equals("ADMIN")) {
 
                 return "redirect:/";
             }

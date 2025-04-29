@@ -8,6 +8,7 @@ import es.dws.aulavisual.DTO.ModuleSimpleDTO;
 import es.dws.aulavisual.Mapper.ModuleMapper;
 import es.dws.aulavisual.model.Course;
 import es.dws.aulavisual.model.Module;
+import es.dws.aulavisual.model.User;
 import es.dws.aulavisual.repository.ModuleRepository;
 import org.hibernate.engine.jdbc.BlobProxy;
 import org.springframework.core.io.ClassPathResource;
@@ -30,15 +31,18 @@ public class ModuleService {
     private final ModuleRepository moduleRepository;
     private final CourseService courseService;
     private final ModuleMapper moduleMapper;
+    private final UserService userService;
 
-    public ModuleService(ModuleRepository moduleRepository, CourseService courseService, ModuleMapper moduleMapper) {
+    public ModuleService(ModuleRepository moduleRepository, CourseService courseService, ModuleMapper moduleMapper, UserService userService) {
         this.moduleRepository = moduleRepository;
         this.courseService = courseService;
         this.moduleMapper = moduleMapper;
+        this.userService = userService;
     }
 
     public ModuleSimpleDTO save(CourseDTO courseDTO, String name, int position, MultipartFile content) {
 
+        // Already protected and sample data service, I'm not touching this
         Course course = courseService.findById(courseDTO.id());
         Blob blob = null;
         if(content != null) {
@@ -50,6 +54,7 @@ public class ModuleService {
 
     private Blob transformImage(MultipartFile image) {
 
+        //Only used in the previous method
         try {
            return BlobProxy.generateProxy(image.getInputStream(), image.getSize());
         }catch (IOException e) {
@@ -60,17 +65,29 @@ public class ModuleService {
 
     public ModuleSimpleDTO findById(long id) {
 
+        User loggedUser = userService.getLoggedUser();
+        if(!loggedUser.getRole().contains("USER")) {
+            throw new RuntimeException("Primera debes iniciar sesion");
+        }
         return moduleMapper.toSimpleDTO(moduleRepository.findById(id).orElseThrow());
     }
 
     public List<ModuleSimpleDTO> getModulesByCourse(CourseDTO courseDTO) {
 
+        User loggedUser = userService.getLoggedUser();
+        if(!loggedUser.getRole().contains("USER")) {
+            throw new RuntimeException("Primera debes iniciar sesion");
+        }
         Course course = courseService.findById(courseDTO.id());
         return moduleMapper.toSimpleDTOs(moduleRepository.findByCourse(course, Sort.by(Sort.Direction.ASC, "position")));
     }
 
     public ResponseEntity<Object> viewModule(long id) {
 
+        User loggedUser = userService.getLoggedUser();
+        if(!loggedUser.getRole().contains("USER")) {
+            throw new RuntimeException("Primera debes iniciar sesion");
+        }
         try {
 
             Module module = moduleRepository.findById(id).orElseThrow();
@@ -96,6 +113,10 @@ public class ModuleService {
 
     public void delete(ModuleSimpleDTO moduleDTO, long courseId) {
 
+        User admin = userService.getLoggedUser();
+        if(!admin.getRole().contains("ADMIN")) {
+            throw new RuntimeException("No tienes permisos para ejecutar esta acción");
+        }
         Module module = moduleRepository.findById(moduleDTO.id()).orElseThrow();
         Course course = module.getCourse();
         if (courseId != course.getId()){
@@ -109,12 +130,20 @@ public class ModuleService {
 
     public boolean positionExists(CourseDTO courseDto, int position) {
 
+        User admin = userService.getLoggedUser();
+        if(!admin.getRole().contains("ADMIN")) {
+            throw new RuntimeException("No tienes permisos para ejecutar esta acción");
+        }
         Course course = courseService.findById(courseDto.id());
         return moduleRepository.existsByCourseAndPosition(course, position);
     }
 
     public List<Integer> getAvailablePositions(CourseDTO courseDTO) {
 
+        User admin = userService.getLoggedUser();
+        if(!admin.getRole().contains("ADMIN")) {
+            throw new RuntimeException("No tienes permisos para ejecutar esta acción");
+        }
         Course course = courseService.findById(courseDTO.id());
         Integer maxPosition = moduleRepository.findLastModuleId(course.getId());
         List<Integer> positions = new ArrayList<>();
@@ -146,18 +175,23 @@ public class ModuleService {
 
     public List<ModuleSimpleDTO> getModulesByCourseId(Long id){
 
+        User loggedUser = userService.getLoggedUser();
+        if(!loggedUser.getRole().contains("USER")) {
+            throw new RuntimeException("Primera debes iniciar sesion");
+        }
         Course course = courseService.findById(id);
         return moduleMapper.toSimpleDTOs(moduleRepository.findByCourse(course, Sort.by(Sort.Direction.ASC, "position")));
     }
 
     public ModuleSimpleDTO saveDTO(Long courseId, ModuleSimpleDTO moduleSimpleDTO) {
 
-
+        //Only used in the REST controller
         return save(courseService.findByIdDTO(courseId), moduleSimpleDTO.name(), moduleSimpleDTO.position(), null);
     }
 
     public void uploadModuleContent(long id, String location, InputStream inputStream, long size) {
 
+        //Only used in the REST controller
         Module module = moduleRepository.findById(id).orElseThrow();
         module.setContentLocation(location);
         module.setContent(BlobProxy.generateProxy(inputStream, size));
