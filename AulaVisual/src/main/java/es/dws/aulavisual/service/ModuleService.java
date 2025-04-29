@@ -75,8 +75,11 @@ public class ModuleService {
     public List<ModuleSimpleDTO> getModulesByCourse(CourseDTO courseDTO) {
 
         User loggedUser = userService.getLoggedUser();
-        if(!loggedUser.getRole().contains("USER")) {
+        if(!userService.hasRoleOrHigher("USER") ) {
             throw new RuntimeException("Primera debes iniciar sesion");
+        }
+        if(!courseService.userIsInCourse(loggedUser.getId(), courseDTO) && !userService.hasRoleOrHigher("ADMIN")) {
+            throw new RuntimeException("No tienes permisos para ver este curso");
         }
         Course course = courseService.findById(courseDTO.id());
         return moduleMapper.toSimpleDTOs(moduleRepository.findByCourse(course, Sort.by(Sort.Direction.ASC, "position")));

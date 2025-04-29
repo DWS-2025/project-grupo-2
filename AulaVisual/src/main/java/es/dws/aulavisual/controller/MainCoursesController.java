@@ -75,7 +75,7 @@ public class MainCoursesController {
             CourseDTO courseDTO = courseService.findByIdDTO(id);
             UserDTO user = userService.findByIdDTO(Long.parseLong(userId));
             ModuleSimpleDTO module = moduleService.findById(moduleId);
-            if(courseService.userIsInCourse(user, courseDTO)) {
+            if(courseService.userIsInCourse(user.id(), courseDTO)) {
 
                 List <ModuleSimpleDTO> modules = moduleService.getModulesByCourse(courseDTO);
                 model.addAttribute("modules", modules);

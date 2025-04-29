@@ -1,0 +1,13 @@
+<nav>
+    <ul>
+        <li><a href="/admin">Gestionar Usuarios</a></li>
+        <li><a href="/admin/courses">Gestionar Cursos</a></li>
+        <li><a href="/profile/{{user.id}}">Configuraciones</a></li>
+        <li class="logout">
+            <form action="/logout" method="post">
+                <button type="submit">Cerrar Sesión</button>
+                <input type="hidden" name="_csrf" value="{{token}}">
+            </form>
+        </li>
+    </ul>
+</nav>

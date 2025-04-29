@@ -37,25 +37,20 @@ public class CourseManagementController {
     }
 
     @GetMapping("/admin/courses")
-    public String manageCourses(Model model, @CookieValue(value = "userId", defaultValue = "") String userId) {
+    public String manageCourses(Model model) {
 
         try {
-            if(userId.isEmpty()) {
 
-                return "redirect:/login";
-            }
+            UserDTO user = (UserDTO) model.getAttribute("user");
 
-            UserDTO user = userService.findByIdDTO(Long.parseLong(userId));
-            if(user.role().equals("ADMIN")) {
+            model.addAttribute("admin", user.realName());
+            model.addAttribute("userId", user.id());
+            model.addAttribute("availableTeachers", userService.getAvaliableTeachers());
+            List <CourseDTO> courses = courseService.getCourses();
+            model.addAttribute("courses", courses);
+            return "courses-management/manageCourses";
 
-                model.addAttribute("admin", user.realName());
-                model.addAttribute("userId", Long.parseLong(userId));
-                model.addAttribute("availableTeachers", userService.getAvaliableTeachers());
-                List <CourseDTO> courses = courseService.getCourses();
-                model.addAttribute("courses", courses);
-                return "courses-management/manageCourses";
-            }
-            return "redirect:/";
+
 
         }catch (NoSuchElementException e){
 
@@ -65,26 +60,19 @@ public class CourseManagementController {
     }
 
     @GetMapping("/admin/courses/{id}/modules")
-    public String getModules(Model model, @PathVariable long id, @CookieValue(value = "userId", defaultValue = "") String userId) {
+    public String getModules(Model model, @PathVariable long id) {
 
         try{
 
-            if(userId.isEmpty()) {
-
-                return "redirect:/login";
-            }
             CourseDTO courseDTO = courseService.findByIdDTO(id);
-            UserDTO user = userService.findByIdDTO(Long.parseLong(userId));
-            if(user.role().equals("ADMIN")) {
+            UserDTO user = (UserDTO) model.getAttribute("user");
 
-                model.addAttribute("courseName", courseDTO.name());
-                model.addAttribute("courseId", id);
-                model.addAttribute("userId", Long.parseLong(userId));
-                model.addAttribute("admin", user.realName());
-                model.addAttribute("modules", moduleService.getModulesByCourse(courseDTO));
-                return "courses-management/modules";
-            }
-            return "redirect:/";
+            model.addAttribute("courseName", courseDTO.name());
+            model.addAttribute("courseId", id);
+            model.addAttribute("userId", user.id());
+            model.addAttribute("admin", user.realName());
+            model.addAttribute("modules", moduleService.getModulesByCourse(courseDTO));
+            return "courses-management/modules";
 
         }catch (NoSuchElementException e){
 
@@ -133,7 +121,7 @@ public class CourseManagementController {
 
             ModuleSimpleDTO module = moduleService.findById(id);
 
-            if(user.role().equals("ADMIN") || course.teacher().id().equals(user.id()) || courseService.userIsInCourse(user, course)) {
+            if(user.role().equals("ADMIN") || course.teacher().id().equals(user.id()) || courseService.userIsInCourse(user.id(), course)) {
 
                 return moduleService.viewModule(module.id());
             }else{
@@ -391,7 +379,7 @@ public class CourseManagementController {
             }
             UserDTO student = userService.findByIdDTO(studentId);
             CourseDTO course = courseService.findByIdDTO(courseId);
-            if(courseService.userIsInCourse(student, course)) {
+            if(courseService.userIsInCourse(student.id(), course)) {
 
                 model.addAttribute("message", "El estudiante ya está en el curso");
                 return "error";

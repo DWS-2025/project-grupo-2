@@ -7,14 +7,7 @@
   <link rel="icon" href="/images/1.svg" sizes="any" type="image/svg+xml">
 </head>
 <body>
-<nav>
-  <ul>
-    <li><a href="/admin">Gestionar Usuarios</a></li>
-    <li><a href="/admin/courses">Gestionar Cursos</a></li>
-    <li><a href="profile/{{user.id}}">Configuraciones</a></li>
-    <li class="logout"><a href="/logout">Cerrar Sesión</a></li>
-  </ul>
-</nav>
+{{>adminNav}}
 <section id="content">
   <div id="container">
     <h1>{{student}}</h1>
