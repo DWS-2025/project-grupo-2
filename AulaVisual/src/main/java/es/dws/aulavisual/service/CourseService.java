@@ -41,6 +41,7 @@ public class CourseService {
 
     public CourseDTO assignTeacher(long id, CourseDTO courseDTO) {
 
+        // The only way to access this method is via protected endpoints in the API and Controllers
         Course course = courseRepository.findById(courseDTO.id()).orElseThrow();
         User teacher = userService.findById(id);
         if(!teacher.getRole().equals("TEACHER") || teacher.getCourseTeaching() != null) {
@@ -65,25 +66,38 @@ public class CourseService {
 
     public void addUserToCourse(long courseId, UserDTO userDTO) {
 
-        // Course course = courseMapper.toDomain(courseDTO);
+        // The only way to access this method is via protected endpoints in the API and Controllers
+        if(userDTO.role().equals("ADMIN")) {
+            throw new IllegalArgumentException("No puedes añadir un admin a un curso");
+        }
+        if(userDTO.role().equals("TEACHER")) {
+            throw new IllegalArgumentException("No puedes añadir un profesor a un curso");
+        }
         Course course = findById(courseId);
-        //User user = userMapper.toDomain(userDTO);
         User user = userService.findById(userDTO.id());
         course.getStudents().add(user);
-        //user.getCourses().add(course);
-        //userService.save(user);
         courseRepository.save(course);
     }
 
 
     public List<CourseDTO> getCourses() {
 
-        return courseMapper.toDTOs(courseRepository.findAll());
+        // Only the admin is able to see all the courses
+        User admin = userService.getLoggedUser();
+        if(admin.getRole().contains("ADMIN")) {
+            return courseMapper.toDTOs(courseRepository.findAll());
+        }
+        throw new RuntimeException("No tienes permisos para ver los cursos");
     }
 
     public CourseDTO findByIdDTO(long id) {
 
-        return courseMapper.toDTO(findById(id));
+        // Not everyone can see the course
+        User user = userService.getLoggedUser();
+        if(user.getRole().contains("USER")) {
+            return courseMapper.toDTO(findById(id));
+        }
+        throw new RuntimeException("No tienes permisos para esto");
     }
 
     Course findById(long id) {
@@ -93,9 +107,13 @@ public class CourseService {
 
     public boolean userIsInCourse(UserDTO userDTO, CourseDTO courseDTO) {
 
-        User user = userService.findById(userDTO.id());
-        Course course = courseRepository.findById(courseDTO.id()).orElseThrow();
-        return course.getTeacher().equals(user)|| course.getStudents().contains(user);
+        User loggedUser = userService.getLoggedUser();
+        if(loggedUser.getRole().equals("ADMIN") || loggedUser.getId() == userDTO.id()) {
+            User user = userService.findById(userDTO.id());
+            Course course = courseRepository.findById(courseDTO.id()).orElseThrow();
+            return course.getTeacher().equals(user)|| course.getStudents().contains(user);
+        }
+        throw new RuntimeException("No tienes permisos para esto");
     }
 
     public void deleteCourse(long courseId) {
