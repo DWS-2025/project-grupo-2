@@ -40,9 +40,13 @@ public class SubmissionService {
 
     public void save(CourseDTO courseDTO, UserDTO userDTO, MultipartFile submission) {
 
-        User user = userService.findById(userDTO.id());
-        Course course = courseService.findById(courseDTO.id());
-        submissionRepository.save(new Submission(course, user, transformSubmission(submission)));
+        User student = userService.getLoggedUser();
+        if(student.getId() == userDTO.id() && courseService.userIsInCourse(student.getId(), courseDTO.id()) && !userMadeSubmission(student.getId(), courseDTO.id())) {
+
+            User user = userService.findById(userDTO.id());
+            Course course = courseService.findById(courseDTO.id());
+            submissionRepository.save(new Submission(course, user, transformSubmission(submission)));
+        }
     }
 
     public SubmissionDTO save(SubmissionDTO submissionDTO) {
@@ -67,52 +71,77 @@ public class SubmissionService {
 
     public SubmissionDTO findByUserAndCourse(UserDTO userDTO, CourseDTO courseDTO) {
 
-        User user = userService.findById(userDTO.id());
-        Course course = courseService.findById(courseDTO.id());
-        return submissionMapper.toDTO(submissionRepository.findByStudentAndCourse(user, course).orElseThrow());
+        if(userService.hasRoleOrHigher("TEACHER") || courseService.userIsInCourse(userDTO.id(), courseDTO.id())) {
+
+            User user = userService.findById(userDTO.id());
+            Course course = courseService.findById(courseDTO.id());
+            return submissionMapper.toDTO(submissionRepository.findByStudentAndCourse(user, course).orElseThrow());
+        }
+        throw new RuntimeException("User does not have sufficient privileges");
     }
 
     public boolean userMadeSubmission(Long userId, Long courseId) {
 
-        User user = userService.findById(userId);
-        Course course = courseService.findById(courseId);
-        Optional <Submission> submission = submissionRepository.findByStudentAndCourse(user, course);
-        return submission.isPresent();
+        if(userService.hasRoleOrHigher("TEACHER") || courseService.userIsInCourse(userId, courseId)) {
+
+            User user = userService.findById(userId);
+            Course course = courseService.findById(courseId);
+            Optional <Submission> submission = submissionRepository.findByStudentAndCourse(user, course);
+            return submission.isPresent();
+        }
+        throw new RuntimeException("User does not have sufficient privileges");
     }
 
     public List<SubmissionDTO> getSubmissions(CourseDTO courseDTO, boolean isGraded) {
 
-        Course course = courseService.findById(courseDTO.id());
-        return submissionMapper.toDTOs(submissionRepository.findSubmissionByCourseAndGraded(course, isGraded));
+        if(userService.hasRoleOrHigher("TEACHER")) {
+
+            Course course = courseService.findById(courseDTO.id());
+            return submissionMapper.toDTOs(submissionRepository.findSubmissionByCourseAndGraded(course, isGraded));
+        }
+        throw new RuntimeException("User does not have sufficient privileges");
     }
 
     public void gradeSubmission(CourseDTO courseDTO, UserDTO studentDTO, float grade) {
 
-        Course course = courseService.findById(courseDTO.id());
-        User student = userService.findById(studentDTO.id());
-        Optional <Submission> searchSubmission = submissionRepository.findByStudentAndCourse(student, course);
-        searchSubmission.ifPresent(submission -> grade(submission, grade));
+        User teacher = userService.getLoggedUser();
+        if(userService.hasRoleOrHigher("TEACHER") && courseDTO.teacher().id().equals(teacher.getId())) {
+
+            Course course = courseService.findById(courseDTO.id());
+            User student = userService.findById(studentDTO.id());
+            Optional <Submission> searchSubmission = submissionRepository.findByStudentAndCourse(student, course);
+            searchSubmission.ifPresent(submission -> grade(submission, grade));
+        }
     }
 
     public ResponseEntity <Object> getSubmission(CourseDTO courseDTO, UserDTO studentDTO) {
 
-        User student = userService.findById(studentDTO.id());
-        Course course = courseService.findById(courseDTO.id());
-        Optional <Submission> searchSubmission = submissionRepository.findByStudentAndCourse(student, course);
-        if(searchSubmission.isPresent()) {
+        User loggedUser = userService.getLoggedUser();
+        if(loggedUser.getId() == studentDTO.id() || (userService.hasRoleOrHigher("TEACHER") && courseDTO.teacher().id().equals(loggedUser.getId()))) {
 
-            Submission submission = searchSubmission.get();
-            return getSubmissionContent(submission);
+            User student = userService.findById(studentDTO.id());
+            Course course = courseService.findById(courseDTO.id());
+            Optional <Submission> searchSubmission = submissionRepository.findByStudentAndCourse(student, course);
+            if(searchSubmission.isPresent()) {
+
+                Submission submission = searchSubmission.get();
+                return getSubmissionContent(submission);
+            }
+            return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.notFound().build();
+        throw new RuntimeException("User does not have sufficient privileges");
     }
 
     public void deleteSubmission(UserDTO studentDTO, CourseDTO courseDTO) {
 
-        User student = userService.findById(studentDTO.id());
-        Course course = courseService.findById(courseDTO.id());
-        Submission submission = submissionRepository.findByStudentAndCourse(student, course).orElseThrow();
-        delete(submission);
+        User loggedUser = userService.getLoggedUser();
+        if(loggedUser.getId() == courseDTO.teacher().id()){
+
+            User student = userService.findById(studentDTO.id());
+            Course course = courseService.findById(courseDTO.id());
+            Submission submission = submissionRepository.findByStudentAndCourse(student, course).orElseThrow();
+            delete(submission);
+        }
     }
 
     public List<SubmissionDTO> getCourseSubmissions(long courseId) {

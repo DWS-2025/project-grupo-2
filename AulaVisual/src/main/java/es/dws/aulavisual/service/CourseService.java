@@ -111,7 +111,7 @@ public class CourseService {
     public boolean userIsInCourse(long userId, long courseId) {
 
         User loggedUser = userService.getLoggedUser();
-        if(loggedUser.getRole().equals("ADMIN") || loggedUser.getId() == userId) {    //If the user want to see his own course
+        if(loggedUser.getRole().equals("TEACHER") || loggedUser.getId() == userId) {    //If the user want to see his own course
             User user = userService.findById(userId);
             Course course = courseRepository.findById(courseId).orElseThrow();
             return course.getTeacher().equals(user)|| course.getStudents().contains(user);
