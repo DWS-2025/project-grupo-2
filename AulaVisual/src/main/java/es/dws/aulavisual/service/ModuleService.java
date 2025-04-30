@@ -147,7 +147,7 @@ public class ModuleService {
     public List<Integer> getAvailablePositions(CourseDTO courseDTO) {
 
         User admin = userService.getLoggedUser();
-        if(!admin.getRole().contains("ADMIN")) {
+        if(!userService.hasRoleOrHigher("ADMIN")) {
             throw new RuntimeException("No tienes permisos para ejecutar esta acción");
         }
         Course course = courseService.findById(courseDTO.id());
