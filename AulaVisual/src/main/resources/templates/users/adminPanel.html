@@ -72,6 +72,7 @@
 
     function authenticateAndLoadUsers(page) {
         const loginUrl = new URL('/api/auth/login/', window.location.origin);
+        const logoutUrl = new URL('/api/auth/logout', window.location.origin);
 
         // Autenticación
         fetch(loginUrl, {
@@ -93,15 +94,16 @@
             .then(() => {
                 // Si la autenticación es exitosa, carga los usuarios
                 loadUsers(page);
+                fetch(logoutUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
             })
             .catch(error => {
                 console.error('Error:', error);
             });
-    }
-
-    function eliminarCookie(nombre) {
-        document.cookie = `${nombre}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
-        console.log("Elininando cookie: " + nombre);
     }
 
     function loadUsers(page) {
@@ -142,27 +144,25 @@
                 document.getElementById('pageInfo').innerText = `Página ${currentPage + 1} de ${totalPages}`;
                 document.getElementById('prevPage').disabled = data.first;
                 document.getElementById('nextPage').disabled = data.last;
-                eliminarCookie('AuthToken');
-                eliminarCookie('RefreshToken');
             });
     }
 
     function applyFilters() {
         currentPage = 0;
-        loadUsers(currentPage);
+        authenticateAndLoadUsers(currentPage);
     }
 
     document.getElementById('prevPage').addEventListener('click', () => {
         if (currentPage > 0) {
             currentPage--;
-            loadUsers(currentPage);
+            authenticateAndLoadUsers(currentPage);
         }
     });
 
     document.getElementById('nextPage').addEventListener('click', () => {
         if (currentPage < totalPages - 1) {
             currentPage++;
-            loadUsers(currentPage);
+            authenticateAndLoadUsers(currentPage);
         }
     });
 
