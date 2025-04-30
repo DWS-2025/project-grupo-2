@@ -90,11 +90,12 @@ public class ModuleService {
     public ResponseEntity<Object> viewModule(long id) {
 
         User loggedUser = userService.getLoggedUser();
-        if(userService.hasRoleOrHigher("ADMIN") || courseService.userIsInCourse(loggedUser.getId(), id) ) {
+        Module module = moduleRepository.findById(id).orElseThrow();
+        Course course = module.getCourse();
+        if(userService.hasRoleOrHigher("ADMIN") || courseService.userIsInCourse(loggedUser.getId(), course.getId()) ) {
 
             try {
 
-                Module module = moduleRepository.findById(id).orElseThrow();
                 Blob content = module.getContent();
                 if(content == null) {
 
