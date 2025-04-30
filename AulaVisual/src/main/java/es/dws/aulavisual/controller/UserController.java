@@ -100,7 +100,7 @@ public class UserController {
         try{
             boolean logout = true;
             UserDTO currentUser = (UserDTO) model.getAttribute("user");
-            if(currentUser.role().contains("ADMIN") && id != currentUser.id()) {
+            if(currentUser.role().equals("ADMIN") && id != currentUser.id()) {
 
                 currentUser = userService.findByIdDTO(id);
                 logout = false;

@@ -42,7 +42,7 @@ public class ModuleService {
 
     public ModuleSimpleDTO save(CourseDTO courseDTO, String name, int position, MultipartFile content) {
 
-        // Already protected and sample data service, I'm not touching this
+        // Already protected route and sample data service causing trouble, I'm not touching this // me neither
         Course course = courseService.findById(courseDTO.id());
         Blob blob = null;
         if(content != null) {
@@ -119,8 +119,7 @@ public class ModuleService {
 
     public void delete(ModuleSimpleDTO moduleDTO, long courseId) {
 
-        User admin = userService.getLoggedUser();
-        if(!admin.getRole().contains("ADMIN")) {
+        if(!userService.hasRoleOrHigher("ADMIN")) {
             throw new RuntimeException("No tienes permisos para ejecutar esta acción");
         }
         Module module = moduleRepository.findById(moduleDTO.id()).orElseThrow();
@@ -136,8 +135,7 @@ public class ModuleService {
 
     public boolean positionExists(CourseDTO courseDto, int position) {
 
-        User admin = userService.getLoggedUser();
-        if(!admin.getRole().contains("ADMIN")) {
+        if(!userService.hasRoleOrHigher("ADMIN")) {
             throw new RuntimeException("No tienes permisos para ejecutar esta acción");
         }
         Course course = courseService.findById(courseDto.id());
@@ -146,7 +144,6 @@ public class ModuleService {
 
     public List<Integer> getAvailablePositions(CourseDTO courseDTO) {
 
-        User admin = userService.getLoggedUser();
         if(!userService.hasRoleOrHigher("ADMIN")) {
             throw new RuntimeException("No tienes permisos para ejecutar esta acción");
         }

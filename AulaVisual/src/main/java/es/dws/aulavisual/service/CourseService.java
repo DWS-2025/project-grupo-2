@@ -41,7 +41,6 @@ public class CourseService {
 
     public CourseDTO assignTeacher(long id, CourseDTO courseDTO) {
 
-        // The only way to access this method is via protected endpoints in the API and Controllers
         Course course = courseRepository.findById(courseDTO.id()).orElseThrow();
         User teacher = userService.findById(id);
         if(!teacher.getRole().equals("TEACHER") || teacher.getCourseTeaching() != null) {
@@ -55,8 +54,13 @@ public class CourseService {
 
     public CourseDTO saveDTO(CourseDTO courseDTO) {
 
-        Course course = courseMapper.toDomain(courseDTO);
-        return courseMapper.toDTO(save(course));
+        if(userService.hasRoleOrHigher("ADMIN")){
+
+            Course course = courseMapper.toDomain(courseDTO);
+            return courseMapper.toDTO(save(course));
+        }else{
+            throw new RuntimeException("No tienes permisos para esto");
+        }
     }
 
     public Course save(Course course) {
@@ -117,8 +121,7 @@ public class CourseService {
 
     public void deleteCourse(long courseId) {
 
-        User admin = userService.getLoggedUser();
-        if(!admin.getRole().equals("ADMIN")) {
+        if(!userService.hasRoleOrHigher("ADMIN")) {
             throw new RuntimeException("No tienes permisos para esto");
         }
         Course course = courseRepository.findById(courseId).orElseThrow();
@@ -126,7 +129,6 @@ public class CourseService {
             course.getTeacher().setCourseTeaching(null);
         }
         courseRepository.deleteById(courseId);
-        System.out.println("Hola");
     }
 
     void removeCourseFromTeacher(User teacher, Course course) {
@@ -141,7 +143,6 @@ public class CourseService {
     public ResponseEntity<Object> loadImage(Long id){
 
         // If you no are logged in you can not see any course image (I don't want you to)
-        User loggedUser = userService.getLoggedUser();
         if(!userService.hasRoleOrHigher("USER")) {
             return ResponseEntity.status(401).body("Unauthorized");
         }
@@ -233,9 +234,7 @@ public class CourseService {
 
     public void uploadImage(long courseId, String location, InputStream inputStream, long size) {
 
-        // Only used in rest controller and a protected endpoint but it doesn't harm to check
-        User admin = userService.getLoggedUser();
-        if(!admin.getRole().equals("ADMIN")) {
+        if(!userService.hasRoleOrHigher("ADMIN")) {
             throw new RuntimeException("No tienes permisos para esto");
         }
         Course course = courseRepository.findById(courseId).orElseThrow();
