@@ -45,7 +45,7 @@ public class SubmissionController {
 
             if(userDTO.role().equals("STUDENT")){
 
-                if(courseService.userIsInCourse(userDTO.id(), courseDTO)){
+                if(courseService.userIsInCourse(userDTO.id(), courseDTO.id())){
 
                     model.addAttribute("courseId", courseId);
                     model.addAttribute("courseName", courseDTO.name());
@@ -125,7 +125,7 @@ public class SubmissionController {
 
             if(userDTO.role().equals("TEACHER") && courseDTO.teacher().id().equals(userDTO.id())){
 
-                if(courseService.userIsInCourse(studentDTO.id(), courseDTO)){
+                if(courseService.userIsInCourse(studentDTO.id(), courseDTO.id())){
 
                     if(submissionService.userMadeSubmission(studentDTO.id(), courseDTO.id())){
 
@@ -164,7 +164,7 @@ public class SubmissionController {
             UserDTO student = userService.findByIdDTO(studentId);
             if(user.role().equals("TEACHER") && courseDTO.teacher().id() == user.id()){
 
-                if(courseService.userIsInCourse(student.id(), courseDTO)) {
+                if(courseService.userIsInCourse(student.id(), courseDTO.id())) {
 
                     if(submissionService.userMadeSubmission(student.id(), courseDTO.id())) {
 
@@ -200,7 +200,7 @@ public class SubmissionController {
                 model.addAttribute("message", "No se ha seleccionado un archivo");
                 return "error";
             }
-            if(courseService.userIsInCourse(user.id(), courseDTO)) {
+            if(courseService.userIsInCourse(user.id(), courseDTO.id())) {
 
                 if(!submissionService.userMadeSubmission(user.id(), courseDTO.id())) {
 
@@ -227,7 +227,7 @@ public class SubmissionController {
             CourseDTO courseDTO = courseService.findByIdDTO(courseId);
             UserDTO student = userService.findByIdDTO(studentId);
 
-            if(courseService.userIsInCourse(student.id(), courseDTO)) {
+            if(courseService.userIsInCourse(student.id(), courseDTO.id())) {
 
                 if(submissionService.userMadeSubmission(student.id(), courseDTO.id())) {
 

@@ -92,9 +92,8 @@ public class CourseService {
 
     public CourseDTO findByIdDTO(long id) {
 
-        // Not everyone can see the course
         User user = userService.getLoggedUser();
-        if(userService.hasRoleOrHigher("USER") && (user.getRole().equals("ADMIN") || userIsInCourse(user.getId(), courseMapper.toDTO(findById(id))))) {
+        if(userService.hasRoleOrHigher("USER") && (user.getRole().equals("ADMIN") || userIsInCourse(user.getId(), id))) {
             return courseMapper.toDTO(findById(id));
         }
         throw new RuntimeException("No tienes permisos para esto");
@@ -105,12 +104,12 @@ public class CourseService {
         return courseRepository.findById(id).orElseThrow();
     }
 
-    public boolean userIsInCourse(long userId, CourseDTO courseDTO) {
+    public boolean userIsInCourse(long userId, long courseId) {
 
         User loggedUser = userService.getLoggedUser();
         if(loggedUser.getRole().equals("ADMIN") || loggedUser.getId() == userId) {    //If the user want to see his own course
             User user = userService.findById(userId);
-            Course course = courseRepository.findById(courseDTO.id()).orElseThrow();
+            Course course = courseRepository.findById(courseId).orElseThrow();
             return course.getTeacher().equals(user)|| course.getStudents().contains(user);
         }
         throw new RuntimeException("No tienes permisos para esto");

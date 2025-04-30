@@ -82,24 +82,14 @@ public class CourseManagementController {
     }
 
     @GetMapping("/admin/courses/{courseId}/modules/{id}")
-    public String getModule(@PathVariable long courseId, @PathVariable long id, Model model, @CookieValue(value = "userId", defaultValue = "") String userId) {
+    public String getModule(@PathVariable long courseId, @PathVariable long id, Model model) {
 
         try {
 
-            if(userId.isEmpty()) {
-
-                return "redirect:/login";
-            }
-            CourseDTO courseDTO = courseService.findByIdDTO(courseId);
-            UserDTO user = userService.findByIdDTO(Long.parseLong(userId));
-            if(user.role().equals("ADMIN")) {
-
-                ModuleSimpleDTO module = moduleService.findById(id);
-                model.addAttribute("courseId", courseId);
-                model.addAttribute("module", module);
-                return "courses-management/modulePreview";
-            }
-            return "redirect:/";
+            ModuleSimpleDTO module = moduleService.findById(id);
+            model.addAttribute("courseId", courseId);
+            model.addAttribute("module", module);
+            return "courses-management/modulePreview";
         }catch (NoSuchElementException e){
 
             model.addAttribute("message", e.getMessage());
@@ -108,26 +98,16 @@ public class CourseManagementController {
     }
 
     @GetMapping("/course/{courseId}/module/{id}/content")
-    public ResponseEntity <Object> getModuleContent(@PathVariable long courseId, @PathVariable long id, @CookieValue(value = "userId", defaultValue = "") String userId) {
+    public ResponseEntity <Object> getModuleContent(@PathVariable long courseId, @PathVariable long id, Model model) {
 
         try{
-            if(userId.isEmpty()) {
 
-                return ResponseEntity.status(401).body("Unauthorized");
-            }
-
-            UserDTO user = userService.findByIdDTO(Long.parseLong(userId));
+            UserDTO user = (UserDTO) model.getAttribute("user");
             CourseDTO course = courseService.findByIdDTO(courseId);
 
             ModuleSimpleDTO module = moduleService.findById(id);
+            return moduleService.viewModule(module.id());
 
-            if(user.role().equals("ADMIN") || course.teacher().id().equals(user.id()) || courseService.userIsInCourse(user.id(), course)) {
-
-                return moduleService.viewModule(module.id());
-            }else{
-
-                return ResponseEntity.status(403).body("Unauthorized");
-            }
         } catch (NoSuchElementException e) {
 
             return ResponseEntity.status(404).body("Error: " + e.getMessage());
@@ -379,7 +359,7 @@ public class CourseManagementController {
             }
             UserDTO student = userService.findByIdDTO(studentId);
             CourseDTO course = courseService.findByIdDTO(courseId);
-            if(courseService.userIsInCourse(student.id(), course)) {
+            if(courseService.userIsInCourse(student.id(), course.id())) {
 
                 model.addAttribute("message", "El estudiante ya está en el curso");
                 return "error";

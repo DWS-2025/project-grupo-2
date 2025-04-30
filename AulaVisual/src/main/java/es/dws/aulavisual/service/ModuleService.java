@@ -66,10 +66,12 @@ public class ModuleService {
     public ModuleSimpleDTO findById(long id) {
 
         User loggedUser = userService.getLoggedUser();
-        if(!loggedUser.getRole().contains("USER")) {
-            throw new RuntimeException("Primera debes iniciar sesion");
+        Module module = moduleRepository.findById(id).orElseThrow();
+        Course courseOfModule = module.getCourse();
+        if(!userService.hasRoleOrHigher("ADMIN") && !courseService.userIsInCourse(loggedUser.getId(),courseOfModule.getId())) {
+            throw new RuntimeException("No tienes permisos para ejecutar esta acción");
         }
-        return moduleMapper.toSimpleDTO(moduleRepository.findById(id).orElseThrow());
+        return moduleMapper.toSimpleDTO(module);
     }
 
     public List<ModuleSimpleDTO> getModulesByCourse(CourseDTO courseDTO) {
@@ -78,7 +80,7 @@ public class ModuleService {
         if(!userService.hasRoleOrHigher("USER") ) {
             throw new RuntimeException("Primera debes iniciar sesion");
         }
-        if(!courseService.userIsInCourse(loggedUser.getId(), courseDTO) && !userService.hasRoleOrHigher("ADMIN")) {
+        if(!courseService.userIsInCourse(loggedUser.getId(), courseDTO.id()) && !userService.hasRoleOrHigher("ADMIN")) {
             throw new RuntimeException("No tienes permisos para ver este curso");
         }
         Course course = courseService.findById(courseDTO.id());
@@ -88,30 +90,31 @@ public class ModuleService {
     public ResponseEntity<Object> viewModule(long id) {
 
         User loggedUser = userService.getLoggedUser();
-        if(!loggedUser.getRole().contains("USER")) {
-            throw new RuntimeException("Primera debes iniciar sesion");
-        }
-        try {
+        if(userService.hasRoleOrHigher("ADMIN") || courseService.userIsInCourse(loggedUser.getId(), id) ) {
 
-            Module module = moduleRepository.findById(id).orElseThrow();
-            Blob content = module.getContent();
-            if(content == null) {
+            try {
 
-                ClassPathResource resource = new ClassPathResource("static/md/default.md");
-                byte [] imageBytes = resource.getInputStream().readAllBytes();
-                return ResponseEntity.ok().header(HttpHeaders.CONTENT_TYPE, "text/markdown").body(imageBytes);
-            }else{
+                Module module = moduleRepository.findById(id).orElseThrow();
+                Blob content = module.getContent();
+                if(content == null) {
 
-                Resource file = new InputStreamResource(content.getBinaryStream());
-                return ResponseEntity.ok().header(HttpHeaders.CONTENT_TYPE, "text/markdown")
-                        .contentLength(content.length()).body(file);
+                    ClassPathResource resource = new ClassPathResource("static/md/default.md");
+                    byte[] imageBytes = resource.getInputStream().readAllBytes();
+                    return ResponseEntity.ok().header(HttpHeaders.CONTENT_TYPE, "text/markdown").body(imageBytes);
+                }else {
+
+                    Resource file = new InputStreamResource(content.getBinaryStream());
+                    return ResponseEntity.ok().header(HttpHeaders.CONTENT_TYPE, "text/markdown")
+                            .contentLength(content.length()).body(file);
+                }
+
+            }catch (Exception e) {
+
+                System.out.println("Error loading content: " + e.getMessage());
+                return ResponseEntity.notFound().build();
             }
-
-        } catch (Exception e) {
-
-            System.out.println("Error loading content: " + e.getMessage());
-            return ResponseEntity.notFound().build();
         }
+        throw new RuntimeException("Primera debes iniciar sesion");
     }
 
     public void delete(ModuleSimpleDTO moduleDTO, long courseId) {
@@ -199,5 +202,11 @@ public class ModuleService {
         module.setContentLocation(location);
         module.setContent(BlobProxy.generateProxy(inputStream, size));
         moduleRepository.save(module);
+    }
+
+    public Integer getFirstModuleByCourse(long courseId) {
+
+
+        return moduleRepository.findFirstModuleId(courseId);
     }
 }

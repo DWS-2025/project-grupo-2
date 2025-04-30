@@ -261,12 +261,12 @@ public class UserService {
 
     public UserDTO findByIdDTO(long id) {
 
-        User admin = getLoggedUser();
-        if(admin.getRole().equals("ADMIN") || admin.getId() == id) {
+        User logguedUser = getLoggedUser();
+        if(hasRoleOrHigher("ADMIN")) {
 
             return userMapper.toDTO(findById(id));
         }
-        return userMapper.toDTO(findById(admin.getId()));
+        return userMapper.toDTO(findById(logguedUser.getId()));
     }
 
     User findById(long id) {
