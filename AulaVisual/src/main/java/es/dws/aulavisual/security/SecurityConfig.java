@@ -96,6 +96,7 @@ public class SecurityConfig {
                     .requestMatchers(HttpMethod.POST,"/api/books/").hasRole("USER")
                     .requestMatchers(HttpMethod.PUT,"/api/books/**").hasRole("USER")
                     .requestMatchers(HttpMethod.DELETE,"/api/books/**").hasRole("ADMIN")
+					.requestMatchers(HttpMethod.GET, "/api/users/**").hasRole("ADMIN")
 					// PUBLIC ENDPOINTS
 					.anyRequest().permitAll()
 			);

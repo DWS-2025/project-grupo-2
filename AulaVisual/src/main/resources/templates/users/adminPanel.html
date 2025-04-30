@@ -70,6 +70,40 @@
     let currentPage = 0;
     let totalPages = 0;
 
+    function authenticateAndLoadUsers(page) {
+        const loginUrl = new URL('/api/auth/login/', window.location.origin);
+
+        // Autenticación
+        fetch(loginUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                username: "asd", // Cambia "username" para que coincida con la clave esperada por el backend
+                password: "asd"
+            })
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Error al autenticar');
+                }
+                return response.json();
+            })
+            .then(() => {
+                // Si la autenticación es exitosa, carga los usuarios
+                loadUsers(page);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    }
+
+    function eliminarCookie(nombre) {
+        document.cookie = `${nombre}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+        console.log("Elininando cookie: " + nombre);
+    }
+
     function loadUsers(page) {
         const role = document.getElementById('role').value;
         const campus = document.getElementById('campus').value;
@@ -108,6 +142,8 @@
                 document.getElementById('pageInfo').innerText = `Página ${currentPage + 1} de ${totalPages}`;
                 document.getElementById('prevPage').disabled = data.first;
                 document.getElementById('nextPage').disabled = data.last;
+                eliminarCookie('AuthToken');
+                eliminarCookie('RefreshToken');
             });
     }
 
@@ -131,7 +167,7 @@
     });
 
     // load the first page of users
-    loadUsers(currentPage);
+    authenticateAndLoadUsers(currentPage);
 </script>
 </body>
 </html>
