@@ -54,8 +54,13 @@ public class CourseService {
 
     public CourseDTO saveDTO(CourseDTO courseDTO) {
 
-        Course course = courseMapper.toDomain(courseDTO);
-        return courseMapper.toDTO(save(course));
+        if(userService.hasRoleOrHigher("ADMIN")){
+
+            Course course = courseMapper.toDomain(courseDTO);
+            return courseMapper.toDTO(save(course));
+        }else{
+            throw new RuntimeException("No tienes permisos para esto");
+        }
     }
 
     public Course save(Course course) {
@@ -65,25 +70,37 @@ public class CourseService {
 
     public void addUserToCourse(long courseId, UserDTO userDTO) {
 
-        // Course course = courseMapper.toDomain(courseDTO);
+        // The only way to access this method is via protected endpoints in the API and Controllers
+        if(userDTO.role().equals("ADMIN")) {
+            throw new IllegalArgumentException("No puedes añadir un admin a un curso");
+        }
+        if(userDTO.role().equals("TEACHER")) {
+            throw new IllegalArgumentException("No puedes añadir un profesor a un curso");
+        }
         Course course = findById(courseId);
-        //User user = userMapper.toDomain(userDTO);
         User user = userService.findById(userDTO.id());
         course.getStudents().add(user);
-        //user.getCourses().add(course);
-        //userService.save(user);
         courseRepository.save(course);
     }
 
 
     public List<CourseDTO> getCourses() {
 
-        return courseMapper.toDTOs(courseRepository.findAll());
+        // Only the admin is able to see all the courses
+        User admin = userService.getLoggedUser();
+        if(admin.getRole().equals("ADMIN")) {
+            return courseMapper.toDTOs(courseRepository.findAll());
+        }
+        throw new RuntimeException("No tienes permisos para ver los cursos");
     }
 
     public CourseDTO findByIdDTO(long id) {
 
-        return courseMapper.toDTO(findById(id));
+        User user = userService.getLoggedUser();
+        if(userService.hasRoleOrHigher("USER") && (user.getRole().equals("ADMIN") || userIsInCourse(user.getId(), id))) {
+            return courseMapper.toDTO(findById(id));
+        }
+        throw new RuntimeException("No tienes permisos para esto");
     }
 
     Course findById(long id) {
@@ -91,31 +108,44 @@ public class CourseService {
         return courseRepository.findById(id).orElseThrow();
     }
 
-    public boolean userIsInCourse(UserDTO userDTO, CourseDTO courseDTO) {
+    public boolean userIsInCourse(long userId, long courseId) {
 
-        User user = userService.findById(userDTO.id());
-        Course course = courseRepository.findById(courseDTO.id()).orElseThrow();
-        return course.getTeacher().equals(user)|| course.getStudents().contains(user);
+        User loggedUser = userService.getLoggedUser();
+        if(loggedUser.getRole().equals("ADMIN") || loggedUser.getId() == userId) {    //If the user want to see his own course
+            User user = userService.findById(userId);
+            Course course = courseRepository.findById(courseId).orElseThrow();
+            return course.getTeacher().equals(user)|| course.getStudents().contains(user);
+        }
+        throw new RuntimeException("No tienes permisos para esto");
     }
 
     public void deleteCourse(long courseId) {
 
+        if(!userService.hasRoleOrHigher("ADMIN")) {
+            throw new RuntimeException("No tienes permisos para esto");
+        }
         Course course = courseRepository.findById(courseId).orElseThrow();
-//      userService.removeAllUsersFromCourse(course);
         if (course.getTeacher() != null) {
             course.getTeacher().setCourseTeaching(null);
         }
         courseRepository.deleteById(courseId);
-        System.out.println("Hola");
     }
 
     void removeCourseFromTeacher(User teacher, Course course) {
 
+        User admin = userService.getLoggedUser();
+        if(!admin.getRole().equals("ADMIN")) {
+            throw new RuntimeException("No tienes permisos para esto");
+        }
         teacher.setCourseTeaching(null);
     }
 
     public ResponseEntity<Object> loadImage(Long id){
 
+        // If you no are logged in you can not see any course image (I don't want you to)
+        if(!userService.hasRoleOrHigher("USER")) {
+            return ResponseEntity.status(401).body("Unauthorized");
+        }
         Course course = courseRepository.findById(id).orElseThrow();
         try {
 
@@ -145,29 +175,50 @@ public class CourseService {
 
     public List<CourseDTO> courseOfUser(Long id) {
 
+        User loggedUser = userService.getLoggedUser();
+        if(!loggedUser.getRole().equals("USER")) {
+            throw new RuntimeException("Primero debes iniciar sesión");
+        }
         User user = userService.findById(id);
         UserDTO userDTO = userMapper.toDTO(user);
         List<Course> normalCourses = courseRepository.searchCoursesByStudentsContaining(user);
-        normalCourses.addAll(courseOfTeacher(userDTO));
+        // This may be right (I think)
+        if (user.getRole().equals("TEACHER")) {
+            normalCourses.removeAll(courseOfTeacher(userDTO));
+        }
+        // ToDTOs is broken
         return courseMapper.toDTOs(normalCourses);
     }
 
     public List<CourseDTO> notCourseOfUser(UserDTO userDTO) {
 
+        User loggedUser = userService.getLoggedUser();
+        if(!loggedUser.getRole().equals("USER")) {
+            throw new RuntimeException("Primero debes iniciar sesión");
+        }
         User user = userService.findById(userDTO.id());
         List<Course> notCourses = courseRepository.searchCoursesByStudentsNotContaining(user);
-        notCourses.removeAll(courseOfTeacher(userDTO));
+        if (user.getRole().equals("TEACHER")) {
+            notCourses.removeAll(courseOfTeacher(userDTO));
+        }
+        // ToDTOs is broken
         return courseMapper.toDTOs(notCourses);
     }
 
     List<Course> courseOfTeacher(UserDTO userDTO) {
 
+        // Already checked in the functions that call this one
         User user = userService.findById(userDTO.id());
         return courseRepository.searchCoursesByTeacherId(user.getId());
     }
 
     public List<CourseInfoDTO> courseInfoOfUser(Long id) {
 
+        //Only used in rest controller
+        User loggedUser = userService.getLoggedUser();
+        if(loggedUser.getRole().equals("USER")) {
+            throw new RuntimeException("Primero debes iniciar sesión");
+        }
         User user = userService.findById(id);
         List<Course> normalCourses = courseRepository.searchCoursesByStudentsContaining(user);
         return courseMapper.toInfoDTOs(normalCourses);
@@ -175,6 +226,7 @@ public class CourseService {
 
     public List<UserSimpleDTO> getAllStudentsfromCourse(Long id) {
 
+        //Only used in rest controller
         Course course = courseRepository.findById(id).orElseThrow();
         List<User> students = course.getStudents();
         return userMapper.toSimpleDTOs(students);
@@ -182,6 +234,9 @@ public class CourseService {
 
     public void uploadImage(long courseId, String location, InputStream inputStream, long size) {
 
+        if(!userService.hasRoleOrHigher("ADMIN")) {
+            throw new RuntimeException("No tienes permisos para esto");
+        }
         Course course = courseRepository.findById(courseId).orElseThrow();
         course.setImage(location);
         course.setImageCourse(BlobProxy.generateProxy(inputStream, size));
@@ -191,7 +246,7 @@ public class CourseService {
 public boolean updateRole(UserDTO userDTO, int newRole) {
 
         User admin = userService.getLoggedUser();
-        if(admin.getRole().contains("ADMIN") && admin.getId() != userDTO.id()) {
+        if(admin.getRole().equals("ADMIN") && admin.getId() != userDTO.id()) {
 
             User user = userService.findById(userDTO.id());
             if(newRole >= 0 && newRole <= 2) {
@@ -218,6 +273,7 @@ public boolean updateRole(UserDTO userDTO, int newRole) {
 
     public UserDTO updateCourseRole(UserDTO userDTO, int newRole, UserCreationDTO userCreationDTO){
 
+        //Only used in rest controller
         if(updateRole(userDTO, newRole)){
 
             for(int i = 0; i < userCreationDTO.userDTO().courses().size(); i++) {

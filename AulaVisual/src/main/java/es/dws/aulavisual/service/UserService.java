@@ -47,6 +47,19 @@ public class UserService {
         return userRepository.findByUserName(SecurityContextHolder.getContext().getAuthentication().getName()).orElseThrow();
     }
 
+    boolean hasRoleOrHigher(String requiredRole) {
+        User loggedUser = getLoggedUser();
+        List<String> roleHierarchy = List.of("ANONYMOUS", "USER", "TEACHER", "ADMIN"); // from least to most privileged
+        int userRoleIndex = roleHierarchy.indexOf(loggedUser.getRole());
+        int requiredRoleIndex = roleHierarchy.indexOf(requiredRole);
+
+        if (userRoleIndex == -1 || requiredRoleIndex == -1) {
+            throw new IllegalArgumentException("Rol no válido");
+        }
+
+        return userRoleIndex >= requiredRoleIndex;
+    }
+
     public UserDTO saveDTO(String name, String surname, String userName, String password, String campus, String roles) {
 
         String passwordHash = passwordEncoder.encode(password);
@@ -248,12 +261,12 @@ public class UserService {
 
     public UserDTO findByIdDTO(long id) {
 
-        User admin = getLoggedUser();
-        if(admin.getRole().equals("ADMIN") || admin.getId() == id) {
+        User logguedUser = getLoggedUser();
+        if(hasRoleOrHigher("ADMIN")) {
 
             return userMapper.toDTO(findById(id));
         }
-        return userMapper.toDTO(findById(admin.getId()));
+        return userMapper.toDTO(findById(logguedUser.getId()));
     }
 
     User findById(long id) {

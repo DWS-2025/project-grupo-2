@@ -4,7 +4,7 @@
 </head>
 <div id="container">
   <script>
-    fetch("/course/{{courseId}}/module/{{id}}/content")
+    fetch("/courses/{{courseId}}/module/{{id}}/content")
             .then(response => response.text())
             .then(text => {
               document.getElementById('container').innerHTML = marked.parse(text);

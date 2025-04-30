@@ -31,20 +31,14 @@ public class MainCoursesController {
     }
 
     @GetMapping("/courses")
-    public String coursesview(Model model, @CookieValue(value = "userId", defaultValue = "") String userId) {
+    public String coursesview(Model model) {
 
         try {
-            if(userId.isEmpty()) {
-
-                return "redirect:/login";
-            }
-            UserDTO user = userService.findByIdDTO(Long.parseLong(userId));
+            UserDTO user = (UserDTO) model.getAttribute("user");
             List <CourseDTO> userCourses = courseService.courseOfUser(user.id());
             List <CourseDTO> availableCourses = courseService.notCourseOfUser(user);
 
 
-            model.addAttribute("user", user);
-            model.addAttribute("userId", Long.parseLong(userId));
             model.addAttribute("userCourses", userCourses);
             model.addAttribute("availableCourses", availableCourses);
             return "courses-user/courses";
@@ -61,8 +55,8 @@ public class MainCoursesController {
         try{
 
             CourseDTO courseDTO = courseService.findByIdDTO(id);
-            ModuleSimpleDTO module = moduleService.findById(id);
-            return "redirect:/courses/" + id + "/module/" + module.id();
+            String redirect = "redirect:/courses/" + id + "/module/" + moduleService.getFirstModuleByCourse(courseDTO.id());
+            return redirect;
         }catch (NoSuchElementException e) {
             model.addAttribute("message", e.getMessage());
             return "error";
@@ -71,17 +65,14 @@ public class MainCoursesController {
     }
 
     @GetMapping("/courses/{id}/module/{moduleId}")
-    public String usersCoursePanel(Model model, @CookieValue(value = "userId", defaultValue = "") String userId, @PathVariable long id, @PathVariable long moduleId) {
+    public String usersCoursePanel(Model model, @PathVariable long id, @PathVariable long moduleId) {
 
         try {
-            if(userId.isEmpty()) {
 
-                return "redirect:/login";
-            }
             CourseDTO courseDTO = courseService.findByIdDTO(id);
-            UserDTO user = userService.findByIdDTO(Long.parseLong(userId));
+            UserDTO user = (UserDTO) model.getAttribute("user");
             ModuleSimpleDTO module = moduleService.findById(moduleId);
-            if(courseService.userIsInCourse(user, courseDTO)) {
+            if(courseService.userIsInCourse(user.id(), courseDTO.id())) {
 
                 List <ModuleSimpleDTO> modules = moduleService.getModulesByCourse(courseDTO);
                 model.addAttribute("modules", modules);

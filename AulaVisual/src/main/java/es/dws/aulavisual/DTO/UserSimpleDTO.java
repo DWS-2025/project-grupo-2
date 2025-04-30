@@ -8,7 +8,7 @@ public record UserSimpleDTO(
         String realName,
         String surname,
         String userName,
-        Integer role,
+        String role,
         String campus,
         List<CourseSimpleDTO> coursesTeaching
 

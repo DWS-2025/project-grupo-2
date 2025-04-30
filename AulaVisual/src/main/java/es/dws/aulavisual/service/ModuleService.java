@@ -8,6 +8,7 @@ import es.dws.aulavisual.DTO.ModuleSimpleDTO;
 import es.dws.aulavisual.Mapper.ModuleMapper;
 import es.dws.aulavisual.model.Course;
 import es.dws.aulavisual.model.Module;
+import es.dws.aulavisual.model.User;
 import es.dws.aulavisual.repository.ModuleRepository;
 import org.hibernate.engine.jdbc.BlobProxy;
 import org.springframework.core.io.ClassPathResource;
@@ -30,15 +31,18 @@ public class ModuleService {
     private final ModuleRepository moduleRepository;
     private final CourseService courseService;
     private final ModuleMapper moduleMapper;
+    private final UserService userService;
 
-    public ModuleService(ModuleRepository moduleRepository, CourseService courseService, ModuleMapper moduleMapper) {
+    public ModuleService(ModuleRepository moduleRepository, CourseService courseService, ModuleMapper moduleMapper, UserService userService) {
         this.moduleRepository = moduleRepository;
         this.courseService = courseService;
         this.moduleMapper = moduleMapper;
+        this.userService = userService;
     }
 
     public ModuleSimpleDTO save(CourseDTO courseDTO, String name, int position, MultipartFile content) {
 
+        // Already protected route and sample data service causing trouble, I'm not touching this // me neither
         Course course = courseService.findById(courseDTO.id());
         Blob blob = null;
         if(content != null) {
@@ -50,6 +54,7 @@ public class ModuleService {
 
     private Blob transformImage(MultipartFile image) {
 
+        //Only used in the previous method
         try {
            return BlobProxy.generateProxy(image.getInputStream(), image.getSize());
         }catch (IOException e) {
@@ -60,42 +65,63 @@ public class ModuleService {
 
     public ModuleSimpleDTO findById(long id) {
 
-        return moduleMapper.toSimpleDTO(moduleRepository.findById(id).orElseThrow());
+        User loggedUser = userService.getLoggedUser();
+        Module module = moduleRepository.findById(id).orElseThrow();
+        Course courseOfModule = module.getCourse();
+        if(!userService.hasRoleOrHigher("ADMIN") && !courseService.userIsInCourse(loggedUser.getId(),courseOfModule.getId())) {
+            throw new RuntimeException("No tienes permisos para ejecutar esta acción");
+        }
+        return moduleMapper.toSimpleDTO(module);
     }
 
     public List<ModuleSimpleDTO> getModulesByCourse(CourseDTO courseDTO) {
 
+        User loggedUser = userService.getLoggedUser();
+        if(!userService.hasRoleOrHigher("USER") ) {
+            throw new RuntimeException("Primera debes iniciar sesion");
+        }
+        if(!courseService.userIsInCourse(loggedUser.getId(), courseDTO.id()) && !userService.hasRoleOrHigher("ADMIN")) {
+            throw new RuntimeException("No tienes permisos para ver este curso");
+        }
         Course course = courseService.findById(courseDTO.id());
         return moduleMapper.toSimpleDTOs(moduleRepository.findByCourse(course, Sort.by(Sort.Direction.ASC, "position")));
     }
 
     public ResponseEntity<Object> viewModule(long id) {
 
-        try {
+        User loggedUser = userService.getLoggedUser();
+        if(userService.hasRoleOrHigher("ADMIN") || courseService.userIsInCourse(loggedUser.getId(), id) ) {
 
-            Module module = moduleRepository.findById(id).orElseThrow();
-            Blob content = module.getContent();
-            if(content == null) {
+            try {
 
-                ClassPathResource resource = new ClassPathResource("static/md/default.md");
-                byte [] imageBytes = resource.getInputStream().readAllBytes();
-                return ResponseEntity.ok().header(HttpHeaders.CONTENT_TYPE, "text/markdown").body(imageBytes);
-            }else{
+                Module module = moduleRepository.findById(id).orElseThrow();
+                Blob content = module.getContent();
+                if(content == null) {
 
-                Resource file = new InputStreamResource(content.getBinaryStream());
-                return ResponseEntity.ok().header(HttpHeaders.CONTENT_TYPE, "text/markdown")
-                        .contentLength(content.length()).body(file);
+                    ClassPathResource resource = new ClassPathResource("static/md/default.md");
+                    byte[] imageBytes = resource.getInputStream().readAllBytes();
+                    return ResponseEntity.ok().header(HttpHeaders.CONTENT_TYPE, "text/markdown").body(imageBytes);
+                }else {
+
+                    Resource file = new InputStreamResource(content.getBinaryStream());
+                    return ResponseEntity.ok().header(HttpHeaders.CONTENT_TYPE, "text/markdown")
+                            .contentLength(content.length()).body(file);
+                }
+
+            }catch (Exception e) {
+
+                System.out.println("Error loading content: " + e.getMessage());
+                return ResponseEntity.notFound().build();
             }
-
-        } catch (Exception e) {
-
-            System.out.println("Error loading content: " + e.getMessage());
-            return ResponseEntity.notFound().build();
         }
+        throw new RuntimeException("Primera debes iniciar sesion");
     }
 
     public void delete(ModuleSimpleDTO moduleDTO, long courseId) {
 
+        if(!userService.hasRoleOrHigher("ADMIN")) {
+            throw new RuntimeException("No tienes permisos para ejecutar esta acción");
+        }
         Module module = moduleRepository.findById(moduleDTO.id()).orElseThrow();
         Course course = module.getCourse();
         if (courseId != course.getId()){
@@ -109,12 +135,18 @@ public class ModuleService {
 
     public boolean positionExists(CourseDTO courseDto, int position) {
 
+        if(!userService.hasRoleOrHigher("ADMIN")) {
+            throw new RuntimeException("No tienes permisos para ejecutar esta acción");
+        }
         Course course = courseService.findById(courseDto.id());
         return moduleRepository.existsByCourseAndPosition(course, position);
     }
 
     public List<Integer> getAvailablePositions(CourseDTO courseDTO) {
 
+        if(!userService.hasRoleOrHigher("ADMIN")) {
+            throw new RuntimeException("No tienes permisos para ejecutar esta acción");
+        }
         Course course = courseService.findById(courseDTO.id());
         Integer maxPosition = moduleRepository.findLastModuleId(course.getId());
         List<Integer> positions = new ArrayList<>();
@@ -146,21 +178,32 @@ public class ModuleService {
 
     public List<ModuleSimpleDTO> getModulesByCourseId(Long id){
 
+        User loggedUser = userService.getLoggedUser();
+        if(!loggedUser.getRole().contains("USER")) {
+            throw new RuntimeException("Primera debes iniciar sesion");
+        }
         Course course = courseService.findById(id);
         return moduleMapper.toSimpleDTOs(moduleRepository.findByCourse(course, Sort.by(Sort.Direction.ASC, "position")));
     }
 
     public ModuleSimpleDTO saveDTO(Long courseId, ModuleSimpleDTO moduleSimpleDTO) {
 
-
+        //Only used in the REST controller
         return save(courseService.findByIdDTO(courseId), moduleSimpleDTO.name(), moduleSimpleDTO.position(), null);
     }
 
     public void uploadModuleContent(long id, String location, InputStream inputStream, long size) {
 
+        //Only used in the REST controller
         Module module = moduleRepository.findById(id).orElseThrow();
         module.setContentLocation(location);
         module.setContent(BlobProxy.generateProxy(inputStream, size));
         moduleRepository.save(module);
+    }
+
+    public Integer getFirstModuleByCourse(long courseId) {
+
+
+        return moduleRepository.findFirstModuleId(courseId);
     }
 }

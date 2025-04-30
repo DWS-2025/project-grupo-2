@@ -37,25 +37,20 @@ public class CourseManagementController {
     }
 
     @GetMapping("/admin/courses")
-    public String manageCourses(Model model, @CookieValue(value = "userId", defaultValue = "") String userId) {
+    public String manageCourses(Model model) {
 
         try {
-            if(userId.isEmpty()) {
 
-                return "redirect:/login";
-            }
+            UserDTO user = (UserDTO) model.getAttribute("user");
 
-            UserDTO user = userService.findByIdDTO(Long.parseLong(userId));
-            if(user.role().equals("ADMIN")) {
+            model.addAttribute("admin", user.realName());
+            model.addAttribute("userId", user.id());
+            model.addAttribute("availableTeachers", userService.getAvaliableTeachers());
+            List <CourseDTO> courses = courseService.getCourses();
+            model.addAttribute("courses", courses);
+            return "courses-management/manageCourses";
 
-                model.addAttribute("admin", user.realName());
-                model.addAttribute("userId", Long.parseLong(userId));
-                model.addAttribute("availableTeachers", userService.getAvaliableTeachers());
-                List <CourseDTO> courses = courseService.getCourses();
-                model.addAttribute("courses", courses);
-                return "courses-management/manageCourses";
-            }
-            return "redirect:/";
+
 
         }catch (NoSuchElementException e){
 
@@ -65,26 +60,19 @@ public class CourseManagementController {
     }
 
     @GetMapping("/admin/courses/{id}/modules")
-    public String getModules(Model model, @PathVariable long id, @CookieValue(value = "userId", defaultValue = "") String userId) {
+    public String getModules(Model model, @PathVariable long id) {
 
         try{
 
-            if(userId.isEmpty()) {
-
-                return "redirect:/login";
-            }
             CourseDTO courseDTO = courseService.findByIdDTO(id);
-            UserDTO user = userService.findByIdDTO(Long.parseLong(userId));
-            if(user.role().equals("ADMIN")) {
+            UserDTO user = (UserDTO) model.getAttribute("user");
 
-                model.addAttribute("courseName", courseDTO.name());
-                model.addAttribute("courseId", id);
-                model.addAttribute("userId", Long.parseLong(userId));
-                model.addAttribute("admin", user.realName());
-                model.addAttribute("modules", moduleService.getModulesByCourse(courseDTO));
-                return "courses-management/modules";
-            }
-            return "redirect:/";
+            model.addAttribute("courseName", courseDTO.name());
+            model.addAttribute("courseId", id);
+            model.addAttribute("userId", user.id());
+            model.addAttribute("admin", user.realName());
+            model.addAttribute("modules", moduleService.getModulesByCourse(courseDTO));
+            return "courses-management/modules";
 
         }catch (NoSuchElementException e){
 
@@ -94,24 +82,14 @@ public class CourseManagementController {
     }
 
     @GetMapping("/admin/courses/{courseId}/modules/{id}")
-    public String getModule(@PathVariable long courseId, @PathVariable long id, Model model, @CookieValue(value = "userId", defaultValue = "") String userId) {
+    public String getModule(@PathVariable long courseId, @PathVariable long id, Model model) {
 
         try {
 
-            if(userId.isEmpty()) {
-
-                return "redirect:/login";
-            }
-            CourseDTO courseDTO = courseService.findByIdDTO(courseId);
-            UserDTO user = userService.findByIdDTO(Long.parseLong(userId));
-            if(user.role().equals("ADMIN")) {
-
-                ModuleSimpleDTO module = moduleService.findById(id);
-                model.addAttribute("courseId", courseId);
-                model.addAttribute("module", module);
-                return "courses-management/modulePreview";
-            }
-            return "redirect:/";
+            ModuleSimpleDTO module = moduleService.findById(id);
+            model.addAttribute("courseId", courseId);
+            model.addAttribute("module", module);
+            return "courses-management/modulePreview";
         }catch (NoSuchElementException e){
 
             model.addAttribute("message", e.getMessage());
@@ -119,27 +97,17 @@ public class CourseManagementController {
         }
     }
 
-    @GetMapping("/course/{courseId}/module/{id}/content")
-    public ResponseEntity <Object> getModuleContent(@PathVariable long courseId, @PathVariable long id, @CookieValue(value = "userId", defaultValue = "") String userId) {
+    @GetMapping("/courses/{courseId}/module/{id}/content")
+    public ResponseEntity <Object> getModuleContent(@PathVariable long courseId, @PathVariable long id, Model model) {
 
         try{
-            if(userId.isEmpty()) {
 
-                return ResponseEntity.status(401).body("Unauthorized");
-            }
-
-            UserDTO user = userService.findByIdDTO(Long.parseLong(userId));
+            UserDTO user = (UserDTO) model.getAttribute("user");
             CourseDTO course = courseService.findByIdDTO(courseId);
 
             ModuleSimpleDTO module = moduleService.findById(id);
+            return moduleService.viewModule(module.id());
 
-            if(user.role().equals("ADMIN") || course.teacher().id().equals(user.id()) || courseService.userIsInCourse(user, course)) {
-
-                return moduleService.viewModule(module.id());
-            }else{
-
-                return ResponseEntity.status(403).body("Unauthorized");
-            }
         } catch (NoSuchElementException e) {
 
             return ResponseEntity.status(404).body("Error: " + e.getMessage());
@@ -147,20 +115,10 @@ public class CourseManagementController {
     }
 
     @PostMapping("/admin/courses/{courseId}/delete")
-    public String deleteCourse(@PathVariable long courseId, @CookieValue(value = "userId", defaultValue = "") String userId, Model model) {
+    public String deleteCourse(@PathVariable long courseId, Model model) {
 
         try {
 
-            if(userId.isEmpty()) {
-
-                return "redirect:/login";
-            }
-//            UserDTO user = userService.findByIdDTO(Long.parseLong(userId));
-//            if(user.role() != 0) {
-//
-//                return "redirect:/";
-//            }
-            //CourseDTO course = courseService.findByIdDTO(courseId);
             courseService.deleteCourse(courseId);
             return "redirect:/admin/courses";
         }catch (NoSuchElementException e) {
@@ -171,21 +129,11 @@ public class CourseManagementController {
     }
 
     @PostMapping("/admin/courses/{courseId}/module/{id}/delete")
-    public String deleteModule(Model model, @PathVariable long courseId, @PathVariable long id, @CookieValue(value = "userId", defaultValue = "") String userId) {
+    public String deleteModule(Model model, @PathVariable long courseId, @PathVariable long id) {
 
         try {
-            if(userId.isEmpty()) {
 
-                return "redirect:/login";
-            }
-            UserDTO user = userService.findByIdDTO(Long.parseLong(userId));
-            if(user.role().equals("ADMIN")) {
-
-                return "redirect:/";
-            }
-            //CourseDTO courseDTO = courseService.findByIdDTO(courseId);
             ModuleSimpleDTO module = moduleService.findById(id);
-
             moduleService.delete(module, courseId);
             return "redirect:/admin/courses/{courseId}/modules";
         }catch (NoSuchElementException e) {
@@ -196,25 +144,16 @@ public class CourseManagementController {
     }
 
     @GetMapping("/admin/courses/addCourse")
-    public String addCourse(@CookieValue(value = "userId", defaultValue = "") String userId, Model model) {
+    public String addCourse(Model model) {
 
         try {
-            if(userId.isEmpty()) {
 
-                return "redirect:/login";
-            }
-            UserDTO user = userService.findByIdDTO(Long.parseLong(userId));
-            if(user.role().equals("ADMIN")) {
-
-                return "redirect:/";
-            }
             if(userService.getAvaliableTeachers().isEmpty()) {
 
                 model.addAttribute("message", "No hay profesores disponibles");
                 return "error";
             }
             model.addAttribute("availableTeachers", userService.getAvaliableTeachers());
-            model.addAttribute("userId", Long.parseLong(userId));
             return "courses-management/addCourse";
         }catch (NoSuchElementException e) {
 
@@ -224,21 +163,13 @@ public class CourseManagementController {
     }
 
     @PostMapping("/admin/courses/{id}/assignTeacher")
-    public String assignTeacher(@PathVariable long id, @RequestParam long teacherId, Model model, @CookieValue(value = "userId", defaultValue = "") String userId) {
+    public String assignTeacher(@PathVariable long id, @RequestParam long teacherId, Model model) {
 
         try {
-            if(userId.isEmpty()) {
 
-                return "redirect:/login";
-            }
-            UserDTO user = userService.findByIdDTO(Long.parseLong(userId));
-            if(user.role().equals("ADMIN")) {
-
-                return "redirect:/";
-            }
             CourseDTO courseDTO = courseService.findByIdDTO(id);
             UserDTO teacherDTO = userService.findByIdDTO(teacherId);
-            if(teacherDTO.role().equals("TEACHER")) {
+            if(!teacherDTO.role().equals("TEACHER")) {
 
                 model.addAttribute("message", "El usuario seleccionado no es un profesor");
                 return "error";
@@ -254,20 +185,12 @@ public class CourseManagementController {
     }
 
     @PostMapping("/admin/courses/addCourse")
-    public String addCourse(Model model, CourseDTO courseDTO, @RequestParam long teacherId, MultipartFile imageCourse, @CookieValue(value = "userId", defaultValue = "") String userId) {
+    public String addCourse(Model model, CourseDTO courseDTO, @RequestParam long teacherId, MultipartFile imageCourse) {
 
         try {
-            if (userId.isEmpty()) {
 
-                return "redirect:/login";
-            }
-            UserDTO user = userService.findByIdDTO(Long.parseLong(userId));
-            if (user.role().equals("ADMIN")) {
-
-                return "redirect:/";
-            }
             UserDTO teacherDTO = userService.findByIdDTO(teacherId);
-            if (teacherDTO.role().equals("TEACHER")) {
+            if (!teacherDTO.role().equals("TEACHER")) {
 
                 model.addAttribute("message", "El usuario seleccionado no es un profesor");
                 return "error";
@@ -296,7 +219,7 @@ public class CourseManagementController {
                 return "error";
             }
             return "redirect:/admin/courses";
-        } catch (NoSuchElementException | IOException | IllegalArgumentException e) {
+        } catch (IOException | RuntimeException e) {
 
             model.addAttribute("message", e.getMessage());
             return "error";
@@ -304,22 +227,12 @@ public class CourseManagementController {
     }
 
     @GetMapping("/admin/courses/{courseId}/addModule")
-    public String addModule(@CookieValue(value = "userId", defaultValue = "") String userId, Model model, @PathVariable long courseId) {
+    public String addModule(Model model, @PathVariable long courseId) {
 
         try {
 
-            if(userId.isEmpty()) {
-
-                return "redirect:/login";
-            }
-            UserDTO user = userService.findByIdDTO(Long.parseLong(userId));
-            if(user.role().equals("ADMIN")) {
-
-                return "redirect:/";
-            }
             CourseDTO courseDTO = courseService.findByIdDTO(courseId);
             model.addAttribute("availablePositions", moduleService.getAvailablePositions(courseDTO));
-            model.addAttribute("userId", Long.parseLong(userId));
             model.addAttribute("courseId", courseId);
             return "courses-management/addModule";
         }catch (NoSuchElementException e){
@@ -330,18 +243,10 @@ public class CourseManagementController {
     }
 
     @PostMapping("/admin/courses/{courseId}/addModule")
-    public String addModule(Model model, @PathVariable long courseId, @RequestParam String name, @RequestParam String position, MultipartFile module, @CookieValue(value = "userId", defaultValue = "") String userId) {
+    public String addModule(Model model, @PathVariable long courseId, @RequestParam String name, @RequestParam String position, MultipartFile module) {
 
         try{
-            if(userId.isEmpty()) {
 
-                return "redirect:/login";
-            }
-            UserDTO user = userService.findByIdDTO(Long.parseLong(userId));
-            if(user.role().equals("ADMIN")) {
-
-                return "redirect:/";
-            }
             if(name.isEmpty() || module == null || module.isEmpty() || position.isEmpty()) {
 
                 model.addAttribute("message", "Faltan campos por rellenar");
@@ -377,21 +282,13 @@ public class CourseManagementController {
     }
 
     @PostMapping("/admin/courses/{courseId}/addStudent")
-    public String addStudent(@PathVariable long courseId, @RequestParam long studentId, Model model, @CookieValue(value = "userId", defaultValue = "") String userId) {
+    public String addStudent(@PathVariable long courseId, @RequestParam long studentId, Model model) {
 
         try {
-            if(userId.isEmpty()) {
 
-                return "redirect:/login";
-            }
-            UserDTO user = userService.findByIdDTO(Long.parseLong(userId));
-            if(user.role().equals("ADMIN")) {
-
-                return "redirect:/";
-            }
             UserDTO student = userService.findByIdDTO(studentId);
             CourseDTO course = courseService.findByIdDTO(courseId);
-            if(courseService.userIsInCourse(student, course)) {
+            if(courseService.userIsInCourse(student.id(), course.id())) {
 
                 model.addAttribute("message", "El estudiante ya está en el curso");
                 return "error";
