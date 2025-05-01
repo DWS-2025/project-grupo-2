@@ -41,7 +41,7 @@ public class UserRestController {
     @PostMapping("/")
     public ResponseEntity<UserDTO> createUser(@RequestBody UserCreationDTO userCreationDTO) {
 
-        UserDTO userDTO = userService.saveDTO(userCreationDTO);
+        UserDTO userDTO = userService.saveDTO(userCreationDTO.userDTO().realName(), userCreationDTO.userDTO().surname(), userCreationDTO.userDTO().userName(), userCreationDTO.password(), userCreationDTO.userDTO().campus(), "USER");
         URI location = fromCurrentRequest().path("/{id}").buildAndExpand(userDTO.id()).toUri();
 
         return ResponseEntity.created(location).body(userDTO);
@@ -52,15 +52,15 @@ public class UserRestController {
 
         try {
             UserDTO userDTO = userService.updateDTO(id, userCreationDTO);
-            int newRole = switch (userDTO.role()) {
+            int newRole = switch (userCreationDTO.userDTO().role()) {
                 case "ADMIN" -> 0;
                 case "TEACHER" -> 1;
-                case "STUDENT" -> 2;
+                case "USER" -> 2;
                 default -> -1;
             };
             userDTO = courseService.updateCourseRole(userDTO, newRole, userCreationDTO);
             URI location = fromCurrentRequest().path("").buildAndExpand(userDTO.id()).toUri();
-            return ResponseEntity.created(location).body(userService.findByIdDTO(userDTO.id()));
+            return ResponseEntity.created(location).body(userDTO);
         }catch (RuntimeException e) {
 
             return ResponseEntity.status(401).body("Unauthorized");

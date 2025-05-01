@@ -245,8 +245,18 @@ public class CourseService {
 
 public boolean updateRole(UserDTO userDTO, int newRole) {
 
-        User admin = userService.getLoggedUser();
-        if(admin.getRole().equals("ADMIN") && admin.getId() != userDTO.id()) {
+        User loggedUser;
+        try {
+            loggedUser = userService.getLoggedUser();
+        } catch (RuntimeException e) {
+            loggedUser = null;
+        }
+
+        if(loggedUser == null || loggedUser.getId() == userDTO.id()) { //Lower level user or admin trying to update his own role
+            return false;
+        }
+        if(userService.hasRoleOrHigher("ADMIN")) {
+
 
             User user = userService.findById(userDTO.id());
             if(newRole >= 0 && newRole <= 2) {
@@ -276,14 +286,18 @@ public boolean updateRole(UserDTO userDTO, int newRole) {
         //Only used in rest controller
         if(updateRole(userDTO, newRole)){
 
-            for(int i = 0; i < userCreationDTO.userDTO().courses().size(); i++) {
+            if(!(userService.findById(userDTO.id()).getRole().equals("ADMIN") || userService.findById(userDTO.id()).getRole().equals("TEACHER"))){
 
-                addUserToCourse(userCreationDTO.userDTO().courses().get(i).id(), userDTO);
+                for(int i = 0; i < userCreationDTO.userDTO().courses().size(); i++) {
+
+                    addUserToCourse(userCreationDTO.userDTO().courses().get(i).id(), userDTO);
+                }
             }
 
             return userService.findByIdDTO(userDTO.id());
         }
-        throw new RuntimeException("Usuario, rol inválidos o no se ha podido actualizar el rol");
+        return userDTO;
+        //throw new RuntimeException("Usuario, rol inválidos o no se ha podido actualizar el rol");
     }
 }
 

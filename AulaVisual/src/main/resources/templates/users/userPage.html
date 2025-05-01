@@ -11,8 +11,6 @@
     <img class="profile-img" src="/user_pfp/{{user.id}}" alt="profile image">
     <form id="userForm" action="/profile/update/{{user.id}}" method="post" enctype="multipart/form-data">
         <input type="text" value="{{user.userName}}" id="username" name="username">
-        <input type="password" placeholder="Contraseña Actual" id="prevPassword" name="prevPassword">
-        <input type="password" placeholder="Nueva Contraseña" id="newPassword" name="newPassword">
         <input type="file" id="image" name="image" accept="image/png">
         <div class="buttons">
             <button type="reset" class="cancel">Borrar Todo</button>

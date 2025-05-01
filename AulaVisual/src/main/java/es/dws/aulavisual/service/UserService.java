@@ -60,26 +60,37 @@ public class UserService {
         return userRoleIndex >= requiredRoleIndex;
     }
 
-    public UserDTO saveDTO(String name, String surname, String userName, String password, String campus, String roles) {
+    public UserDTO saveDTO(String name, String surname, String userName, String password, String campus, String role) {
 
+        if(userRepository.findByUserName(userName).isPresent()) {
+
+            throw new RuntimeException("El nombre de usuario ya existe");
+        }
+        if(!(campus.equals("Noxus") || campus.equals("Piltover") || campus.equals("Zaun"))) {
+
+            throw new RuntimeException("Campus no válido");
+        }
         String passwordHash = passwordEncoder.encode(password);
-        return userMapper.toDTO(save(name, surname, userName, passwordHash, campus, roles));
+        return userMapper.toDTO(save(name, surname, userName, passwordHash, campus, role));
     }
 
-    User save(String name, String surname, String userName, String passwordHash, String campus, String roles) {
+    User save(String name, String surname, String userName, String passwordHash, String campus, String role) {
 
-        User user = new User(name, surname, userName, passwordHash, campus, roles);
-        return userRepository.saveAndFlush(user);
+        User user = new User(name, surname, userName, passwordHash, campus, role);
+        return userRepository.save(user);
     }
 
     public UserDTO saveDTO(UserCreationDTO userDTO) {
 
-        User user = userMapper.toDomain(userDTO.userDTO());
-        user.setPasswordHash(hashPassword(userDTO.password()));
-        user.setUserName(userDTO.userDTO().userName());
-        user.setRealName(userDTO.userDTO().realName());
-        user.setSurname(userDTO.userDTO().surname());
-        return userMapper.toDTO(save(user));
+        if(userRepository.findByUserName(userDTO.userDTO().userName()).isPresent()) {
+
+            throw new RuntimeException("El nombre de usuario ya existe");
+        }else {
+            User user = userMapper.toDomain(userDTO.userDTO());
+            user.setRole("USER"); //Force role to USER
+            user.setPasswordHash(passwordEncoder.encode(userDTO.password()));
+            return userMapper.toDTO(save(user));
+        }
     }
 
     User save(User user) {
@@ -95,7 +106,7 @@ public class UserService {
             throw new RuntimeException("No puedes eliminarte a ti mismo");
         }else{
 
-            if(admin.getRole().equals("ADMIN")){
+            if(hasRoleOrHigher("ADMIN")){
 
                 User userToDelete = userRepository.findById(id).orElseThrow();
                 List<Course> courses = userToDelete.getCourses();
@@ -127,50 +138,17 @@ public class UserService {
         }
     }
 
-    public void editPassword(long id, String newPassword, String previousPassword) {
-
-        User admin = getLoggedUser();
-        if(admin.getRole().equals("ADMIN") || admin.getId() == id) {
-
-
-            User userToEdit = userRepository.findById(id).orElseThrow();
-            if(!userToEdit.getPasswordHash().equals(hashPassword(previousPassword))) {
-
-                System.out.println("Bad credentials");
-                return;
-            }
-            userToEdit.setPasswordHash(hashPassword(newPassword));
-            userRepository.save(userToEdit);
-        }
-    }
-
-    public String hashPassword(String password) {
-
-        try {
-            MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
-            byte[] hash = messageDigest.digest(password.getBytes());
-            StringBuilder hexString = new StringBuilder();
-            for (byte b : hash) {
-                String hex = Integer.toHexString(0xff & b);
-                if(hex.length() == 1) hexString.append('0');
-                hexString.append(hex);
-            }
-            return hexString.toString();
-        }catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException("SHA-256 algorithm not found", e);
-        }
-    }
-
     public void saveImage(long userId, String location, InputStream inputStream, long size) {
 
         User admin = getLoggedUser();
-        if(admin.getRole().equals("ADMIN") || admin.getId() == userId){
+        if(hasRoleOrHigher("ADMIN") || admin.getId() == userId){
 
             User user = userRepository.findById(userId).orElseThrow();
 
             user.setImage(location);
             user.setImageFile(BlobProxy.generateProxy(inputStream, size));
             userRepository.save(user);
+            return;
         }
         throw new RuntimeException("No tienes permisos para editar este usuario");
     }
@@ -179,13 +157,14 @@ public class UserService {
 
         User loggedUser = getLoggedUser();
 
-        if(loggedUser.getId() != requestedId && !loggedUser.getRole().contains("ADMIN")) {
+        if(loggedUser.getId() != requestedId && !hasRoleOrHigher("ADMIN")) {
 
             return ResponseEntity.status(403).body("Forbidden");
         }
         try {
 
-            Blob image = loggedUser.getImageFile();
+            User user = userRepository.findById(requestedId).orElseThrow();
+            Blob image = user.getImageFile();
             if(image == null) {
 
                 try {
@@ -282,15 +261,20 @@ public class UserService {
     public UserDTO updateDTO(Long id, UserCreationDTO userCreationDTO) {
 
         User requestUser = getLoggedUser();
+        User user = userRepository.findById(id).orElseThrow();
         if(requestUser.getId() == id || requestUser.getRole().equals("ADMIN")) {
 
-            User user = userRepository.findById(id).orElseThrow();
+            user.setUserName(userCreationDTO.userDTO().userName());
+        }else {
+
+            throw new RuntimeException("No tienes permisos para editar este usuario");
+        }
+        if(hasRoleOrHigher("ADMIN")){
+
             user.setRealName(userCreationDTO.userDTO().realName());
             user.setSurname(userCreationDTO.userDTO().surname());
-            user.setUserName(userCreationDTO.userDTO().userName());
             user.setCampus(userCreationDTO.userDTO().campus());
-            return userMapper.toDTO(userRepository.save(user));
         }
-        throw new RuntimeException("No tienes permisos para editar este usuario");
+        return userMapper.toDTO(userRepository.save(user));
     }
 }

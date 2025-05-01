@@ -55,8 +55,7 @@ public class MainCoursesController {
         try{
 
             CourseDTO courseDTO = courseService.findByIdDTO(id);
-            String redirect = "redirect:/courses/" + id + "/module/" + moduleService.getFirstModuleByCourse(courseDTO.id());
-            return redirect;
+            return "redirect:/courses/" + id + "/module/" + moduleService.getFirstModuleByCourse(courseDTO.id());
         }catch (NoSuchElementException e) {
             model.addAttribute("message", e.getMessage());
             return "error";
