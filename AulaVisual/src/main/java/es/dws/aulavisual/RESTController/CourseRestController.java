@@ -121,7 +121,7 @@ public class CourseRestController {
         try{
             CourseDTO newCourseDTO = courseService.assignTeacher(teacherInfoDTO.id(), courseDTO);
             return ResponseEntity.ok(newCourseDTO);
-        } catch (IllegalArgumentException e){
+        } catch (RuntimeException e){
             return ResponseEntity.badRequest().body(e.getMessage());
         }
 
