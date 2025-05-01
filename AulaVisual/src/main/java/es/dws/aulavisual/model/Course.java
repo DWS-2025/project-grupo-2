@@ -30,7 +30,7 @@ public class Course {
     private Blob imageCourse = null;
 
     @ManyToMany(fetch = FetchType.EAGER)
-    private final List <User> students = new ArrayList<>();
+    private List <User> students = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "course")
     private final List <Module> modules = new ArrayList<>();
@@ -96,6 +96,11 @@ public class Course {
     public List<User> getStudents() {
 
         return students;
+    }
+
+    public void setStudents(List<User> students){
+
+        this.students = students;
     }
 
     public Blob getImageCourse() {

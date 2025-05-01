@@ -18,6 +18,7 @@ import java.sql.Blob;
 
 import org.springframework.http.ResponseEntity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import es.dws.aulavisual.Mapper.UserMapper;
@@ -57,6 +58,9 @@ public class CourseService {
         if(userService.hasRoleOrHigher("ADMIN")){
 
             Course course = courseMapper.toDomain(courseDTO);
+            course.setTeacher(null);
+            course.setStudents(new ArrayList <>());
+            course.setImage(null);
             return courseMapper.toDTO(save(course));
         }else{
             throw new RuntimeException("No tienes permisos para esto");
@@ -87,8 +91,7 @@ public class CourseService {
     public List<CourseDTO> getCourses() {
 
         // Only the admin is able to see all the courses
-        User admin = userService.getLoggedUser();
-        if(admin.getRole().equals("ADMIN")) {
+        if(userService.hasRoleOrHigher("ADMIN")) {
             return courseMapper.toDTOs(courseRepository.findAll());
         }
         throw new RuntimeException("No tienes permisos para ver los cursos");
@@ -119,7 +122,7 @@ public class CourseService {
         throw new RuntimeException("No tienes permisos para esto");
     }
 
-    public void deleteCourse(long courseId) {
+    public CourseDTO deleteCourse(long courseId) {
 
         if(!userService.hasRoleOrHigher("ADMIN")) {
             throw new RuntimeException("No tienes permisos para esto");
@@ -129,6 +132,7 @@ public class CourseService {
             course.getTeacher().setCourseTeaching(null);
         }
         courseRepository.deleteById(courseId);
+        return courseMapper.toDTO(course);
     }
 
     void removeCourseFromTeacher(User teacher, Course course) {
@@ -216,8 +220,8 @@ public class CourseService {
 
         //Only used in rest controller
         User loggedUser = userService.getLoggedUser();
-        if(loggedUser.getRole().equals("USER")) {
-            throw new RuntimeException("Primero debes iniciar sesión");
+        if(!userService.hasRoleOrHigher("ADMIN") && loggedUser.getId() != id) {
+            throw new RuntimeException("No tienes permiso para ver otros cursos");
         }
         User user = userService.findById(id);
         List<Course> normalCourses = courseRepository.searchCoursesByStudentsContaining(user);
@@ -227,6 +231,10 @@ public class CourseService {
     public List<UserSimpleDTO> getAllStudentsfromCourse(Long id) {
 
         //Only used in rest controller
+        User loggedUser = userService.getLoggedUser();
+        if(!userService.hasRoleOrHigher("ADMIN") && loggedUser.getCourseTeaching().getId() != id) {
+            throw new RuntimeException("No tienes permiso para ver otros cursos");
+        }
         Course course = courseRepository.findById(id).orElseThrow();
         List<User> students = course.getStudents();
         return userMapper.toSimpleDTOs(students);

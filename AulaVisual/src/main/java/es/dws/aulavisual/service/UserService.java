@@ -273,7 +273,10 @@ public class UserService {
 
             user.setRealName(userCreationDTO.userDTO().realName());
             user.setSurname(userCreationDTO.userDTO().surname());
-            user.setCampus(userCreationDTO.userDTO().campus());
+            if(userCreationDTO.userDTO().campus().equals("Noxus") || userCreationDTO.userDTO().campus().equals("Piltover") || userCreationDTO.userDTO().campus().equals("Zaun")) {
+
+                user.setCampus(userCreationDTO.userDTO().campus());
+            }
         }
         return userMapper.toDTO(userRepository.save(user));
     }
