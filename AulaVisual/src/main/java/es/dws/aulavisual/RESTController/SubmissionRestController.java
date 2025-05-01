@@ -24,40 +24,52 @@ public class SubmissionRestController {
     }
 
     @GetMapping("course/{courseId}/submissions")
-    public ResponseEntity<List<SubmissionDTO>> getSubmissions(@PathVariable long courseId) {
+    public ResponseEntity<Object> getSubmissions(@PathVariable long courseId) {
 
-        List<SubmissionDTO> submissionDTOS = submissionService.getCourseSubmissions(courseId);
+        try {
+            List<SubmissionDTO> submissionDTOS = submissionService.getCourseSubmissions(courseId);
+            return ResponseEntity.ok(submissionDTOS);
+        }catch (RuntimeException e) {
 
-        return ResponseEntity.ok(submissionDTOS);
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @GetMapping("user/{userId}/submissions")
-    public ResponseEntity<List<SubmissionDTO>> getUserSubmissions(@PathVariable long userId) {
+    public ResponseEntity<Object> getUserSubmissions(@PathVariable long userId) {
 
-        List<SubmissionDTO> submissionDTOS = submissionService.getUserSubmissions(userId);
+        try {
 
-        return ResponseEntity.ok(submissionDTOS);
+            List<SubmissionDTO> submissionDTOS = submissionService.getUserSubmissions(userId);
+            return ResponseEntity.ok(submissionDTOS);
+        }catch (RuntimeException e) {
+
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @GetMapping("submission/{id}")
-    public ResponseEntity<SubmissionDTO> getSubmission(@PathVariable long id) {
+    public ResponseEntity<Object> getSubmission(@PathVariable long id) {
 
-        SubmissionDTO submissionDTO = submissionService.findById(id);
+        try {
+            SubmissionDTO submissionDTO = submissionService.findById(id);
+            return ResponseEntity.ok(submissionDTO);
+        }catch (RuntimeException e) {
 
-        return ResponseEntity.ok(submissionDTO);
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @PostMapping("submission/")
     public ResponseEntity<Object> createSubmission(@RequestBody SubmissionDTO submissionDTO) {
 
-        if (submissionDTO.student() == null) {
-            return ResponseEntity.badRequest().build();
+        try {
+            SubmissionDTO createdSubmission = submissionService.save(submissionDTO);
+            return ResponseEntity.ok(createdSubmission);
+        }catch (RuntimeException e) {
+
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
-        if(submissionService.userMadeSubmission(submissionDTO.student().id(), submissionDTO.course().id())) {
-            return ResponseEntity.badRequest().build();
-        }
-        SubmissionDTO createdSubmission = submissionService.save(submissionDTO);
-        return ResponseEntity.ok(createdSubmission);
     }
 
     @PutMapping("submission/{id}/content")
@@ -67,9 +79,9 @@ public class SubmissionRestController {
             String location = fromCurrentRequest().path("").buildAndExpand(id).toUri().getPath();
             submissionService.uploadSubmissionContent(id, location, file.getInputStream(), file.getSize());
             return ResponseEntity.created(URI.create(location)).body(location);
-        }catch (IOException e){
+        }catch (IOException | RuntimeException e){
 
-            return ResponseEntity.badRequest().body("Error uploading submission content: " + e.getMessage());
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
@@ -80,7 +92,7 @@ public class SubmissionRestController {
             return submissionService.getSubmission(id);
         }catch (Exception e){
 
-            return ResponseEntity.badRequest().body("Error loading submission content: " + e.getMessage());
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
@@ -88,10 +100,15 @@ public class SubmissionRestController {
             Float grade
     ){}
     @PutMapping("submission/{id}/grade")
-    public ResponseEntity<SubmissionDTO> gradeSubmission(@PathVariable long id, @RequestBody gradeUpdate grade) {
+    public ResponseEntity<Object> gradeSubmission(@PathVariable long id, @RequestBody gradeUpdate grade) {
 
-        SubmissionDTO submissionDTO = submissionService.gradeSubmission(id, grade.grade());
-        return ResponseEntity.ok(submissionDTO);
+        try {
+            SubmissionDTO submissionDTO = submissionService.gradeSubmission(id, grade.grade());
+            return ResponseEntity.ok(submissionDTO);
+        }catch (RuntimeException e) {
+
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @DeleteMapping("submission/{id}")
