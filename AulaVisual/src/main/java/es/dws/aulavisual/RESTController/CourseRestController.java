@@ -108,8 +108,8 @@ public class CourseRestController {
 
         try{
             return courseService.loadImage(id);
-        } catch (NoSuchElementException e){
-            return ResponseEntity.badRequest().body("Error loading image: " + e.getMessage());
+        } catch (RuntimeException e){
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
