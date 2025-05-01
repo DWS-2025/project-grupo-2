@@ -230,6 +230,10 @@ public class CourseService {
     public List<UserSimpleDTO> getAllStudentsfromCourse(Long id) {
 
         //Only used in rest controller
+        User loggedUser = userService.getLoggedUser();
+        if(!userService.hasRoleOrHigher("ADMIN") && loggedUser.getCourseTeaching().getId() != id) {
+            throw new RuntimeException("No tienes permiso para ver otros cursos");
+        }
         Course course = courseRepository.findById(id).orElseThrow();
         List<User> students = course.getStudents();
         return userMapper.toSimpleDTOs(students);

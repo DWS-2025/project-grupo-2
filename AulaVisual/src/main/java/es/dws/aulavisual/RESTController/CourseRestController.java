@@ -74,10 +74,15 @@ public class CourseRestController {
     }
 
     @GetMapping("course/{id}/users/")
-    public ResponseEntity<List<UserSimpleDTO>> getUsersInCourse(@PathVariable Long id) {
+    public ResponseEntity<Object> getUsersInCourse(@PathVariable Long id) {
 
-        List<UserSimpleDTO> users = courseService.getAllStudentsfromCourse(id);
-        return ResponseEntity.ok(users);
+        try {
+            List<UserSimpleDTO> users = courseService.getAllStudentsfromCourse(id);
+            return ResponseEntity.ok(users);
+        }catch (RuntimeException e){
+
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @DeleteMapping("course/{id}/")
