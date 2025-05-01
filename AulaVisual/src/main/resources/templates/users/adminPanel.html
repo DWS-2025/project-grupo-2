@@ -70,6 +70,42 @@
     let currentPage = 0;
     let totalPages = 0;
 
+    function authenticateAndLoadUsers(page) {
+        const loginUrl = new URL('/api/auth/login/', window.location.origin);
+        const logoutUrl = new URL('/api/auth/logout', window.location.origin);
+
+        // Autenticación
+        fetch(loginUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                username: "asd", // Cambia "username" para que coincida con la clave esperada por el backend
+                password: "asd"
+            })
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Error al autenticar');
+                }
+                return response.json();
+            })
+            .then(() => {
+                // Si la autenticación es exitosa, carga los usuarios
+                loadUsers(page);
+                fetch(logoutUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    }
+
     function loadUsers(page) {
         const role = document.getElementById('role').value;
         const campus = document.getElementById('campus').value;
@@ -113,25 +149,25 @@
 
     function applyFilters() {
         currentPage = 0;
-        loadUsers(currentPage);
+        authenticateAndLoadUsers(currentPage);
     }
 
     document.getElementById('prevPage').addEventListener('click', () => {
         if (currentPage > 0) {
             currentPage--;
-            loadUsers(currentPage);
+            authenticateAndLoadUsers(currentPage);
         }
     });
 
     document.getElementById('nextPage').addEventListener('click', () => {
         if (currentPage < totalPages - 1) {
             currentPage++;
-            loadUsers(currentPage);
+            authenticateAndLoadUsers(currentPage);
         }
     });
 
     // load the first page of users
-    loadUsers(currentPage);
+    authenticateAndLoadUsers(currentPage);
 </script>
 </body>
 </html>

@@ -262,7 +262,7 @@ public class UserService {
     public UserDTO findByIdDTO(long id) {
 
         User logguedUser = getLoggedUser();
-        if(hasRoleOrHigher("ADMIN")) {
+        if(hasRoleOrHigher("TEACHER")) {
 
             return userMapper.toDTO(findById(id));
         }

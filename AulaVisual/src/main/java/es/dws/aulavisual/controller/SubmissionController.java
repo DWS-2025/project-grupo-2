@@ -28,52 +28,46 @@ public class SubmissionController {
     }
 
     @GetMapping("/courses/{courseId}/submission")
-    public String seeCourseSubmission(Model model, @CookieValue(value = "userId", defaultValue = "") String userId, @PathVariable long courseId) {
+    public String seeCourseSubmission(Model model, @PathVariable long courseId) {
 
         try {
-            if(userId.isEmpty()){
-                return "redirect:/login";
-            }
-            UserDTO userDTO = userService.findByIdDTO(Long.parseLong(userId));
 
+            UserDTO userDTO = (UserDTO) model.getAttribute("user");
             CourseDTO courseDTO = courseService.findByIdDTO(courseId);
-
             if(userDTO.role().equals("TEACHER")){
 
                 return "redirect:/teacher/courses/" + courseId + "/submissions";
             }
 
-            if(userDTO.role().equals("STUDENT")){
 
-                if(courseService.userIsInCourse(userDTO.id(), courseDTO.id())){
+            if(courseService.userIsInCourse(userDTO.id(), courseDTO.id())){
 
-                    model.addAttribute("courseId", courseId);
-                    model.addAttribute("courseName", courseDTO.name());
-                    if(!submissionService.userMadeSubmission(userDTO.id(), courseDTO.id())){
+                model.addAttribute("courseId", courseId);
+                model.addAttribute("courseName", courseDTO.name());
+                if(!submissionService.userMadeSubmission(userDTO.id(), courseDTO.id())){
 
-                        model.addAttribute("submitted", false);
-                        model.addAttribute("task", courseDTO.task());
-                    }else {
-
-                        SubmissionDTO submission = submissionService.findByUserAndCourse(userDTO, courseDTO);
-                        model.addAttribute("submitted", true);
-                        if(submission.graded()) {
-
-                            model.addAttribute("grade", submission.grade());
-                        }else{
-
-                            model.addAttribute("grade", "No Disponible");
-                        }
-                    }
+                    model.addAttribute("submitted", false);
+                    model.addAttribute("task", courseDTO.task());
                 }else {
 
-                    model.addAttribute("message", "No tienes acceso a este curso");
-                    return "error";
-                }
+                    SubmissionDTO submission = submissionService.findByUserAndCourse(userDTO, courseDTO);
+                    model.addAttribute("submitted", true);
+                    if(submission.graded()) {
 
-                return "courses-user/submission";
+                        model.addAttribute("grade", submission.grade());
+                    }else{
+
+                        model.addAttribute("grade", "No Disponible");
+                    }
+                }
+            }else {
+
+                model.addAttribute("message", "No tienes acceso a este curso");
+                return "error";
             }
-            return "redirect:/courses";
+
+            return "courses-user/submission";
+
         }catch (NoSuchElementException e){
 
             model.addAttribute("message", e.getMessage());
@@ -82,27 +76,18 @@ public class SubmissionController {
     }
 
     @GetMapping("/teacher/courses/{courseId}/submissions")
-    public String gradeCourseSubmission(Model model, @CookieValue(value = "userId", defaultValue = "") String userId, @PathVariable long courseId) {
+    public String gradeCourseSubmission(Model model, @PathVariable long courseId) {
 
         try {
-            if(userId.isEmpty()){
-                return "redirect:/login";
-            }
-            UserDTO user = userService.findByIdDTO(Long.parseLong(userId));
 
             CourseDTO courseDTO = courseService.findByIdDTO(courseId);
-
-            if(user.role().equals("TEACHER")){
-
-                List<SubmissionDTO> submissions = submissionService.getSubmissions(courseDTO, false);
-                List<SubmissionDTO> graded = submissionService.getSubmissions(courseDTO, true);
-                model.addAttribute("gradedSubmissions", graded);
-                model.addAttribute("submissions", submissions);
-                model.addAttribute("courseId", courseId);
-                model.addAttribute("courseName", courseDTO.name());
-                return "courses-user/submissionsGrade";
-            }
-            return "redirect:/courses";
+            List<SubmissionDTO> submissions = submissionService.getSubmissions(courseDTO, false);
+            List<SubmissionDTO> graded = submissionService.getSubmissions(courseDTO, true);
+            model.addAttribute("gradedSubmissions", graded);
+            model.addAttribute("submissions", submissions);
+            model.addAttribute("courseId", courseId);
+            model.addAttribute("courseName", courseDTO.name());
+            return "courses-user/submissionsGrade";
         }catch (NoSuchElementException e){
 
             model.addAttribute("message", e.getMessage());
@@ -111,26 +96,22 @@ public class SubmissionController {
     }
 
     @PostMapping("/teacher/courses/{courseId}/grade/{studentId}")
-    public String gradeCourseSubmission(Model model, @CookieValue(value = "userId", defaultValue = "") String userId, @PathVariable long courseId, @PathVariable long studentId, @RequestParam float grade) {
+    public String gradeCourseSubmission(Model model, @PathVariable long courseId, @PathVariable long studentId, @RequestParam float grade) {
 
         try {
-            if(userId.isEmpty()){
-                return "redirect:/login";
-            }
-            UserDTO userDTO = userService.findByIdDTO(Long.parseLong(userId));
 
+            UserDTO teacher = (UserDTO) model.getAttribute("user");
             CourseDTO courseDTO = courseService.findByIdDTO(courseId);
-
             UserDTO studentDTO = userService.findByIdDTO(studentId);
 
-            if(userDTO.role().equals("TEACHER") && courseDTO.teacher().id().equals(userDTO.id())){
+            if(courseDTO.teacher().id().equals(teacher.id())){
 
                 if(courseService.userIsInCourse(studentDTO.id(), courseDTO.id())){
 
                     if(submissionService.userMadeSubmission(studentDTO.id(), courseDTO.id())){
 
                         submissionService.gradeSubmission(courseDTO, studentDTO, grade);
-                        return "redirect:/courses/" + courseId + "/grade";
+                        return "redirect:/teacher/courses/" + courseId + "/submissions";
                     }else{
 
                         model.addAttribute("message", "Estudiante no ha entregado la tarea");
@@ -150,19 +131,16 @@ public class SubmissionController {
         }
     }
 
-    @GetMapping("/courses/{courseId}/submission/download/{studentId}")
-    public ResponseEntity<Object> downloadCourseSubmission(@CookieValue(value = "userId", defaultValue = "") String userId, @PathVariable long courseId, @PathVariable long studentId) {
+    @GetMapping("/teacher/courses/{courseId}/submission/download/{studentId}")
+    public ResponseEntity<Object> downloadCourseSubmission(@PathVariable long courseId, @PathVariable long studentId, Model model) {
 
         try {
-            if(userId.isEmpty()){
-                return ResponseEntity.status(401).body("Unauthorized");
-            }
-            UserDTO user = userService.findByIdDTO(Long.parseLong(userId));
 
+            UserDTO user = (UserDTO) model.getAttribute("user");
             CourseDTO courseDTO = courseService.findByIdDTO(courseId);
-
             UserDTO student = userService.findByIdDTO(studentId);
-            if(user.role().equals("TEACHER") && courseDTO.teacher().id() == user.id()){
+
+            if(courseDTO.teacher().id().equals(user.id())){
 
                 if(courseService.userIsInCourse(student.id(), courseDTO.id())) {
 
@@ -186,27 +164,18 @@ public class SubmissionController {
     }
 
     @PostMapping("/courses/{courseId}/submission")
-    public String submitCourseSubmission(Model model, @CookieValue(value = "userId", defaultValue = "") String userId, @PathVariable long courseId, MultipartFile submission) {
+    public String submitCourseSubmission(Model model, @PathVariable long courseId, MultipartFile submission) {
 
         try {
-            if(userId.isEmpty()){
-                return "redirect:/login";
-            }
-            UserDTO user = userService.findByIdDTO(Long.parseLong(userId));
 
+            UserDTO user = (UserDTO) model.getAttribute("user");
             CourseDTO courseDTO = courseService.findByIdDTO(courseId);
             if(submission.isEmpty()){
 
                 model.addAttribute("message", "No se ha seleccionado un archivo");
                 return "error";
             }
-            if(courseService.userIsInCourse(user.id(), courseDTO.id())) {
-
-                if(!submissionService.userMadeSubmission(user.id(), courseDTO.id())) {
-
-                    submissionService.save(courseDTO, user, submission);
-                }
-            }
+            submissionService.save(courseDTO, user, submission);
             return "redirect:/courses";
         }catch (NoSuchElementException e){
 
@@ -215,15 +184,12 @@ public class SubmissionController {
         }
     }
 
-    @PostMapping("/courses/{courseId}/draft/{studentId}")
-    public String deleteSubmission(Model model, @CookieValue(value = "userId", defaultValue = "") String userId, @PathVariable long courseId, @PathVariable long studentId) {
+    @PostMapping("/teacher/courses/{courseId}/draft/{studentId}")
+    public String deleteSubmission(Model model, @PathVariable long courseId, @PathVariable long studentId) {
 
         try {
-            if(userId.isEmpty()){
-                return "redirect:/login";
-            }
-            UserDTO user = userService.findByIdDTO(Long.parseLong(userId));
 
+            UserDTO user = (UserDTO) model.getAttribute("user");
             CourseDTO courseDTO = courseService.findByIdDTO(courseId);
             UserDTO student = userService.findByIdDTO(studentId);
 
@@ -234,7 +200,7 @@ public class SubmissionController {
                     if(courseDTO.teacher().id().equals(user.id())) {
 
                         submissionService.deleteSubmission(student, courseDTO);
-                        return "redirect:/courses/" + courseId + "/grade";
+                        return "redirect:/teacher/courses/" + courseId + "/submissions";
                     }
                 }
             }

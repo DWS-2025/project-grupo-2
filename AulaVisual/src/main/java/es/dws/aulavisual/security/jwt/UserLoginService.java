@@ -74,7 +74,7 @@ public class UserLoginService {
 	}
 
 	public String logout(HttpServletResponse response) {
-		SecurityContextHolder.clearContext();
+		//SecurityContextHolder.clearContext();
 		response.addCookie(removeTokenCookie(TokenType.ACCESS));
 		response.addCookie(removeTokenCookie(TokenType.REFRESH));
 

@@ -49,8 +49,13 @@ public class UserController {
         if(currentUser != null) {
 
             if(currentUser.role().equals("ADMIN")) {
-            return "redirect:/admin";}
+
+            return "redirect:/admin";
+            }else if(currentUser.role().equals("TEACHER"))
+
+                return "redirect:/teacher/courses/" + currentUser.courseTeaching().id() + "/submissions";
             else {
+
                 return "redirect:/courses";
             }
         }else{
