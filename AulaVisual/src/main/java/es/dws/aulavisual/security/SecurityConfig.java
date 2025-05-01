@@ -92,13 +92,15 @@ public class SecurityConfig {
 		http
 			.authorizeHttpRequests(authorize -> authorize
                     // PRIVATE ENDPOINTS
-					.requestMatchers(HttpMethod.GET, "/api/users/me").hasRole("USER")
-                    .requestMatchers(HttpMethod.POST,"/api/books/").hasRole("USER")
-                    .requestMatchers(HttpMethod.PUT,"/api/books/**").hasRole("USER")
-                    .requestMatchers(HttpMethod.DELETE,"/api/books/**").hasRole("ADMIN")
-					.requestMatchers(HttpMethod.GET, "/api/users/**").hasRole("ADMIN")
+					.requestMatchers(HttpMethod.GET, "/api/users/").hasRole("ADMIN")
+					.requestMatchers(HttpMethod.GET, "/api/users/*/").hasRole("USER")
+					.requestMatchers(HttpMethod.PUT, "/api/users/*/").hasRole("USER")
+					.requestMatchers(HttpMethod.PUT, "/api/users/*/image/").hasRole("USER")
+					.requestMatchers(HttpMethod.GET, "/api/users/*/image/").hasRole("USER")
+					.requestMatchers(HttpMethod.DELETE, "/api/users/*/").hasRole("ADMIN")
 					// PUBLIC ENDPOINTS
-					.anyRequest().permitAll()
+					.requestMatchers(HttpMethod.POST, "/api/users/").permitAll()
+					.requestMatchers(HttpMethod.POST, "/api/auth/**").permitAll()
 			);
 		
         // Disable Form login Authentication

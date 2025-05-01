@@ -74,32 +74,22 @@ public class UserController {
     public String register(Model model, @RequestParam String name, @RequestParam String surname, @RequestParam String username, @RequestParam String password, @RequestParam String campus) {
 
         try {
-            if(!(name.isEmpty() && surname.isEmpty() && username.isEmpty() && password.isEmpty() && campus.isEmpty())) {
-
-                if(!(campus.equals("Noxus") || campus.equals("Piltover") || campus.equals("Zaun"))) {
-
-                    model.addAttribute("message", "Campus inválido");
-                }else{
-
-                    UserDTO user = userService.findByUserName(username);
-                    model.addAttribute("message", "Nombre de usuario ya en uso");
-                }
-                return "error";
-            }else{
+            if(name.isEmpty() || surname.isEmpty() || username.isEmpty() || password.isEmpty() || campus.isEmpty()) {
 
                 model.addAttribute("message", "Todos los campos son obligatorios");
+                return "error";
             }
-
-            return "redirect:/register";
-        }catch (NoSuchElementException e) {
-
             userService.saveDTO(name, surname, username, password, campus, "USER");
-            return "redirect:/login";
+            return "redirect:/";
+        }catch (RuntimeException e) {
+
+            model.addAttribute("message", e.getMessage());
+            return "error";
         }
     }
 
     @PostMapping("/profile/update/{id}")
-    public String updateUser(Model model, @PathVariable long id, @RequestParam String username, @RequestParam String prevPassword, @RequestParam String newPassword, MultipartFile image) {
+    public String updateUser(Model model, @PathVariable long id, @RequestParam String username, MultipartFile image) {
 
 
         try{
@@ -114,11 +104,6 @@ public class UserController {
             if(!username.equals(currentUser.userName())){
 
                 userService.editUsername(currentUser.id(), username);
-            }
-
-            if(!(newPassword.isEmpty() && prevPassword.isEmpty())) {
-
-                userService.editPassword(currentUser.id(), newPassword, prevPassword);
             }
 
             if(image != null && !image.isEmpty()) {
