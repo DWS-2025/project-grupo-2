@@ -147,14 +147,10 @@ public class SubmissionService {
 
     public void deleteSubmission(UserDTO studentDTO, CourseDTO courseDTO) {
 
-        User loggedUser = userService.getLoggedUser();
-        if(loggedUser.getId() == courseDTO.teacher().id()){
-
-            User student = userService.findById(studentDTO.id());
-            Course course = courseService.findById(courseDTO.id());
-            Submission submission = submissionRepository.findByStudentAndCourse(student, course).orElseThrow();
-            delete(submission);
-        }
+        User user = userService.findById(studentDTO.id());
+        Course course = courseService.findById(courseDTO.id());
+        Submission submission = submissionRepository.findByStudentAndCourse(user, course).orElseThrow();
+        deleteSubmission(submission.getId());
     }
 
     public List<SubmissionDTO> getCourseSubmissions(long courseId) {
@@ -255,8 +251,13 @@ public class SubmissionService {
 
     public SubmissionDTO deleteSubmission(long id) {
 
+        User loggedUser = userService.getLoggedUser();
         Submission submission = submissionRepository.findById(id).orElseThrow();
-        return delete(submission);
+        if(loggedUser.getRole().equals("ADMIN") || loggedUser.getId() == submission.getCourse().getTeacher().getId()) {
+
+            return delete(submission);
+        }
+        throw new RuntimeException("No tienes permisos para eliminar esta entrega");
     }
 
     private SubmissionDTO delete(Submission submission) {
