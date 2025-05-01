@@ -100,10 +100,15 @@ public class SubmissionRestController {
             Float grade
     ){}
     @PutMapping("submission/{id}/grade")
-    public ResponseEntity<SubmissionDTO> gradeSubmission(@PathVariable long id, @RequestBody gradeUpdate grade) {
+    public ResponseEntity<Object> gradeSubmission(@PathVariable long id, @RequestBody gradeUpdate grade) {
 
-        SubmissionDTO submissionDTO = submissionService.gradeSubmission(id, grade.grade());
-        return ResponseEntity.ok(submissionDTO);
+        try {
+            SubmissionDTO submissionDTO = submissionService.gradeSubmission(id, grade.grade());
+            return ResponseEntity.ok(submissionDTO);
+        }catch (RuntimeException e) {
+
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @DeleteMapping("submission/{id}")

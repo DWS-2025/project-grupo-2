@@ -131,14 +131,10 @@ public class SubmissionService {
 
     public void gradeSubmission(CourseDTO courseDTO, UserDTO studentDTO, float grade) {
 
-        User teacher = userService.getLoggedUser();
-        if(userService.hasRoleOrHigher("TEACHER") && courseDTO.teacher().id().equals(teacher.getId())) {
-
-            Course course = courseService.findById(courseDTO.id());
-            User student = userService.findById(studentDTO.id());
-            Optional <Submission> searchSubmission = submissionRepository.findByStudentAndCourse(student, course);
-            searchSubmission.ifPresent(submission -> grade(submission, grade));
-        }
+        Course course = courseService.findById(courseDTO.id());
+        User student = userService.findById(studentDTO.id());
+        Submission searchSubmission = submissionRepository.findByStudentAndCourse(student, course).orElseThrow();
+        gradeSubmission(searchSubmission.getId(), grade);
     }
 
     public ResponseEntity <Object> getSubmission(CourseDTO courseDTO, UserDTO studentDTO) {
@@ -238,8 +234,17 @@ public class SubmissionService {
 
     public SubmissionDTO gradeSubmission(long id, float grade) {
 
+        User loggedUser = userService.getLoggedUser();
         Submission submission = submissionRepository.findById(id).orElseThrow();
-        return grade(submission, grade);
+        if(loggedUser.getRole().equals("ADMIN") || loggedUser.getId() == submission.getCourse().getTeacher().getId()) {
+
+            if(submission.isGraded()){
+
+                throw new RuntimeException("Entrega ya calificada");
+            }
+            return grade(submission, grade);
+        }
+        throw new RuntimeException("No tienes permisos para calificar esta entrega");
     }
 
     private SubmissionDTO grade(Submission submission, float grade) {
