@@ -63,14 +63,13 @@ public class SubmissionRestController {
     @PostMapping("submission/")
     public ResponseEntity<Object> createSubmission(@RequestBody SubmissionDTO submissionDTO) {
 
-        if (submissionDTO.student() == null) {
-            return ResponseEntity.badRequest().build();
+        try {
+            SubmissionDTO createdSubmission = submissionService.save(submissionDTO);
+            return ResponseEntity.ok(createdSubmission);
+        }catch (RuntimeException e) {
+
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
-        if(submissionService.userMadeSubmission(submissionDTO.student().id(), submissionDTO.course().id())) {
-            return ResponseEntity.badRequest().build();
-        }
-        SubmissionDTO createdSubmission = submissionService.save(submissionDTO);
-        return ResponseEntity.ok(createdSubmission);
     }
 
     @PutMapping("submission/{id}/content")

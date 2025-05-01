@@ -51,8 +51,28 @@ public class SubmissionService {
 
     public SubmissionDTO save(SubmissionDTO submissionDTO) {
 
+        if(submissionDTO.student() == null || submissionDTO.course() == null) {
+            throw new RuntimeException("Submission must have a student and a course");
+        }
         Course course = courseService.findById(submissionDTO.course().id());
         User user = userService.findById(submissionDTO.student().id());
+        User loggedUser = userService.getLoggedUser();
+        if(userService.hasRoleOrHigher("TEACHER")){
+
+            throw new RuntimeException("Solo los usuarios pueden crear una submission");
+        }
+        if(!loggedUser.equals(user)){
+
+            throw new RuntimeException("Crea un submission para ti mismo melón");
+        }
+        if(!courseService.userIsInCourse(loggedUser.getId(), course.getId())){
+
+            throw new RuntimeException("Debes estar matriculado en el curso");
+        }
+        if(userMadeSubmission(user.getId(), course.getId())){
+
+            throw new RuntimeException("Ya has creado una submission para este curso");
+        }
         return submissionMapper.toDTO(submissionRepository.save(new Submission(course, user, null)));
     }
 
