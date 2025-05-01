@@ -38,10 +38,15 @@ public class CourseRestController {
 
 
     @GetMapping("user/{id}/courses/")
-    public ResponseEntity<List <CourseInfoDTO>> coursesOfUser(@PathVariable Long id) {
+    public ResponseEntity<Object> coursesOfUser(@PathVariable Long id) {
 
-        List<CourseInfoDTO> courses = courseService.courseInfoOfUser(id);
-        return ResponseEntity.ok(courses);
+        try {
+            List<CourseInfoDTO> courses = courseService.courseInfoOfUser(id);
+            return ResponseEntity.ok(courses);
+        }catch (RuntimeException e){
+
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @GetMapping("course/{id}/")

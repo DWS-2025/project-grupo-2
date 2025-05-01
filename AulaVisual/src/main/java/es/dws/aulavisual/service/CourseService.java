@@ -215,8 +215,8 @@ public class CourseService {
 
         //Only used in rest controller
         User loggedUser = userService.getLoggedUser();
-        if(loggedUser.getRole().equals("USER")) {
-            throw new RuntimeException("Primero debes iniciar sesión");
+        if(!userService.hasRoleOrHigher("ADMIN") && loggedUser.getId() != id) {
+            throw new RuntimeException("No tienes permiso para ver otros cursos");
         }
         User user = userService.findById(id);
         List<Course> normalCourses = courseRepository.searchCoursesByStudentsContaining(user);
