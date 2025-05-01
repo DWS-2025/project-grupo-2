@@ -122,7 +122,7 @@ public class CourseService {
         throw new RuntimeException("No tienes permisos para esto");
     }
 
-    public void deleteCourse(long courseId) {
+    public CourseDTO deleteCourse(long courseId) {
 
         if(!userService.hasRoleOrHigher("ADMIN")) {
             throw new RuntimeException("No tienes permisos para esto");
@@ -132,6 +132,7 @@ public class CourseService {
             course.getTeacher().setCourseTeaching(null);
         }
         courseRepository.deleteById(courseId);
+        return courseMapper.toDTO(course);
     }
 
     void removeCourseFromTeacher(User teacher, Course course) {

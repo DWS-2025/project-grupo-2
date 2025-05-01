@@ -88,9 +88,7 @@ public class CourseRestController {
     @DeleteMapping("course/{id}/")
     public ResponseEntity<CourseDTO> deleteCourse(@PathVariable Long id) {
 
-        CourseDTO courseDTO = courseService.findByIdDTO(id);
-        courseService.deleteCourse(id);
-        return ResponseEntity.ok(courseDTO);
+        return ResponseEntity.ok(courseService.deleteCourse(id));
     }
 
     @PutMapping("course/{id}/image/")
