@@ -79,9 +79,9 @@ public class SubmissionRestController {
             String location = fromCurrentRequest().path("").buildAndExpand(id).toUri().getPath();
             submissionService.uploadSubmissionContent(id, location, file.getInputStream(), file.getSize());
             return ResponseEntity.created(URI.create(location)).body(location);
-        }catch (IOException e){
+        }catch (IOException | RuntimeException e){
 
-            return ResponseEntity.badRequest().body("Error uploading submission content: " + e.getMessage());
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 

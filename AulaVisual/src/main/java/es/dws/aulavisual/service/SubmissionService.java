@@ -198,8 +198,20 @@ public class SubmissionService {
 
     public void uploadSubmissionContent(long id, String location, InputStream inputStream, long size) {
 
+        User loggedUser = userService.getLoggedUser();
         Submission submission = submissionRepository.findById(id).orElseThrow();
+        if(!loggedUser.equals(submission.getUser())){
 
+            throw new RuntimeException("Solo puedo subir contenido a tus entregas");
+        }
+        if(userService.hasRoleOrHigher("TEACHER")){
+
+            throw new RuntimeException("Solo los usuarios pueden subir contenido a sus entregas");
+        }
+        if(submission.getSubmission() != null){
+
+            throw new RuntimeException("Ya has subido contenido a esta entrega");
+        }
         submission.setContent(location);
         submission.setSubmission(BlobProxy.generateProxy(inputStream, size));
         submissionRepository.save(submission);
