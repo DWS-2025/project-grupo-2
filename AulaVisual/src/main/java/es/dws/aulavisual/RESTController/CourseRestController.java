@@ -98,8 +98,8 @@ public class CourseRestController {
             String location = fromCurrentRequest().path("").buildAndExpand(id).toUri().getPath();
             courseService.uploadImage(id, location, image.getInputStream(), image.getSize());
             return ResponseEntity.created(URI.create(location)).body(location);
-        } catch (IOException e){
-            return ResponseEntity.badRequest().body("Error uploading image: " + e.getMessage());
+        } catch (IOException | RuntimeException e){
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
