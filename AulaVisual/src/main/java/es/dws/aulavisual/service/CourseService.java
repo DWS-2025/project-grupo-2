@@ -18,6 +18,7 @@ import java.sql.Blob;
 
 import org.springframework.http.ResponseEntity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import es.dws.aulavisual.Mapper.UserMapper;
@@ -57,6 +58,9 @@ public class CourseService {
         if(userService.hasRoleOrHigher("ADMIN")){
 
             Course course = courseMapper.toDomain(courseDTO);
+            course.setTeacher(null);
+            course.setStudents(new ArrayList <>());
+            course.setImage(null);
             return courseMapper.toDTO(save(course));
         }else{
             throw new RuntimeException("No tienes permisos para esto");

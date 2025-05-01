@@ -62,10 +62,15 @@ public class CourseRestController {
     }
 
     @PostMapping("courses/")
-    public ResponseEntity<CourseDTO> createCourse(@RequestBody CourseDTO courseDTO) {
+    public ResponseEntity<Object> createCourse(@RequestBody CourseDTO courseDTO) {
 
-        CourseDTO createCourseDTO = courseService.saveDTO(courseDTO);
-        return ResponseEntity.ok(createCourseDTO);
+        try {
+            CourseDTO createCourseDTO = courseService.saveDTO(courseDTO);
+            return ResponseEntity.ok(createCourseDTO);
+        }catch (RuntimeException e){
+
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @GetMapping("course/{id}/users/")
