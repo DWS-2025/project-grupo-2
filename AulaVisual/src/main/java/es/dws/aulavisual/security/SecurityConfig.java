@@ -101,6 +101,7 @@ public class SecurityConfig {
 					.requestMatchers(HttpMethod.DELETE, "/api/users/*/").hasRole("ADMIN")
 					//SUBMISSIONS
 					.requestMatchers(HttpMethod.GET, "/api/course/*/submissions").hasRole("TEACHER")
+					.requestMatchers(HttpMethod.GET, "/api/user/*/submissions").hasRole("USER")
 					// PUBLIC ENDPOINTS
 					.requestMatchers(HttpMethod.POST, "/api/users/").permitAll() //register
 					.requestMatchers(HttpMethod.POST, "/api/auth/**").permitAll()

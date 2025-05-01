@@ -160,8 +160,13 @@ public class SubmissionService {
 
     public List<SubmissionDTO> getUserSubmissions(long userId) {
 
-        User user = userService.findById(userId);
-        return submissionMapper.toDTOs(submissionRepository.findSubmissionByStudent(user));
+        User loggedUser = userService.getLoggedUser();
+        if(userService.hasRoleOrHigher("ADMIN") || loggedUser.getId() == userId) {
+
+            User user = userService.findById(userId);
+            return submissionMapper.toDTOs(submissionRepository.findSubmissionByStudent(user));
+        }
+        throw new RuntimeException("User does not have sufficient privileges");
     }
 
     public void uploadSubmissionContent(long id, String location, InputStream inputStream, long size) {
