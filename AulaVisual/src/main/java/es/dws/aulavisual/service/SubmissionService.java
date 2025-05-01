@@ -66,7 +66,14 @@ public class SubmissionService {
 
     public SubmissionDTO findById(long id) {
 
-        return submissionMapper.toDTO(submissionRepository.findById(id).orElseThrow());
+        User loggedUser = userService.getLoggedUser();
+        Submission submission = submissionRepository.findById(id).orElseThrow();
+        if(submission.getUser().equals(loggedUser) || (userService.hasRoleOrHigher("TEACHER") && loggedUser.getCourseTeaching().equals(submission.getCourse()))) {
+
+            return submissionMapper.toDTO(submissionRepository.findById(id).orElseThrow());
+        }
+
+        throw new RuntimeException("User does not have sufficient privileges");
     }
 
     public SubmissionDTO findByUserAndCourse(UserDTO userDTO, CourseDTO courseDTO) {

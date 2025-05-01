@@ -31,7 +31,7 @@ public class SubmissionRestController {
             return ResponseEntity.ok(submissionDTOS);
         }catch (RuntimeException e) {
 
-            return ResponseEntity.status(401).body("Unauthorized");
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
@@ -44,16 +44,20 @@ public class SubmissionRestController {
             return ResponseEntity.ok(submissionDTOS);
         }catch (RuntimeException e) {
 
-            return ResponseEntity.status(401).body("Unauthorized");
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
     @GetMapping("submission/{id}")
-    public ResponseEntity<SubmissionDTO> getSubmission(@PathVariable long id) {
+    public ResponseEntity<Object> getSubmission(@PathVariable long id) {
 
-        SubmissionDTO submissionDTO = submissionService.findById(id);
+        try {
+            SubmissionDTO submissionDTO = submissionService.findById(id);
+            return ResponseEntity.ok(submissionDTO);
+        }catch (RuntimeException e) {
 
-        return ResponseEntity.ok(submissionDTO);
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @PostMapping("submission/")
