@@ -50,10 +50,15 @@ public class CourseRestController {
     }
 
     @GetMapping("course/{id}/")
-    public ResponseEntity<CourseDTO> getCourseById(@PathVariable Long id) {
+    public ResponseEntity<Object> getCourseById(@PathVariable Long id) {
 
-        CourseDTO course = courseService.findByIdDTO(id);
-        return ResponseEntity.ok(course);
+        try {
+            CourseDTO course = courseService.findByIdDTO(id);
+            return ResponseEntity.ok(course);
+        }catch (RuntimeException e){
+
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @PostMapping("courses/")
