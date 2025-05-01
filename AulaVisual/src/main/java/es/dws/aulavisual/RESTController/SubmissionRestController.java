@@ -92,7 +92,7 @@ public class SubmissionRestController {
             return submissionService.getSubmission(id);
         }catch (Exception e){
 
-            return ResponseEntity.badRequest().body("Error loading submission content: " + e.getMessage());
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 

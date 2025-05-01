@@ -143,20 +143,10 @@ public class SubmissionService {
 
     public ResponseEntity <Object> getSubmission(CourseDTO courseDTO, UserDTO studentDTO) {
 
-        User loggedUser = userService.getLoggedUser();
-        if(loggedUser.getId() == studentDTO.id() || (userService.hasRoleOrHigher("TEACHER") && courseDTO.teacher().id().equals(loggedUser.getId()))) {
-
-            User student = userService.findById(studentDTO.id());
-            Course course = courseService.findById(courseDTO.id());
-            Optional <Submission> searchSubmission = submissionRepository.findByStudentAndCourse(student, course);
-            if(searchSubmission.isPresent()) {
-
-                Submission submission = searchSubmission.get();
-                return getSubmissionContent(submission);
-            }
-            return ResponseEntity.notFound().build();
-        }
-        throw new RuntimeException("User does not have sufficient privileges");
+        Course course = courseService.findById(courseDTO.id());
+        User user = userService.findById(studentDTO.id());
+        Submission submission = submissionRepository.findByStudentAndCourse(user, course).orElseThrow();
+        return getSubmission(submission.getId());
     }
 
     public void deleteSubmission(UserDTO studentDTO, CourseDTO courseDTO) {
@@ -219,7 +209,16 @@ public class SubmissionService {
 
     public ResponseEntity <Object> getSubmission(long id) {
 
+        User loggedUser = userService.getLoggedUser();
         Submission submission = submissionRepository.findById(id).orElseThrow();
+        if(!userService.hasRoleOrHigher("TEACHER") && !loggedUser.equals(submission.getUser())){
+
+            throw new RuntimeException("No tienes permisos para ver esta entrega");
+        }
+        if(loggedUser.getRole().equals("TEACHER") && !submission.getCourse().getTeacher().equals(loggedUser)){
+
+            throw new RuntimeException("Debes ser el profesor de este curso");
+        }
         return getSubmissionContent(submission);
     }
 
