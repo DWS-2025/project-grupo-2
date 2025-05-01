@@ -92,14 +92,17 @@ public class SecurityConfig {
 		http
 			.authorizeHttpRequests(authorize -> authorize
                     // PRIVATE ENDPOINTS
+					//USERS
 					.requestMatchers(HttpMethod.GET, "/api/users/").hasRole("ADMIN")
 					.requestMatchers(HttpMethod.GET, "/api/users/*/").hasRole("USER")
 					.requestMatchers(HttpMethod.PUT, "/api/users/*/").hasRole("USER")
 					.requestMatchers(HttpMethod.PUT, "/api/users/*/image/").hasRole("USER")
 					.requestMatchers(HttpMethod.GET, "/api/users/*/image/").hasRole("USER")
 					.requestMatchers(HttpMethod.DELETE, "/api/users/*/").hasRole("ADMIN")
+					//SUBMISSIONS
+					.requestMatchers(HttpMethod.GET, "/api/course/*/submissions").hasRole("TEACHER")
 					// PUBLIC ENDPOINTS
-					.requestMatchers(HttpMethod.POST, "/api/users/").permitAll()
+					.requestMatchers(HttpMethod.POST, "/api/users/").permitAll() //register
 					.requestMatchers(HttpMethod.POST, "/api/auth/**").permitAll()
 			);
 		

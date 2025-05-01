@@ -24,11 +24,15 @@ public class SubmissionRestController {
     }
 
     @GetMapping("course/{courseId}/submissions")
-    public ResponseEntity<List<SubmissionDTO>> getSubmissions(@PathVariable long courseId) {
+    public ResponseEntity<Object> getSubmissions(@PathVariable long courseId) {
 
-        List<SubmissionDTO> submissionDTOS = submissionService.getCourseSubmissions(courseId);
+        try {
+            List<SubmissionDTO> submissionDTOS = submissionService.getCourseSubmissions(courseId);
+            return ResponseEntity.ok(submissionDTOS);
+        }catch (RuntimeException e) {
 
-        return ResponseEntity.ok(submissionDTOS);
+            return ResponseEntity.status(401).body("Unauthorized");
+        }
     }
 
     @GetMapping("user/{userId}/submissions")
