@@ -25,10 +25,15 @@ public class CourseRestController {
     }
 
     @GetMapping("courses/")
-    public ResponseEntity<List<CourseDTO>> courses() {
+    public ResponseEntity<Object> courses() {
 
-        List<CourseDTO> courses = courseService.getCourses();
-        return ResponseEntity.ok(courses);
+        try{
+            List<CourseDTO> courses = courseService.getCourses();
+            return ResponseEntity.ok(courses);
+        }catch (RuntimeException e) {
+
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
 

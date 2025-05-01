@@ -87,8 +87,7 @@ public class CourseService {
     public List<CourseDTO> getCourses() {
 
         // Only the admin is able to see all the courses
-        User admin = userService.getLoggedUser();
-        if(admin.getRole().equals("ADMIN")) {
+        if(userService.hasRoleOrHigher("ADMIN")) {
             return courseMapper.toDTOs(courseRepository.findAll());
         }
         throw new RuntimeException("No tienes permisos para ver los cursos");
