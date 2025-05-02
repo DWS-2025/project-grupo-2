@@ -120,6 +120,7 @@ public class SecurityConfig {
 					.requestMatchers(HttpMethod.PUT, "/api/course/*/").hasRole("ADMIN")
 					//MODULES
 					.requestMatchers(HttpMethod.GET, "/api/course/*/modules/").hasRole("USER")
+					.requestMatchers(HttpMethod.GET, "/api/course/*/module/*/").hasRole("USER")
 					// PUBLIC ENDPOINTS
 					.requestMatchers(HttpMethod.POST, "/api/users/").permitAll() //register
 					.requestMatchers(HttpMethod.POST, "/api/auth/**").permitAll()

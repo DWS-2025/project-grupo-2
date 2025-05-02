@@ -36,10 +36,15 @@ public class ModuleRestController {
     }
 
     @GetMapping("module/{id}/")
-    public ResponseEntity <ModuleSimpleDTO> getModule(@PathVariable long id) {
+    public ResponseEntity <Object> getModule(@PathVariable long id) {
 
-        ModuleSimpleDTO module = moduleService.findById(id);
-        return ResponseEntity.ok(module);
+        try {
+            ModuleSimpleDTO module = moduleService.findById(id);
+            return ResponseEntity.ok(module);
+        }catch (RuntimeException e){
+
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @GetMapping("module/{id}/content/")

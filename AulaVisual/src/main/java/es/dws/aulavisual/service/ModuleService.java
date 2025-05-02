@@ -50,7 +50,7 @@ public class ModuleService {
         }
         Module module = new Module(course, name, position, blob);
         moduleRepository.save(module);
-        module.setContentLocation("/api/course/" + module.getCourse().getId() + "/module/" + module.getId() + "/content");
+        module.setContentLocation("/api/course/" + module.getCourse().getId() + "/module/" + module.getId() + "/content/");
         return moduleMapper.toSimpleDTO(moduleRepository.save(module));
     }
 
