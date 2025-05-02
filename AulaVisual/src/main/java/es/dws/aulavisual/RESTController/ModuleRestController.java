@@ -24,50 +24,74 @@ public class ModuleRestController {
     }
 
     @GetMapping("modules/")
-    public ResponseEntity <List <ModuleSimpleDTO>> getModules(@PathVariable long courseId) {
+    public ResponseEntity <Object> getModules(@PathVariable long courseId) {
 
-        List<ModuleSimpleDTO> modules = moduleService.getModulesByCourseId(courseId);
-        return ResponseEntity.ok(modules);
+        try{
+            List<ModuleSimpleDTO> modules = moduleService.getModulesByCourseId(courseId);
+            return ResponseEntity.ok(modules);
+        }catch (RuntimeException e){
+
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @GetMapping("module/{id}/")
-    public ResponseEntity <ModuleSimpleDTO> getModule(@PathVariable long id) {
+    public ResponseEntity <Object> getModule(@PathVariable long id) {
 
-        ModuleSimpleDTO module = moduleService.findById(id);
-        return ResponseEntity.ok(module);
+        try {
+            ModuleSimpleDTO module = moduleService.findById(id);
+            return ResponseEntity.ok(module);
+        }catch (RuntimeException e){
+
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @GetMapping("module/{id}/content/")
     public ResponseEntity <Object> getModuleContent(@PathVariable long id) {
 
-       return moduleService.viewModule(id);
+       try {
+           return moduleService.viewModule(id);
+       }catch (RuntimeException e){
+
+           return ResponseEntity.badRequest().body(e.getMessage());
+       }
     }
 
-    @PostMapping("module/{id}/content/")
+    @PutMapping("module/{id}/content/")
     public ResponseEntity <Object> updateModuleContent(@PathVariable long id, @RequestParam("content") MultipartFile content) {
 
         try {
             String location = fromCurrentRequest().path("").buildAndExpand(id).toUri().getPath();
             moduleService.uploadModuleContent(id, location, content.getInputStream(), content.getSize());
             return ResponseEntity.created(URI.create(location)).body(location);
-        }catch (IOException e) {
+        }catch (RuntimeException | IOException e) {
 
             throw new RuntimeException("Error processing file", e);
         }
     }
 
     @PostMapping("module/")
-    public ResponseEntity <ModuleSimpleDTO> createModule(@PathVariable long courseId, @RequestBody ModuleSimpleDTO module) {
+    public ResponseEntity <Object> createModule(@PathVariable long courseId, @RequestBody ModuleSimpleDTO module) {
 
-        ModuleSimpleDTO createdModule = moduleService.saveDTO(courseId, module);
-        return ResponseEntity.ok(createdModule);
+        try {
+            ModuleSimpleDTO createdModule = moduleService.saveDTO(courseId, module);
+            return ResponseEntity.ok(createdModule);
+        }catch (RuntimeException e){
+
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @DeleteMapping("module/{id}/")
-    public ResponseEntity <ModuleSimpleDTO> deleteModule(@PathVariable Long courseId, @PathVariable long id) {
+    public ResponseEntity <Object> deleteModule(@PathVariable long id) {
 
-        ModuleSimpleDTO module = moduleService.findById(id);
-        moduleService.delete(module, courseId);
-        return ResponseEntity.ok(module);
+        try {
+
+            return ResponseEntity.ok(moduleService.deleteById(id));
+        }catch (RuntimeException e){
+
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 }

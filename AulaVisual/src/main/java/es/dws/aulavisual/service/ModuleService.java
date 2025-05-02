@@ -49,6 +49,8 @@ public class ModuleService {
             blob = transformImage(content);
         }
         Module module = new Module(course, name, position, blob);
+        moduleRepository.save(module);
+        module.setContentLocation("/api/course/" + module.getCourse().getId() + "/module/" + module.getId() + "/content/");
         return moduleMapper.toSimpleDTO(moduleRepository.save(module));
     }
 
@@ -115,7 +117,7 @@ public class ModuleService {
                 return ResponseEntity.notFound().build();
             }
         }
-        throw new RuntimeException("Primera debes iniciar sesion");
+        throw new RuntimeException("No tienes permisos para ver este contenido");
     }
 
     public void delete(ModuleSimpleDTO moduleDTO, long courseId) {
@@ -132,6 +134,14 @@ public class ModuleService {
         course.getmodules().remove(module);
         courseService.save(course);
         moduleRepository.deleteById(module.getId());
+    }
+
+    public ModuleSimpleDTO deleteById(long id) {
+
+        ModuleSimpleDTO moduleDTO = findById(id);
+        long courseId = moduleDTO.course().id();
+        delete(moduleDTO, courseId);
+        return moduleDTO;
     }
 
     public boolean positionExists(CourseDTO courseDto, int position) {
@@ -180,17 +190,24 @@ public class ModuleService {
     public List<ModuleSimpleDTO> getModulesByCourseId(Long id){
 
         User loggedUser = userService.getLoggedUser();
-        if(!loggedUser.getRole().contains("USER")) {
-            throw new RuntimeException("Primera debes iniciar sesion");
-        }
         Course course = courseService.findById(id);
+        if(!userService.hasRoleOrHigher("ADMIN") && !courseService.userIsInCourse(loggedUser.getId(), course.getId())) {
+            throw new RuntimeException("No tienes permisos para ver este curso");
+        }
         return moduleMapper.toSimpleDTOs(moduleRepository.findByCourse(course, Sort.by(Sort.Direction.ASC, "position")));
     }
 
     public ModuleSimpleDTO saveDTO(Long courseId, ModuleSimpleDTO moduleSimpleDTO) {
 
         //Only used in the REST controller
-        return save(courseService.findByIdDTO(courseId), moduleSimpleDTO.name(), moduleSimpleDTO.position(), null);
+        CourseDTO courseDTO = courseService.findByIdDTO(courseId);
+        if(!getAvailablePositions(courseDTO).contains(moduleSimpleDTO.position())){
+
+            throw new RuntimeException("Las posiciones disponibles son: " + getAvailablePositions(courseDTO));
+        }
+        Module module = moduleRepository.findById(save(courseService.findByIdDTO(courseId), moduleSimpleDTO.name(), moduleSimpleDTO.position(), null).id()).orElseThrow();
+        module.setContentLocation(null);
+       return moduleMapper.toSimpleDTO(moduleRepository.save(module));
     }
 
     public void uploadModuleContent(long id, String location, InputStream inputStream, long size) {
