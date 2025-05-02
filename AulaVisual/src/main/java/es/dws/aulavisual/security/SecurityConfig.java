@@ -122,6 +122,7 @@ public class SecurityConfig {
 					.requestMatchers(HttpMethod.GET, "/api/course/*/modules/").hasRole("USER")
 					.requestMatchers(HttpMethod.GET, "/api/course/*/module/*/").hasRole("USER")
 					.requestMatchers(HttpMethod.GET, "/api/course/*/module/*/content/").hasRole("USER")
+					.requestMatchers(HttpMethod.PUT, "/api/course/*/module/*/content/").hasRole("ADMIN")
 					// PUBLIC ENDPOINTS
 					.requestMatchers(HttpMethod.POST, "/api/users/").permitAll() //register
 					.requestMatchers(HttpMethod.POST, "/api/auth/**").permitAll()
