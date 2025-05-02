@@ -117,7 +117,7 @@ public class ModuleService {
                 return ResponseEntity.notFound().build();
             }
         }
-        throw new RuntimeException("Primera debes iniciar sesion");
+        throw new RuntimeException("No tienes permisos para ver este contenido");
     }
 
     public void delete(ModuleSimpleDTO moduleDTO, long courseId) {

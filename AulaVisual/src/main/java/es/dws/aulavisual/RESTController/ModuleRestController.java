@@ -50,7 +50,12 @@ public class ModuleRestController {
     @GetMapping("module/{id}/content/")
     public ResponseEntity <Object> getModuleContent(@PathVariable long id) {
 
-       return moduleService.viewModule(id);
+       try {
+           return moduleService.viewModule(id);
+       }catch (RuntimeException e){
+
+           return ResponseEntity.badRequest().body(e.getMessage());
+       }
     }
 
     @PostMapping("module/{id}/content/")
