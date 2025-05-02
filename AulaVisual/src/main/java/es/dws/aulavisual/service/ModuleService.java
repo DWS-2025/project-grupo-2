@@ -136,6 +136,14 @@ public class ModuleService {
         moduleRepository.deleteById(module.getId());
     }
 
+    public ModuleSimpleDTO deleteById(long id) {
+
+        ModuleSimpleDTO moduleDTO = findById(id);
+        long courseId = moduleDTO.course().id();
+        delete(moduleDTO, courseId);
+        return moduleDTO;
+    }
+
     public boolean positionExists(CourseDTO courseDto, int position) {
 
         if(!userService.hasRoleOrHigher("ADMIN")) {
@@ -192,6 +200,11 @@ public class ModuleService {
     public ModuleSimpleDTO saveDTO(Long courseId, ModuleSimpleDTO moduleSimpleDTO) {
 
         //Only used in the REST controller
+        CourseDTO courseDTO = courseService.findByIdDTO(courseId);
+        if(!getAvailablePositions(courseDTO).contains(moduleSimpleDTO.position())){
+
+            throw new RuntimeException("Las posiciones disponibles son: " + getAvailablePositions(courseDTO));
+        }
         Module module = moduleRepository.findById(save(courseService.findByIdDTO(courseId), moduleSimpleDTO.name(), moduleSimpleDTO.position(), null).id()).orElseThrow();
         module.setContentLocation(null);
        return moduleMapper.toSimpleDTO(moduleRepository.save(module));

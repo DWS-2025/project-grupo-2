@@ -124,6 +124,7 @@ public class SecurityConfig {
 					.requestMatchers(HttpMethod.GET, "/api/course/*/module/*/content/").hasRole("USER")
 					.requestMatchers(HttpMethod.PUT, "/api/course/*/module/*/content/").hasRole("ADMIN")
 					.requestMatchers(HttpMethod.POST, "/api/course/*/module/").hasRole("ADMIN")
+					.requestMatchers(HttpMethod.DELETE, "/api/course/*/module/*/").hasRole("ADMIN")
 					// PUBLIC ENDPOINTS
 					.requestMatchers(HttpMethod.POST, "/api/users/").permitAll() //register
 					.requestMatchers(HttpMethod.POST, "/api/auth/**").permitAll()

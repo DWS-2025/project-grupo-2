@@ -84,10 +84,14 @@ public class ModuleRestController {
     }
 
     @DeleteMapping("module/{id}/")
-    public ResponseEntity <ModuleSimpleDTO> deleteModule(@PathVariable Long courseId, @PathVariable long id) {
+    public ResponseEntity <Object> deleteModule(@PathVariable long id) {
 
-        ModuleSimpleDTO module = moduleService.findById(id);
-        moduleService.delete(module, courseId);
-        return ResponseEntity.ok(module);
+        try {
+
+            return ResponseEntity.ok(moduleService.deleteById(id));
+        }catch (RuntimeException e){
+
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 }
