@@ -72,10 +72,15 @@ public class ModuleRestController {
     }
 
     @PostMapping("module/")
-    public ResponseEntity <ModuleSimpleDTO> createModule(@PathVariable long courseId, @RequestBody ModuleSimpleDTO module) {
+    public ResponseEntity <Object> createModule(@PathVariable long courseId, @RequestBody ModuleSimpleDTO module) {
 
-        ModuleSimpleDTO createdModule = moduleService.saveDTO(courseId, module);
-        return ResponseEntity.ok(createdModule);
+        try {
+            ModuleSimpleDTO createdModule = moduleService.saveDTO(courseId, module);
+            return ResponseEntity.ok(createdModule);
+        }catch (RuntimeException e){
+
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @DeleteMapping("module/{id}/")
