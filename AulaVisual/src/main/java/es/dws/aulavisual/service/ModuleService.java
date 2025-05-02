@@ -49,6 +49,8 @@ public class ModuleService {
             blob = transformImage(content);
         }
         Module module = new Module(course, name, position, blob);
+        moduleRepository.save(module);
+        module.setContentLocation("/api/course/" + module.getCourse().getId() + "/module/" + module.getId() + "/content");
         return moduleMapper.toSimpleDTO(moduleRepository.save(module));
     }
 
@@ -180,17 +182,19 @@ public class ModuleService {
     public List<ModuleSimpleDTO> getModulesByCourseId(Long id){
 
         User loggedUser = userService.getLoggedUser();
-        if(!loggedUser.getRole().contains("USER")) {
-            throw new RuntimeException("Primera debes iniciar sesion");
-        }
         Course course = courseService.findById(id);
+        if(!userService.hasRoleOrHigher("ADMIN") && !courseService.userIsInCourse(loggedUser.getId(), course.getId())) {
+            throw new RuntimeException("No tienes permisos para ver este curso");
+        }
         return moduleMapper.toSimpleDTOs(moduleRepository.findByCourse(course, Sort.by(Sort.Direction.ASC, "position")));
     }
 
     public ModuleSimpleDTO saveDTO(Long courseId, ModuleSimpleDTO moduleSimpleDTO) {
 
         //Only used in the REST controller
-        return save(courseService.findByIdDTO(courseId), moduleSimpleDTO.name(), moduleSimpleDTO.position(), null);
+        Module module = moduleRepository.findById(save(courseService.findByIdDTO(courseId), moduleSimpleDTO.name(), moduleSimpleDTO.position(), null).id()).orElseThrow();
+        module.setContentLocation(null);
+       return moduleMapper.toSimpleDTO(moduleRepository.save(module));
     }
 
     public void uploadModuleContent(long id, String location, InputStream inputStream, long size) {

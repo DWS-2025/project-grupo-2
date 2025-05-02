@@ -24,10 +24,15 @@ public class ModuleRestController {
     }
 
     @GetMapping("modules/")
-    public ResponseEntity <List <ModuleSimpleDTO>> getModules(@PathVariable long courseId) {
+    public ResponseEntity <Object> getModules(@PathVariable long courseId) {
 
-        List<ModuleSimpleDTO> modules = moduleService.getModulesByCourseId(courseId);
-        return ResponseEntity.ok(modules);
+        try{
+            List<ModuleSimpleDTO> modules = moduleService.getModulesByCourseId(courseId);
+            return ResponseEntity.ok(modules);
+        }catch (RuntimeException e){
+
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @GetMapping("module/{id}/")

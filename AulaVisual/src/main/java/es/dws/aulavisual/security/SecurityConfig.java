@@ -118,6 +118,8 @@ public class SecurityConfig {
 					.requestMatchers(HttpMethod.PUT, "/api/course/*/image/").hasRole("ADMIN")
 					.requestMatchers(HttpMethod.GET, "/api/course/*/image/").hasRole("USER")
 					.requestMatchers(HttpMethod.PUT, "/api/course/*/").hasRole("ADMIN")
+					//MODULES
+					.requestMatchers(HttpMethod.GET, "/api/course/*/modules/").hasRole("USER")
 					// PUBLIC ENDPOINTS
 					.requestMatchers(HttpMethod.POST, "/api/users/").permitAll() //register
 					.requestMatchers(HttpMethod.POST, "/api/auth/**").permitAll()
