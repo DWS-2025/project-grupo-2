@@ -224,6 +224,10 @@ public class CourseService {
             throw new RuntimeException("No tienes permiso para ver otros cursos");
         }
         User user = userService.findById(id);
+        if(user.getRole().equals("TEACHER")) {
+            return courseMapper.toInfoDTOs(courseOfTeacher(userMapper.toDTO(user)));
+
+        }
         List<Course> normalCourses = courseRepository.searchCoursesByStudentsContaining(user);
         return courseMapper.toInfoDTOs(normalCourses);
     }
