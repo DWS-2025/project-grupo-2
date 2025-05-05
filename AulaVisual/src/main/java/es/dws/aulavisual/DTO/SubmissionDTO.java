@@ -1,5 +1,7 @@
 package es.dws.aulavisual.DTO;
 
+import java.util.List;
+
 public record SubmissionDTO(
 
         Long id,
@@ -7,6 +9,7 @@ public record SubmissionDTO(
         CourseSimpleDTO course,
         boolean graded,
         float grade,
-        String content
+        String content,
+        List<String> comments
 ) {
 }

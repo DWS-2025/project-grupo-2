@@ -267,4 +267,18 @@ public class SubmissionService {
         submissionRepository.delete(submission);
         return submissionMapper.toDTO(submission);
     }
+
+    public List <String> saveComment(long courseId, String comment) {
+
+        User loggedUser = userService.getLoggedUser();
+        Course course = courseService.findById(courseId);
+        if(courseService.userIsInCourse(loggedUser.getId(), courseId)) {
+
+            Submission submission = submissionRepository.findByStudentAndCourse(loggedUser, course).orElseThrow();
+            submission.addComment(comment);
+            submissionRepository.save(submission);
+            return submission.getComments();
+        }
+        throw new RuntimeException("No tienes permisos para comentar esta entrega");
+    }
 }
