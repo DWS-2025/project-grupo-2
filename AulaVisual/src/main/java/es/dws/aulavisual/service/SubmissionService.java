@@ -8,7 +8,8 @@ import es.dws.aulavisual.model.Course;
 import es.dws.aulavisual.model.Submission;
 import es.dws.aulavisual.repository.SubmissionRepository;
 import es.dws.aulavisual.model.User;
-
+import org.owasp.html.PolicyFactory;
+import org.owasp.html.Sanitizers;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.List;
@@ -266,5 +267,22 @@ public class SubmissionService {
         submission.getCourse().getSubmissions().remove(submission);
         submissionRepository.delete(submission);
         return submissionMapper.toDTO(submission);
+    }
+
+    public List <String> saveComment(long courseId, String comment) {
+
+        User loggedUser = userService.getLoggedUser();
+        Course course = courseService.findById(courseId);
+        if(courseService.userIsInCourse(loggedUser.getId(), courseId)) {
+
+            Submission submission = submissionRepository.findByStudentAndCourse(loggedUser, course).orElseThrow();
+            // Sanitize the comment before adding it
+            PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
+            String sanitizedComment = policy.sanitize(comment);
+            submission.addComment(sanitizedComment);
+            submissionRepository.save(submission);
+            return submission.getComments();
+        }
+        throw new RuntimeException("No tienes permisos para comentar esta entrega");
     }
 }

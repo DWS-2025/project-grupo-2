@@ -1,6 +1,8 @@
 package es.dws.aulavisual.model;
 
 import java.sql.Blob;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import jakarta.persistence.*;
@@ -19,6 +21,8 @@ public class Submission {
     private Course course;
 
     private String content = null;
+
+    private List<String> comments = new ArrayList <>();
 
     @Lob
     private Blob submission;
@@ -96,6 +100,14 @@ public class Submission {
     public void setSubmission(Blob blob) {
 
         this.submission = blob;
+    }
+
+    public void addComment(String comment) {
+        this.comments.add(comment);
+    }
+
+    public List<String> getComments() {
+        return comments;
     }
 
     @Override

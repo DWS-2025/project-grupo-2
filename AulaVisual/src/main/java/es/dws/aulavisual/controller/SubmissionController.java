@@ -52,6 +52,7 @@ public class SubmissionController {
 
                     SubmissionDTO submission = submissionService.findByUserAndCourse(userDTO, courseDTO);
                     model.addAttribute("submitted", true);
+                    model.addAttribute("comments", submission.comments());
                     if(submission.graded()) {
 
                         model.addAttribute("grade", submission.grade());
@@ -210,5 +211,19 @@ public class SubmissionController {
             model.addAttribute("message", e.getMessage());
             return "error";
         }
+    }
+
+    @PostMapping("/courses/{courseId}/submission/comment")
+    public String commentSubmission(Model model, @PathVariable long courseId, @RequestParam("comment") String comment) {
+
+        try {
+            submissionService.saveComment(courseId, comment);
+            return "redirect:/courses/" + courseId + "/submission";
+        }catch (RuntimeException e){
+
+            model.addAttribute("message", e.getMessage());
+            return "error";
+        }
+
     }
 }

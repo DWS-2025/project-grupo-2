@@ -12,7 +12,7 @@ body {
 
 body::before {
     content: '';
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
     width: 100%;
@@ -77,4 +77,15 @@ button {
 .save {
     background: green;
     color: white;
+}
+
+#comment-editor {
+    min-width: 300px; /* Ancho mínimo */
+    min-height: 150px; /* Alto mínimo */
+    max-width: 600px; /* Ancho máximo */
+    max-height: 300px; /* Alto máximo */
+    overflow: auto; /* Habilitar desplazamiento si el contenido excede el tamaño */
+    border: 1px solid #ccc; /* Opcional: agregar un borde */
+    padding: 10px; /* Opcional: agregar un relleno */
+    box-sizing: border-box; /* Asegurar que el padding no afecte el tamaño total */
 }
