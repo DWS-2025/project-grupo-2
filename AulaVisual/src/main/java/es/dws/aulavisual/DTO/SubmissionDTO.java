@@ -10,6 +10,7 @@ public record SubmissionDTO(
         boolean graded,
         float grade,
         String content,
+        String submissionName,
         List<String> comments
 ) {
 }

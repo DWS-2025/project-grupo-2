@@ -77,9 +77,9 @@ public class SubmissionRestController {
 
         try {
             String location = fromCurrentRequest().path("").buildAndExpand(id).toUri().getPath();
-            submissionService.uploadSubmissionContent(id, location, file.getInputStream(), file.getSize());
+            submissionService.uploadSubmissionContent(id, location, file);
             return ResponseEntity.created(URI.create(location)).body(location);
-        }catch (IOException | RuntimeException e){
+        }catch (RuntimeException e){
 
             return ResponseEntity.badRequest().body(e.getMessage());
         }

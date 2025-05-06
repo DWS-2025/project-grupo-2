@@ -24,21 +24,19 @@ public class Submission {
 
     private List<String> comments = new ArrayList <>();
 
-    @Lob
-    private Blob submission;
-
+    private String submissionName;
     private boolean graded = false;
     private float grade = -1;
 
+
+    public Submission(Course course, User user, String submissionName) {
+        this.course = course;
+        this.student = user;
+        this.submissionName = submissionName;
+    }
     protected Submission() {
 
 
-    }
-
-    public Submission(Course course, User user, Blob submission) {
-        this.course = course;
-        this.student = user;
-        this.submission = submission;
     }
 
     public User getUser() {
@@ -62,9 +60,9 @@ public class Submission {
         return this.grade;
     }
 
-    public Blob getSubmission() {
+    public String getSubmissionName() {
 
-        return submission;
+        return this.submissionName;
     }
 
     public Long getId() {
@@ -97,16 +95,13 @@ public class Submission {
         this.content = content;
     }
 
-    public void setSubmission(Blob blob) {
-
-        this.submission = blob;
-    }
-
     public void addComment(String comment) {
+
         this.comments.add(comment);
     }
 
     public List<String> getComments() {
+
         return comments;
     }
 

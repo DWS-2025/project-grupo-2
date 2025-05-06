@@ -10,17 +10,18 @@ import es.dws.aulavisual.repository.SubmissionRepository;
 import es.dws.aulavisual.model.User;
 import org.owasp.html.PolicyFactory;
 import org.owasp.html.Sanitizers;
-import java.io.InputStream;
-import java.net.URI;
+
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
-import org.springframework.core.io.InputStreamResource;
+
 import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import java.sql.Blob;
-import org.hibernate.engine.jdbc.BlobProxy;
+
 import java.util.Optional;
 import java.io.IOException;
 
@@ -46,7 +47,9 @@ public class SubmissionService {
 
             User user = userService.findById(userDTO.id());
             Course course = courseService.findById(courseDTO.id());
-            submissionRepository.save(new Submission(course, user, transformSubmission(submission)));
+            Submission submissionEntity = new Submission(course, user, submission.getOriginalFilename());
+            saveSubmissionInDisk(submissionEntity, submission);
+            submissionRepository.save(submissionEntity);
         }
     }
 
@@ -74,15 +77,7 @@ public class SubmissionService {
 
             throw new RuntimeException("Ya has creado una submission para este curso");
         }
-        return submissionMapper.toDTO(submissionRepository.save(new Submission(course, user, null)));
-    }
-
-    private Blob transformSubmission(MultipartFile submission) {
-        try {
-            return BlobProxy.generateProxy(submission.getInputStream(), submission.getSize());
-        } catch (IOException e) {
-            throw new RuntimeException("Error processing submission", e);
-        }
+        return submissionMapper.toDTO(submissionRepository.save(new Submission(course, user, submissionDTO.submissionName())));
     }
 
     public SubmissionDTO findById(long id) {
@@ -179,7 +174,7 @@ public class SubmissionService {
         throw new RuntimeException("User does not have sufficient privileges");
     }
 
-    public void uploadSubmissionContent(long id, String location, InputStream inputStream, long size) {
+    public void uploadSubmissionContent(long id, String location, MultipartFile file) {
 
         User loggedUser = userService.getLoggedUser();
         Submission submission = submissionRepository.findById(id).orElseThrow();
@@ -191,12 +186,12 @@ public class SubmissionService {
 
             throw new RuntimeException("Solo los usuarios pueden subir contenido a sus entregas");
         }
-        if(submission.getSubmission() != null){
+        if(userMadeSubmission(loggedUser.getId(), submission.getId())){
 
             throw new RuntimeException("Ya has subido contenido a esta entrega");
         }
         submission.setContent(location);
-        submission.setSubmission(BlobProxy.generateProxy(inputStream, size));
+        saveSubmissionInDisk(submission, file);
         submissionRepository.save(submission);
     }
 
@@ -213,20 +208,6 @@ public class SubmissionService {
             throw new RuntimeException("Debes ser el profesor de este curso");
         }
         return getSubmissionContent(submission);
-    }
-
-    private ResponseEntity <Object> getSubmissionContent(Submission submission) {
-
-        Blob content = submission.getSubmission();
-        try {
-            Resource file = new InputStreamResource(content.getBinaryStream());
-            return ResponseEntity.ok().header(HttpHeaders.CONTENT_TYPE, "application/pdf")
-                    .contentLength(content.length()).body(file);
-
-        }catch (Exception e) {
-            System.out.println("Error loading submission: " + e.getMessage());
-            return ResponseEntity.notFound().build();
-        }
     }
 
     public SubmissionDTO gradeSubmission(long id, float grade) {
@@ -256,6 +237,15 @@ public class SubmissionService {
         Submission submission = submissionRepository.findById(id).orElseThrow();
         if(loggedUser.getRole().equals("ADMIN") || loggedUser.getId() == submission.getCourse().getTeacher().getId()) {
 
+            try {
+                Path submissionPath = java.nio.file.Paths.get("files/submissions/");
+                Path path = submissionPath.resolve("course-" + submission.getCourse().getId());
+                Path filePath = path.resolve(submission.getStudent().getId() + ".pdf");
+                Files.deleteIfExists(filePath);
+            }catch (IOException e){
+
+                throw new RuntimeException("Error deleting file", e);
+            }
             return delete(submission);
         }
         throw new RuntimeException("No tienes permisos para eliminar esta entrega");
@@ -284,5 +274,35 @@ public class SubmissionService {
             return submission.getComments();
         }
         throw new RuntimeException("No tienes permisos para comentar esta entrega");
+    }
+
+    private void saveSubmissionInDisk(Submission submission, MultipartFile file) {
+
+        try {
+            Path submissionPath = java.nio.file.Paths.get("files/submissions/");
+            Path path = submissionPath.resolve("course-" + submission.getCourse().getId());
+            if (!Files.exists(path)) {
+                Files.createDirectories(path);
+            }
+            Path filePath = path.resolve(submission.getStudent().getId() + ".pdf");
+            Files.copy(file.getInputStream(), filePath);
+        }catch (IOException e) {
+            throw new RuntimeException("Error creating directory", e);
+        }
+    }
+
+    private ResponseEntity <Object> getSubmissionContent(Submission submission) {
+
+        try {
+            Path submissionPath = java.nio.file.Paths.get("files/submissions/");
+            Path path = submissionPath.resolve("course-" + submission.getCourse().getId());
+            Path filePath = path.resolve(submission.getStudent().getId() + ".pdf");
+            Resource file = new UrlResource(filePath.toUri());
+            return ResponseEntity.ok().header(HttpHeaders.CONTENT_TYPE, "application/pdf").body(file);
+
+        }catch (Exception e) {
+            System.out.println("Error loading submission: " + e.getMessage());
+            return ResponseEntity.notFound().build();
+        }
     }
 }
