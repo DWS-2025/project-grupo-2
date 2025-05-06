@@ -180,25 +180,27 @@ public class CourseService {
     public List<CourseDTO> courseOfUser(Long id) {
 
         User loggedUser = userService.getLoggedUser();
-        if(!loggedUser.getRole().equals("USER")) {
+        if(!userService.hasRoleOrHigher("USER")) {
             throw new RuntimeException("Primero debes iniciar sesión");
         }
-        User user = userService.findById(id);
-        UserDTO userDTO = userMapper.toDTO(user);
-        List<Course> normalCourses = courseRepository.searchCoursesByStudentsContaining(user);
-        // This may be right (I think)
-        if (user.getRole().equals("TEACHER")) {
-            normalCourses.removeAll(courseOfTeacher(userDTO));
+
+        if (loggedUser.getRole().equals("TEACHER")){
+            throw new RuntimeException("No puedes ver los cursos siendo profesor");
         }
-        // ToDTOs is broken
+        User user = userService.findById(id);
+        List<Course> normalCourses = courseRepository.searchCoursesByStudentsContaining(user);
         return courseMapper.toDTOs(normalCourses);
     }
 
     public List<CourseDTO> notCourseOfUser(UserDTO userDTO) {
 
         User loggedUser = userService.getLoggedUser();
-        if(!loggedUser.getRole().equals("USER")) {
+        if(!userService.hasRoleOrHigher("USER")) {
             throw new RuntimeException("Primero debes iniciar sesión");
+        }
+
+        if(loggedUser.getRole().equals("TEACHER")){
+            throw new RuntimeException("No puedes ver los cursos siendo profesor");
         }
         User user = userService.findById(userDTO.id());
         List<Course> notCourses = courseRepository.searchCoursesByStudentsNotContaining(user);

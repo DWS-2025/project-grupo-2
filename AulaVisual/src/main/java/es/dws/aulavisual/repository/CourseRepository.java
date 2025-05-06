@@ -4,14 +4,16 @@ import es.dws.aulavisual.model.Course;
 import es.dws.aulavisual.model.User;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Service;
 
 @Service
 public interface CourseRepository extends JpaRepository<Course, Long> {
 
-    List<Course> searchCoursesByStudentsContaining(User user);
+    List <Course> searchCoursesByStudentsContaining(User user);
 
-    List<Course> searchCoursesByStudentsNotContaining(User user);
+    List <Course> searchCoursesByStudentsNotContaining(User user);
 
-    List<Course> searchCoursesByTeacherId(long id);
+    List <Course> searchCoursesByTeacherId(long id);
+
 }
