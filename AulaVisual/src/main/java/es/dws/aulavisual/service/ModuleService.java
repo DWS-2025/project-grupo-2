@@ -1,5 +1,6 @@
 package es.dws.aulavisual.service;
 
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.sql.Blob;
 
@@ -55,12 +56,10 @@ public class ModuleService {
     }
 
     private Blob transformImage(MultipartFile image) {
-
-        //Only used in the previous method
         try {
-           return BlobProxy.generateProxy(image.getInputStream(), image.getSize());
-        }catch (IOException e) {
-
+            byte[] imageBytes = image.getBytes(); // Read the InputStream into a byte array
+            return BlobProxy.generateProxy(new ByteArrayInputStream(imageBytes), imageBytes.length);
+        } catch (IOException e) {
             throw new RuntimeException("Error processing image", e);
         }
     }

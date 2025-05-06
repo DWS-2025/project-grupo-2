@@ -22,11 +22,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: new URLSearchParams({ comment: cleanedComment }),
             }).then(response => {
                 if (response.ok) {
-                    alert('Comentario guardado con éxito');
+                    console.log('Comentario guardado con éxito');
                 } else {
-                    alert('Error al guardar el comentario');
+                    console.log('Error al guardar el comentario');
                 }
             });
+            window.location.reload();
         });
     }
 });

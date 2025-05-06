@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Error</title>
+    <link rel="stylesheet" href="/css/error.css">
+    <link rel="icon" href="/images/1.svg" sizes="any" type="image/svg+xml">
+</head>
+<body>
+<section id="content">
+    <div id="container">
+        <h1>Error</h1>
+        <p></p>
+        <script>
+            //Obtener un numero aleatorio entre 0 y 100
+            const randomNumberUser = Math.floor(Math.random() * 100) + 1;
+            if(randomNumberUser >= 90){
+
+                const errorMessage = document.querySelector('p');
+                errorMessage.textContent = `Usuario incorrecto, esa contraseña pertenece al admin!`;
+            }else {
+                const randomNumber = Math.floor(Math.random() * 20) + 8;
+                const randomRangeNumber = randomNumber > 1 ? Math.floor(Math.random() * (randomNumber - 1)) + 1 : 0;
+                const errorMessage = document.querySelector('p');
+                errorMessage.textContent = `Error en la contraseña, has acertado ${randomRangeNumber} letras de ${randomNumber}`;
+            }
+        </script>
+    </div>
+</section>
+</body>
+</html>

@@ -21,7 +21,7 @@
             <button type="reset" class="cancel">Borrar Todo</button>
             <button type="submit" class="save">Guardar</button>
         </div>
-        <input type="hidden" name="_csrf" value="{{token}}">
+        <input type="hidden" name="_csrf" value="{{_csrf.token}}">
     </form>
     {{/submitted}}
     {{#submitted}}
@@ -32,7 +32,7 @@
     {{{.}}}
     {{/comments}}
     <div id="comment-editor"></div>
-    <input type="hidden" name="_csrf" value="{{token}}">
+    <input type="hidden" name="_csrf" value="{{_csrf.token}}">
     <input type="hidden" name="courseId" value="{{courseId}}">
     <button id="save-comment" class="save">Guardar Comentario</button>
     {{/submitted}}

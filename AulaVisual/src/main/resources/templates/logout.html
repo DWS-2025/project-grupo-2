@@ -9,7 +9,7 @@
 </head>
 <body>
 <form id="logoutForm" action="/logout" method="post">
-    <input type="hidden" name="_csrf" value="{{token}}">
+    <input type="hidden" name="_csrf" value="{{_csrf.token}}">
 </form>
 <script>
     document.getElementById('logoutForm').submit();

@@ -276,7 +276,7 @@ public boolean updateRole(UserDTO userDTO, int newRole) {
                 switch (newRole) {
                     case 0 -> user.setRole("ADMIN");
                     case 1 -> user.setRole("TEACHER");
-                    case 2 -> user.setRole("STUDENT");
+                    case 2 -> user.setRole("USER");
                 }
                 if(newRole == 0 || newRole == 1) {
 
@@ -285,6 +285,15 @@ public boolean updateRole(UserDTO userDTO, int newRole) {
                         courseRepository.save(course);
                     });
                     user.clearCourses();
+                }
+
+                if(newRole == 2 && user.getCourseTeaching() != null) {
+
+                    Course courseTeaching = user.getCourseTeaching();
+                    courseTeaching.setTeacher(null);
+                    save(courseTeaching);
+                    user.setCourseTeaching(null);
+
                 }
                 userService.save(user);
                 return true;
