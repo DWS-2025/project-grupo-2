@@ -136,11 +136,10 @@ public class UserController {
     public String getProfile(Model model, @PathVariable long id) {
 
 
-            UserDTO currentUser = (UserDTO) model.getAttribute("user");
-            if(currentUser.role().contains("ADMIN") && id != currentUser.id()) {
+            UserDTO currentUser;
 
-               currentUser = userService.findByIdDTO(id);
-            }
+            currentUser = userService.findByIdDTO(id);
+
             model.addAttribute("user", currentUser);
             return "/users/userPage";
     }
