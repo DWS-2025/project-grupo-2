@@ -6,7 +6,7 @@
         <li class="logout">
             <form action="/logout" method="post">
                 <button type="submit">Cerrar Sesión</button>
-                <input type="hidden" name="_csrf" value="{{token}}">
+                <input type="hidden" name="_csrf" value="{{_csrf.token}}">
             </form>
         </li>
     </ul>
