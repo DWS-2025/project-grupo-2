@@ -93,7 +93,6 @@ public class SecurityConfig {
 			.authorizeHttpRequests(authorize -> authorize
                     // PRIVATE ENDPOINTS
 					//USERS
-					.requestMatchers(HttpMethod.GET, "/api/users/").hasRole("ADMIN")
 					.requestMatchers(HttpMethod.GET, "/api/users/*/").hasRole("USER")
 					.requestMatchers(HttpMethod.PUT, "/api/users/*/").hasRole("USER")
 					.requestMatchers(HttpMethod.PUT, "/api/users/*/image/").hasRole("USER")
@@ -128,6 +127,7 @@ public class SecurityConfig {
 					// PUBLIC ENDPOINTS
 					.requestMatchers(HttpMethod.POST, "/api/users/").permitAll() //register
 					.requestMatchers(HttpMethod.POST, "/api/auth/**").permitAll()
+					.requestMatchers(HttpMethod.GET, "/api/users/").permitAll() //if not conflict vs webFilterChain
 			);
 		
         // Disable Form login Authentication
