@@ -10,11 +10,10 @@ import org.springframework.stereotype.Service;
 @Service
 public interface CourseRepository extends JpaRepository<Course, Long> {
 
-    List<Course> searchCoursesByStudentsContaining(User user);
+    List <Course> searchCoursesByStudentsContaining(User user);
 
-    List<Course> searchCoursesByStudentsNotContaining(User user);
+    List <Course> searchCoursesByStudentsNotContaining(User user);
 
-    List<Course> searchCoursesByTeacherId(long id);
+    List <Course> searchCoursesByTeacherId(long id);
 
-    @Query("SELECT c FROM Course c WHERE c.teacher.id != :teacherId")
-    List<Course> findCoursesWhereTeacherIsNot(Long teacherId);}
+}

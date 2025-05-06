@@ -185,7 +185,7 @@ public class CourseService {
         }
 
         if (loggedUser.getRole().equals("TEACHER")){
-            return courseMapper.toDTOs(courseOfTeacher(userMapper.toDTO(loggedUser)));
+            throw new RuntimeException("No puedes ver los cursos siendo profesor");
         }
         User user = userService.findById(id);
         List<Course> normalCourses = courseRepository.searchCoursesByStudentsContaining(user);
@@ -200,7 +200,7 @@ public class CourseService {
         }
 
         if(loggedUser.getRole().equals("TEACHER")){
-            return courseMapper.toDTOs(notCourseOfTeacher(userDTO));
+            throw new RuntimeException("No puedes ver los cursos siendo profesor");
         }
         User user = userService.findById(userDTO.id());
         List<Course> notCourses = courseRepository.searchCoursesByStudentsNotContaining(user);
@@ -216,13 +216,6 @@ public class CourseService {
         // Already checked in the functions that call this one
         User user = userService.findById(userDTO.id());
         return courseRepository.searchCoursesByTeacherId(user.getId());
-    }
-
-    List <Course> notCourseOfTeacher(UserDTO userDTO) {
-
-        // Already checked in the functions that call this one
-        User user = userService.findById(userDTO.id());
-        return courseRepository.findCoursesWhereTeacherIsNot(user.getId());
     }
 
     public List<CourseInfoDTO> courseInfoOfUser(Long id) {
