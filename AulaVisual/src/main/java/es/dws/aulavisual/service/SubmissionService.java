@@ -8,7 +8,8 @@ import es.dws.aulavisual.model.Course;
 import es.dws.aulavisual.model.Submission;
 import es.dws.aulavisual.repository.SubmissionRepository;
 import es.dws.aulavisual.model.User;
-
+import org.owasp.html.PolicyFactory;
+import org.owasp.html.Sanitizers;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.List;
@@ -275,7 +276,10 @@ public class SubmissionService {
         if(courseService.userIsInCourse(loggedUser.getId(), courseId)) {
 
             Submission submission = submissionRepository.findByStudentAndCourse(loggedUser, course).orElseThrow();
-            submission.addComment(comment);
+            // Sanitize the comment before adding it
+            PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
+            String sanitizedComment = policy.sanitize(comment);
+            submission.addComment(sanitizedComment);
             submissionRepository.save(submission);
             return submission.getComments();
         }
