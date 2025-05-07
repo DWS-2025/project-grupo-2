@@ -2,6 +2,7 @@ package es.dws.aulavisual.controller;
 
 import es.dws.aulavisual.DTO.CourseDTO;
 import es.dws.aulavisual.DTO.ModuleSimpleDTO;
+import es.dws.aulavisual.DTO.SubmissionDTO;
 import es.dws.aulavisual.DTO.UserDTO;
 import es.dws.aulavisual.model.Course;
 import es.dws.aulavisual.service.CourseService;
@@ -21,12 +22,10 @@ import java.util.List;
 public class MainCoursesController {
 
     private final CourseService courseService;
-    private final UserService userService;
     private final ModuleService moduleService;
 
-    public MainCoursesController(CourseService courseService, UserService userService, ModuleService moduleService) {
+    public MainCoursesController(CourseService courseService, ModuleService moduleService) {
         this.courseService = courseService;
-        this.userService = userService;
         this.moduleService = moduleService;
     }
 

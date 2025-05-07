@@ -1,5 +1,7 @@
 package es.dws.aulavisual.DTO;
 
+import es.dws.aulavisual.model.SubmissionComment;
+
 import java.util.List;
 
 public record SubmissionDTO(
@@ -11,6 +13,6 @@ public record SubmissionDTO(
         float grade,
         String content,
         String submissionName,
-        List<String> comments
+        List<SubmissionComment> comments
 ) {
 }

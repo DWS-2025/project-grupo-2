@@ -1,6 +1,5 @@
 package es.dws.aulavisual.model;
 
-import java.sql.Blob;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -22,7 +21,8 @@ public class Submission {
 
     private String content = null;
 
-    private List<String> comments = new ArrayList <>();
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<SubmissionComment> comments = new ArrayList<>();
 
     private String submissionName;
     private boolean graded = false;
@@ -95,12 +95,12 @@ public class Submission {
         this.content = content;
     }
 
-    public void addComment(String comment) {
+    public void addComment(SubmissionComment comment) {
 
         this.comments.add(comment);
     }
 
-    public List<String> getComments() {
+    public List<SubmissionComment> getComments() {
 
         return comments;
     }

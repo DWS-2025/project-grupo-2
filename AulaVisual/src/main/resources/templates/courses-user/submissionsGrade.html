@@ -20,6 +20,7 @@
             <th>Entrega</th>
             <th>Nota</th>
             <th>Guardar</th>
+            <th>Comentarios</th>
         </tr>
         </thead>
         <tbody>
@@ -37,6 +38,9 @@
             <button type="submit" class="save" form="grade-user-{{student.id}}">Guardar</button>
             <input type="hidden" name="_csrf" value="{{_csrf.token}}" form="grade-user-{{student.id}}">
         </td>
+        <td class="center">
+            <a href="/teacher/courses/{{courseId}}/submission/{{id}}/comments">Acceder a comentarios</a>
+        </td>
     </tr>
     {{/submissions}}
         </tbody>
@@ -53,6 +57,7 @@
             <th>Apellido</th>
             <th>Entrega</th>
             <th>Eliminar</th>
+            <th>Comentarios</th>
         </tr>
         </thead>
         <tbody>
@@ -68,6 +73,9 @@
             <td class="center">
                 <button type="submit" class="save" form="delete-user-{{student.id}}" name="delete">Devolver a borrador</button>
                 <input type="hidden" name="_csrf" value="{{_csrf.token}}" form="delete-user-{{student.id}}">
+            </td>
+            <td class="center">
+                <a href="/teacher/courses/{{courseId}}/submission/{{id}}/comments">Acceder a comentarios</a>
             </td>
         </tr>
         {{/gradedSubmissions}}

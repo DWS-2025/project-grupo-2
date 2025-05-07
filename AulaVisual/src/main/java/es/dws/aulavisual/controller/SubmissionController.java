@@ -53,6 +53,7 @@ public class SubmissionController {
                     SubmissionDTO submission = submissionService.findByUserAndCourse(userDTO, courseDTO);
                     model.addAttribute("submitted", true);
                     model.addAttribute("comments", submission.comments());
+                    model.addAttribute("submissionId", submission.id());
                     if(submission.graded()) {
 
                         model.addAttribute("grade", submission.grade());
@@ -213,11 +214,11 @@ public class SubmissionController {
         }
     }
 
-    @PostMapping("/courses/{courseId}/submission/comment")
-    public String commentSubmission(Model model, @PathVariable long courseId, @RequestParam("comment") String comment) {
+    @PostMapping("/courses/{courseId}/submission/{id}/comment")
+    public String commentSubmission(Model model, @PathVariable long courseId, @PathVariable long id ,@RequestParam("comment") String comment) {
 
         try {
-            submissionService.saveComment(courseId, comment);
+            submissionService.saveComment(courseId, comment, id);
             return "redirect:/courses/" + courseId + "/submission";
         }catch (RuntimeException e){
 
@@ -225,5 +226,28 @@ public class SubmissionController {
             return "error";
         }
 
+    }
+
+    @GetMapping("/teacher/courses/{courseId}/submission/{id}/comments")
+    public String seeSubmissionComments (Model model, @PathVariable long courseId, @PathVariable long id) {
+
+        try {
+            UserDTO user = (UserDTO) model.getAttribute("user");
+            CourseDTO courseDTO = courseService.findByIdDTO(courseId);
+            if(courseService.userIsInCourse(user.id(), courseDTO.id())) {
+
+                SubmissionDTO submissionDTO = submissionService.findById(id);
+                model.addAttribute("courseId", courseId);
+                model.addAttribute("submissionId", id);
+                model.addAttribute("comments", submissionDTO.comments());
+                return "courses-user/teacherComment";
+            }
+            model.addAttribute("message", "No tienes acceso a este curso");
+            return "error";
+        }catch (NoSuchElementException e) {
+
+            model.addAttribute("message", e.getMessage());
+            return "error";
+        }
     }
 }

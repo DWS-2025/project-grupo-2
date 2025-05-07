@@ -6,6 +6,7 @@ import es.dws.aulavisual.DTO.UserDTO;
 import es.dws.aulavisual.Mapper.SubmissionMapper;
 import es.dws.aulavisual.model.Course;
 import es.dws.aulavisual.model.Submission;
+import es.dws.aulavisual.model.SubmissionComment;
 import es.dws.aulavisual.repository.SubmissionRepository;
 import es.dws.aulavisual.model.User;
 import org.owasp.html.PolicyFactory;
@@ -259,17 +260,18 @@ public class SubmissionService {
         return submissionMapper.toDTO(submission);
     }
 
-    public List <String> saveComment(long courseId, String comment) {
+    public List <SubmissionComment> saveComment(long courseId, String comment, long submissionId) {
 
         User loggedUser = userService.getLoggedUser();
         Course course = courseService.findById(courseId);
         if(courseService.userIsInCourse(loggedUser.getId(), courseId)) {
 
-            Submission submission = submissionRepository.findByStudentAndCourse(loggedUser, course).orElseThrow();
+            Submission submission = submissionRepository.findById(submissionId).orElseThrow();
             // Sanitize the comment before adding it
             PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
             String sanitizedComment = policy.sanitize(comment);
-            submission.addComment(sanitizedComment);
+            SubmissionComment submissionComment = new SubmissionComment(loggedUser.getRole(), sanitizedComment);
+            submission.addComment(submissionComment);
             submissionRepository.save(submission);
             return submission.getComments();
         }

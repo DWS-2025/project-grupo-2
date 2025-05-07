@@ -12,22 +12,7 @@
 </head>
 <body>
 <div class="container">
-    <h1>Entrega del Curso {{courseName}}</h1>
-    {{^submitted}}
-    <h2>{{task}}</h2>
-    <form id="userForm" action="/courses/{{courseId}}/submission" method="post" enctype="multipart/form-data">
-        <input type="file" id="submission" name="submission" accept="application/pdf">
-        <div class="buttons">
-            <button type="reset" class="cancel">Borrar Todo</button>
-            <button type="submit" class="save">Guardar</button>
-        </div>
-        <input type="hidden" name="_csrf" value="{{_csrf.token}}">
-    </form>
-    {{/submitted}}
-    {{#submitted}}
-    <h2>Entrega Realizada</h2>
-    <h3>Nota: {{grade}}</h3>
-    <h3>Comentarios</h3>
+    <h1>Comentarios</h1>
     {{#comments}}
     <div class="{{role}}">
         <h3>{{role}}</h3>
@@ -39,7 +24,6 @@
     <input type="hidden" name="courseId" value="{{courseId}}">
     <input type="hidden" name="submissionId" value="{{submissionId}}">
     <button id="save-comment" class="save">Guardar Comentario</button>
-    {{/submitted}}
 </div>
 </body>
 </html>

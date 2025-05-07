@@ -13,8 +13,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const cleanedComment = DOMPurify.sanitize(rawComment);
             const csrfToken = document.querySelector('input[name="_csrf"]').value;
             const courseId = document.querySelector('input[name="courseId"]').value;
+            const submissionId = document.querySelector('input[name="submissionId"]').value;
 
-            await fetch('/courses/' + courseId + '/submission/comment', {
+            await fetch('/courses/' + courseId + '/submission/'+ submissionId +'/comment', {
                 method: 'POST',
                 headers: {
                     'X-CSRF-TOKEN': csrfToken,

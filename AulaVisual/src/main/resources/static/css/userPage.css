@@ -80,7 +80,7 @@ button {
 }
 
 #comment-editor {
-    min-width: 300px; /* Ancho mínimo */
+    min-width: 372px; /* Ancho mínimo */
     min-height: 150px; /* Alto mínimo */
     max-width: 600px; /* Ancho máximo */
     max-height: 300px; /* Alto máximo */
@@ -88,4 +88,42 @@ button {
     border: 1px solid #ccc; /* Opcional: agregar un borde */
     padding: 10px; /* Opcional: agregar un relleno */
     box-sizing: border-box; /* Asegurar que el padding no afecte el tamaño total */
+}
+
+.USER{
+
+    /* Create a comment box */
+    background-color: #f9f9f9;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
+    margin: 10px 0;
+    width: 90%;
+    max-width: 600px; /* Ancho máximo */
+    box-sizing: border-box; /* Asegurar que el padding no afecte el tamaño total */
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: center;
+    position: relative;
+    transition: background-color 0.3s;
+}
+
+.TEACHER{
+
+    /* Create a comment box */
+    background-color: #f0f8ff;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
+    margin: 10px 0;
+    width: 90%;
+    max-width: 600px; /* Ancho máximo */
+    box-sizing: border-box; /* Asegurar que el padding no afecte el tamaño total */
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    position: relative;
+    transition: background-color 0.3s;
 }
