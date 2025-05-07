@@ -108,10 +108,17 @@ public class SubmissionService {
 
         if(userService.hasRoleOrHigher("TEACHER") || courseService.userIsInCourse(userId, courseId)) {
 
-            User user = userService.findById(userId);
-            Course course = courseService.findById(courseId);
-            Optional <Submission> submission = submissionRepository.findByStudentAndCourse(user, course);
-            return submission.isPresent();
+            Path submissionPath = java.nio.file.Paths.get("files/submissions/");
+            Path path = submissionPath.resolve("course-" + courseId);
+            if (!Files.exists(path)) {
+                return false;
+            }
+            Path filePath = path.resolve(userId + ".pdf");
+            if (!Files.exists(filePath)) {
+
+                return false;
+            }
+            return true;
         }
         throw new RuntimeException("User does not have sufficient privileges");
     }

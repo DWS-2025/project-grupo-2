@@ -107,6 +107,8 @@ public class SecurityConfig {
 					.requestMatchers(HttpMethod.GET, "/api/submission/*/content").hasRole("USER")
 					.requestMatchers(HttpMethod.PUT, "/api/submission/*/grade").hasRole("TEACHER")
 					.requestMatchers(HttpMethod.DELETE, "/api/submission/*").hasRole("TEACHER")
+					.requestMatchers(HttpMethod.GET, "/api/course/*/submission/*/comments").hasRole("USER")
+					.requestMatchers(HttpMethod.POST, "/api/course/*/submission/*/comment").hasRole("USER")
 					//COURSES
 					.requestMatchers(HttpMethod.GET, "/api/courses/").hasRole("ADMIN")
 					.requestMatchers(HttpMethod.GET, "/api/user/*/courses/").hasRole("USER")

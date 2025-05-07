@@ -117,4 +117,28 @@ public class SubmissionRestController {
         SubmissionDTO submissionDTO = submissionService.deleteSubmission(id);
         return ResponseEntity.ok().body(submissionDTO);
     }
+
+    @PostMapping("/course/{courseId}/submission/{id}/comment")
+    public ResponseEntity<Object> commentSubmission(@PathVariable long courseId,@PathVariable long id, @RequestBody String comment) {
+
+        try {
+
+            return ResponseEntity.ok().body(submissionService.saveComment(courseId, comment, id));
+        }catch (RuntimeException e){
+
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/course/{courseId}/submission/{id}/comments")
+    public ResponseEntity<Object> seeSubmissionComments(@PathVariable long id) {
+
+        try {
+            SubmissionDTO submissionDTO = submissionService.findById(id);
+            return ResponseEntity.ok().body(submissionDTO.comments());
+        }catch (RuntimeException e){
+
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 }
