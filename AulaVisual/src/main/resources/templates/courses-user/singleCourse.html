@@ -6,6 +6,7 @@
   <link rel="stylesheet" href="/css/usersCoursePanel.css">
   <link rel="icon" href="/images/1.svg" sizes="any" type="image/svg+xml">
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dompurify/dist/purify.min.js"></script>
 
 </head>
 <body>
@@ -28,8 +29,9 @@
     fetch("/courses/{{courseId}}/module/{{id}}/content")
             .then(response => response.text())
             .then(text => {
-              document.getElementById('content').innerHTML = marked.parse(text);
-            });
+              document.getElementById('content').innerHTML = DOMPurify.sanitize(marked.parse(text));
+            })
+            .catch(error => console.error('Error al cargar el contenido:', error));
   </script>
 </section>
 </body>

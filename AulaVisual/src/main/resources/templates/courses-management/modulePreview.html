@@ -1,5 +1,6 @@
 <head>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dompurify/dist/purify.min.js"></script>
   <title>Test</title>
 </head>
 <div id="container">
@@ -7,7 +8,8 @@
     fetch("/courses/{{courseId}}/module/{{id}}/content")
             .then(response => response.text())
             .then(text => {
-              document.getElementById('container').innerHTML = marked.parse(text);
-            });
+              document.getElementById('container').innerHTML = DOMPurify.sanitize(marked.parse(text));
+            })
+            .catch(error => console.error('Error al cargar el contenido:', error));
   </script>
 </div>
