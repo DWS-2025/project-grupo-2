@@ -1,0 +1,978 @@
+{
+	"info": {
+		"_postman_id": "3515ff97-a4ce-4384-8385-466783d82cc3",
+		"name": "AulaVisual",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "43143682",
+		"_collection_link": "https://aulavisual-apllication.postman.co/workspace/AulaVisual-Apllication-Workspac~4161359c-4f3c-4bbc-8fb9-b59da1034d33/collection/43143682-3515ff97-a4ce-4384-8385-466783d82cc3?action=share&source=collection_link&creator=43143682"
+	},
+	"item": [
+		{
+			"name": "Users",
+			"item": [
+				{
+					"name": "RequestAllUsers",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users/?page=0&size=5",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								""
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "0"
+								},
+								{
+									"key": "size",
+									"value": "5"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "RequestUser",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/users/58/",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"58",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CreateUser",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"userDTO\": {\r\n        \"realName\": \"testApi\",\r\n        \"surname\": \"testApi\",\r\n        \"userName\": \"testApi\",\r\n        \"role\": \"ADMIN\",\r\n        \"campus\": \"Noxus\",\r\n        \"courses\": null,\r\n        \"courseTeaching\": null\r\n    },\r\n    \"password\": \"testApi\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users/",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "EditUser",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"userDTO\": {\r\n        \"realName\": \"testApiEdit\",\r\n        \"surname\": \"testApiEdit\",\r\n        \"userName\": \"testApiEdit\",\r\n        \"role\": \"TEACHER\",\r\n        \"campus\": \"Noxus\",\r\n        \"courses\": [{\r\n            \"id\": 1,\r\n            \"name\": \"League of Legends\",\r\n            \"description\": \"Aprende a jugar al LOL\",\r\n            \"task\": \"Haz una redacción sobre el control de oleadas\",\r\n            \"teacher\": {\r\n                \"id\": 1,\r\n                \"realName\": \"teacher1\",\r\n                \"surname\": \"teacher1\",\r\n                \"userName\": \"teacher1\",\r\n                \"campus\": \"Noxus\"\r\n            }}],\r\n        \"courseTeaching\": null\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users/58/",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"58",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GenarateTeacher",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"userDTO\": {\r\n        \"realName\": \"test2Edit\",\r\n        \"surname\": \"test2Edit\",\r\n        \"userName\": \"test2Edit\",\r\n        \"role\": \"TEACHER\",\r\n        \"campus\": \"Noxus\",\r\n        \"courses\": [{\r\n            \"id\": 1,\r\n            \"name\": \"League of Legends\",\r\n            \"description\": \"Aprende a jugar al LOL\",\r\n            \"task\": \"Haz una redacción sobre el control de oleadas\",\r\n            \"teacher\": {\r\n                \"id\": 1,\r\n                \"realName\": \"teacher1\",\r\n                \"surname\": \"teacher1\",\r\n                \"userName\": \"teacher1\",\r\n                \"campus\": \"Noxus\"\r\n            }}],\r\n        \"courseTeaching\": null\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users/5/",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"5",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "RequestUserImage",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/users/58/image/",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"58",
+								"image",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "UploadUserImage",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "image",
+									"type": "file",
+									"src": "postman-cloud:///1f00bbad-bf31-4950-bc22-880af3a334f6"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users/58/image/",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"58",
+								"image",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DeleteUser",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/users/58/",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"58",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Submissions",
+			"item": [
+				{
+					"name": "RequestAllSubmissionsByCourse",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/course/1/submissions",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"course",
+								"1",
+								"submissions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "RequestAllSubmissionsUser",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/user/5/submissions",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"user",
+								"5",
+								"submissions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "RequestSubmissions",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/submission/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"submission",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CreateSubmission",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"student\" : {\r\n\r\n        \"id\" : 5,\r\n        \"realName\" : \"test2\",\r\n        \"surname\" : \"test2\",\r\n        \"userName\" : \"test2\",\r\n        \"role\" : 2,\r\n        \"campus\" : \"Zaun\",\r\n        \"coursesTeaching\" : null\r\n    },\r\n\r\n    \"course\" : {\r\n\r\n        \"id\" : 1,\r\n        \"name\": \"League of Legends\",\r\n        \"description\": \"Aprende a jugar al LOL\",\r\n        \"task\": \"Haz una redacción sobre el control de oleadas\",\r\n        \"teacher\": {\r\n            \"id\": 1,\r\n            \"realName\": \"teacher1\",\r\n            \"surname\": \"teacher1\",\r\n            \"userName\": \"teacher1\",\r\n            \"campus\": \"Noxus\"\r\n        }\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/submission/",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"submission",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "UploadSubmission",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": "postman-cloud:///1f00d7d6-2985-4970-9b3c-da9042b777f5"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseUrl}}/submission/1/content",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"submission",
+								"1",
+								"content"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ViewSubmission",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/submission/1/content",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"submission",
+								"1",
+								"content"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GradeSubmission",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"grade\": 9.5\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/submission/1/grade",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"submission",
+								"1",
+								"grade"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DeleteSubmission",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/submission/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"submission",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetComments",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/course/1/submission/1/comments",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"course",
+								"1",
+								"submission",
+								"1",
+								"comments"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "UploadComments",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "<img src=x onerror=alert(1)> <script>alert(1)</script>zdbzdfg",
+							"options": {
+								"raw": {
+									"language": "text"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/course/1/submission/1/comment",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"course",
+								"1",
+								"submission",
+								"1",
+								"comment"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Courses",
+			"item": [
+				{
+					"name": "RequestAllCourses",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/courses/",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"courses",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "RequestUserCourses",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/user/5/courses/",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"user",
+								"5",
+								"courses",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "RequestCourse",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/course/4/",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"course",
+								"4",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CreateCourse",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"courseTest\",\r\n    \"description\": \"courseDescription\",\r\n    \"task\": \"courseTask\",\r\n    \"teacher\": null\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/courses/",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"courses",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "RequestAllUsersInCourse",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/course/1/users/",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"course",
+								"1",
+								"users",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DeleteCourse",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/course/1/",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"course",
+								"1",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "UploadImage",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "image",
+									"type": "file",
+									"src": "postman-cloud:///1f00e419-e07c-4da0-9313-209cd70e01c2"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseUrl}}/course/4/image/",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"course",
+								"4",
+								"image",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "RequestImage",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/course/4/image/",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"course",
+								"4",
+								"image",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "AssignTeacher",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\" : 5,\r\n    \"realName\": \"test2Edit\",\r\n    \"surname\": \"test2Edit\",\r\n    \"userName\": \"test2Edit\",\r\n    \"campus\": \"Noxus\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/course/4/",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"course",
+								"4",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Modules",
+			"item": [
+				{
+					"name": "RequestAllCourseModules",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/course/1/modules/",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"course",
+								"1",
+								"modules",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "RequestCourseModule",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/course/1/module/1/",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"course",
+								"1",
+								"module",
+								"1",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DeleteModule",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/course/1/module/3/",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"course",
+								"1",
+								"module",
+								"3",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CreateModule",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"asyugdfa\",\r\n    \"position\": 3,\r\n    \"description\": \"asuifdgha\",\r\n    \"course\": {\r\n            \"id\": 1,\r\n            \"name\": \"League of Legends\",\r\n            \"description\": \"Aprende a jugar al LOL\",\r\n            \"task\": \"Haz una redacción sobre el control de oleadas\",\r\n            \"teacher\": {\r\n                \"id\": 1,\r\n                \"realName\": \"teacher1\",\r\n                \"surname\": \"teacher1\",\r\n                \"userName\": \"teacher1\",\r\n                \"campus\": \"Noxus\"\r\n            }\r\n        }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/course/1/module/",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"course",
+								"1",
+								"module",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "RequestModuleContent",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/course/1/module/7/content/",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"course",
+								"1",
+								"module",
+								"7",
+								"content",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "UploadModuleContent",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "content",
+									"type": "file",
+									"src": "postman-cloud:///1f0272f8-061e-41d0-b766-0f94ea2571c3"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseUrl}}/course/1/module/4/content/",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"course",
+								"1",
+								"module",
+								"4",
+								"content",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Login",
+			"item": [
+				{
+					"name": "Login",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\" : \"test2\",\r\n    \"password\" : \"test2\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/login/",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"login",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "RefreshToken",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/refresh",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"refresh"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Logout",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/logout",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"logout"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
