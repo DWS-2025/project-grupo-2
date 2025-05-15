@@ -75,14 +75,14 @@ public class CourseService {
     public void addUserToCourse(long courseId, UserDTO userDTO) {
 
         // The only way to access this method is via protected endpoints in the API and Controllers
-        if(userDTO.role().equals("ADMIN")) {
+        User user = userService.findById(userDTO.id());
+        if(user.getRole().equals("ADMIN")) {
             throw new IllegalArgumentException("No puedes añadir un admin a un curso");
         }
-        if(userDTO.role().equals("TEACHER")) {
+        if(user.getRole().equals("TEACHER")) {
             throw new IllegalArgumentException("No puedes añadir un profesor a un curso");
         }
         Course course = findById(courseId);
-        User user = userService.findById(userDTO.id());
         course.getStudents().add(user);
         courseRepository.save(course);
     }
@@ -114,9 +114,9 @@ public class CourseService {
     public boolean userIsInCourse(long userId, long courseId) {
 
         User loggedUser = userService.getLoggedUser();
-        if(loggedUser.getRole().equals("TEACHER") || loggedUser.getId() == userId) {    //If the user want to see his own course
+        Course course = courseRepository.findById(courseId).orElseThrow();
+        if(userService.hasRoleOrHigher("ADMIN") || loggedUser.getId() == userId || loggedUser.equals(course.getTeacher())) {    //If the user want to see his own course
             User user = userService.findById(userId);
-            Course course = courseRepository.findById(courseId).orElseThrow();
             return course.getTeacher().equals(user)|| course.getStudents().contains(user);
         }
         throw new RuntimeException("No tienes permisos para esto");

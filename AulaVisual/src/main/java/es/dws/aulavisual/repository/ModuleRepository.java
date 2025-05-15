@@ -19,11 +19,11 @@ public interface ModuleRepository extends JpaRepository <Module, Long> {
 
     List<Module> findByCourse(Course course, Sort sort);
 
-    @Query(value = "SELECT position FROM Module WHERE course_id = :course_id ORDER BY position DESC LIMIT 1;",
+    @Query(value = "SELECT id FROM Module WHERE course_id = :course_id ORDER BY position DESC LIMIT 1;",
             nativeQuery = true)
     Integer findLastModuleId(long course_id);
 
-    @Query(value = "SELECT position FROM Module WHERE course_id = :course_id ORDER BY position ASC LIMIT 1;",
+    @Query(value = "SELECT id FROM Module WHERE course_id = :course_id ORDER BY position ASC LIMIT 1;",
             nativeQuery = true)
     Integer findFirstModuleId(long course_id);
 }
