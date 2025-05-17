@@ -100,13 +100,13 @@ public class UserService {
 
     public UserDTO deleteById(long id) {
 
-        User admin = getLoggedUser();
-        if(admin.getId() == id) {
+        User loggedUser = getLoggedUser();
+        if(loggedUser.getId() == id && hasRoleOrHigher("ADMIN")) {
 
-            throw new RuntimeException("No puedes eliminarte a ti mismo");
+            throw new RuntimeException("No puedes eliminarte a ti mismo siendo administrador");
         }else{
 
-            if(hasRoleOrHigher("ADMIN")){
+            if(hasRoleOrHigher("ADMIN") || loggedUser.getId()==id){
 
                 User userToDelete = userRepository.findById(id).orElseThrow();
                 List<Course> courses = userToDelete.getCourses();
@@ -121,6 +121,7 @@ public class UserService {
                     course.setTeacher(null);
                 }
                 userRepository.deleteById(id);
+
                 return userMapper.toDTO(userToDelete);
             }
             throw new RuntimeException("No tienes permisos para eliminar este usuario");
