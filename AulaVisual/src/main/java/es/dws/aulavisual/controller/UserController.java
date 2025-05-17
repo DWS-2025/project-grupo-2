@@ -177,8 +177,8 @@ public class UserController {
         }
     }
 
-    @GetMapping("/users/{id}/delete")
-    public String deleteUser(Model model, @PathVariable long id) {
+    @PostMapping("/users/{id}/delete")
+    public String deleteUser(Model model, @RequestParam long id) {
 
         try {
 

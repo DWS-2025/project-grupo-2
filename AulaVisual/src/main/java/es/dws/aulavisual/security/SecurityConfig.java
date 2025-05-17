@@ -172,13 +172,13 @@ public class SecurityConfig {
 						.requestMatchers("/js/**").permitAll()
 						.requestMatchers("/error").permitAll()
 						.requestMatchers("/login/success").permitAll()
-						.requestMatchers("/users/{id}/delete").permitAll()
 						// PRIVATE PAGES
 						.requestMatchers("/admin/**").hasAnyRole("ADMIN")
 						.requestMatchers("/courses/**").hasAnyRole("USER")
 						.requestMatchers("/teacher/**").hasAnyRole("TEACHER")
 						.requestMatchers("/user_pfp/*").hasAnyRole("USER")
 						.requestMatchers("/profile/**").hasAnyRole("USER")
+						.requestMatchers("/users/{id}/delete").hasAnyRole("USER")
 						.requestMatchers("/**").permitAll()
 				)
 				.formLogin(formLogin -> formLogin

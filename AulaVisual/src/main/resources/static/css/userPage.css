@@ -127,3 +127,9 @@ button {
     position: relative;
     transition: background-color 0.3s;
 }
+
+.USER > form {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
