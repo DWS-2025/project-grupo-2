@@ -37,6 +37,9 @@ public class SecurityConfig {
 	@Autowired
 	private UnauthorizedHandlerJwt unauthorizedHandlerJwt;
 
+	@Autowired
+	private CustomAccessDeniedHandler customAccessDeniedHandler;
+
 	@Bean
 	public PasswordEncoder passwordEncoder() {
 
@@ -176,6 +179,7 @@ public class SecurityConfig {
 						.requestMatchers("/teacher/**").hasAnyRole("TEACHER")
 						.requestMatchers("/user_pfp/*").hasAnyRole("USER")
 						.requestMatchers("/profile/**").hasAnyRole("USER")
+						.requestMatchers("/**").permitAll()
 				)
 				.formLogin(formLogin -> formLogin
 						.loginPage("/login")
@@ -187,6 +191,9 @@ public class SecurityConfig {
 						.logoutUrl("/logout")
 						.logoutSuccessUrl("/")
 						.permitAll()
+				)
+				.exceptionHandling(ex -> ex
+						.accessDeniedHandler(customAccessDeniedHandler) // Solo para 403
 				);
 
 		return http.build();
