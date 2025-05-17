@@ -18,6 +18,11 @@
         </div>
         <input type="hidden" name="_csrf" value="{{_csrf.token}}">
     </form>
+    <form action="/users/{{user.id}}/delete" method="post">
+        <input type="hidden" name="_csrf" value="{{_csrf.token}}">
+        <input type="hidden" name="id" value="{{user.id}}">
+        <button type="submit" class="delete">Borrar usuario</button>
+    </form>
 </div>
 </body>
 </html>

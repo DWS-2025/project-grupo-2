@@ -178,6 +178,7 @@ public class SecurityConfig {
 						.requestMatchers("/teacher/**").hasAnyRole("TEACHER")
 						.requestMatchers("/user_pfp/*").hasAnyRole("USER")
 						.requestMatchers("/profile/**").hasAnyRole("USER")
+						.requestMatchers("/users/{id}/delete").hasAnyRole("USER")
 						.requestMatchers("/**").permitAll()
 				)
 				.formLogin(formLogin -> formLogin

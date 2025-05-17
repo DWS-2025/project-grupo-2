@@ -163,12 +163,27 @@ public class UserController {
         }
     }
     @PostMapping("/admin/users/{id}/delete")
-    public String deleteUser(Model model, @PathVariable long id) {
+    public String deleteUserAdmin(Model model, @PathVariable long id) {
 
         try {
 
             userService.deleteById(id);
             return "redirect:/admin";
+
+        }catch (RuntimeException e) {
+
+            model.addAttribute("message", e.getMessage());
+            return "error";
+        }
+    }
+
+    @PostMapping("/users/{id}/delete")
+    public String deleteUser(Model model, @RequestParam long id) {
+
+        try {
+
+            userService.deleteById(id);
+            return "logout";
 
         }catch (RuntimeException e) {
 

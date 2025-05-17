@@ -32,6 +32,11 @@
     <div class="{{role}}">
         <h3>{{role}}</h3>
         {{{text}}}
+
+        <form action="/courses/{{courseId}}/submission/{{submissionId}}/comment/{{id}}/delete" method="post">
+            <input type="hidden" name="_csrf" value="{{_csrf.token}}">
+            <button type="submit" id="delete">Eliminar</button>
+        </form>
     </div>
     {{/comments}}
     <div id="comment-editor"></div>

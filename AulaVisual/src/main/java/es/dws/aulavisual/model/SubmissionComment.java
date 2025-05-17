@@ -11,8 +11,8 @@ public class SubmissionComment {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     long id;
-    String role;
-    String text;
+    private String role;
+    private String text;
 
     public SubmissionComment(String role, String text) {
         this.role = role;

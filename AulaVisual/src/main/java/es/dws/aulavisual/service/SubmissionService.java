@@ -7,6 +7,7 @@ import es.dws.aulavisual.Mapper.SubmissionMapper;
 import es.dws.aulavisual.model.Course;
 import es.dws.aulavisual.model.Submission;
 import es.dws.aulavisual.model.SubmissionComment;
+import es.dws.aulavisual.repository.CommentRepository;
 import es.dws.aulavisual.repository.SubmissionRepository;
 import es.dws.aulavisual.model.User;
 import org.owasp.html.PolicyFactory;
@@ -33,12 +34,14 @@ public class SubmissionService {
     private final SubmissionMapper submissionMapper;
     private final CourseService courseService;
     private final UserService userService;
+    private final CommentRepository commentRepository;
 
-    public SubmissionService(SubmissionRepository submissionRepository, SubmissionMapper submissionMapper, CourseService courseService, UserService userService) {
+    public SubmissionService(SubmissionRepository submissionRepository, SubmissionMapper submissionMapper, CourseService courseService, UserService userService, CommentRepository commentRepository) {
         this.submissionRepository = submissionRepository;
         this.submissionMapper = submissionMapper;
         this.courseService = courseService;
         this.userService = userService;
+        this.commentRepository = commentRepository;
     }
 
     public void save(CourseDTO courseDTO, UserDTO userDTO, MultipartFile submission) {
@@ -312,6 +315,31 @@ public class SubmissionService {
         }catch (Exception e) {
             System.out.println("Error loading submission: " + e.getMessage());
             return ResponseEntity.notFound().build();
+        }
+    }
+
+    public void deleteComment(long commentId, long submissionId) {
+
+        User loggedUser = userService.getLoggedUser();
+        SubmissionComment comment = commentRepository.findById(commentId).orElseThrow();
+        Submission submission = submissionRepository.findById(submissionId).orElseThrow();
+
+        if(!courseService.userIsInCourse(loggedUser.getId(), submission.getCourse().getId())) {
+
+            throw new RuntimeException();
+        }
+
+        if(!loggedUser.equals(submission.getStudent()) && !userService.hasRoleOrHigher("TEACHER")) {
+
+            throw new RuntimeException();
+        }
+
+        if(comment.getRole().equals(loggedUser.getRole())){
+            submission.getComments().remove(comment);
+            commentRepository.delete(comment);
+            submissionRepository.save(submission);
+        }else{
+            throw new RuntimeException();
         }
     }
 }

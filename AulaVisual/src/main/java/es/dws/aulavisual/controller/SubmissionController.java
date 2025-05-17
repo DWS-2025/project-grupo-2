@@ -250,4 +250,28 @@ public class SubmissionController {
             return "error";
         }
     }
+
+    @PostMapping ("/courses/{courseId}/submission/{submissionId}/comment/{commentId}/delete")
+    public String deleteComment (Model model, @PathVariable long courseId, @PathVariable long submissionId, @PathVariable long commentId){
+
+        try {
+            submissionService.deleteComment(commentId, submissionId);
+            return "redirect:/courses/" + courseId + "/submission";
+        }catch (RuntimeException e){
+
+            return "redirect:https://www.youtube.com/watch?v=dQw4w9WgXcQ";
+        }
+    }
+
+    @PostMapping ("/teacher/courses/{courseId}/submission/{submissionId}/comment/{commentId}/delete")
+    public String deleteCommentTeacher (Model model, @PathVariable long courseId, @PathVariable long submissionId, @PathVariable long commentId){
+
+        try {
+            submissionService.deleteComment(commentId, submissionId);
+            return "redirect:/teacher/courses/" + courseId + "/submission/" + submissionId + "/comments";
+        }catch (RuntimeException e){
+
+            return "redirect:https://www.youtube.com/watch?v=dQw4w9WgXcQ";
+        }
+    }
 }
