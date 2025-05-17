@@ -169,6 +169,7 @@ public class SecurityConfig {
 						.requestMatchers("/js/**").permitAll()
 						.requestMatchers("/error").permitAll()
 						.requestMatchers("/login/success").permitAll()
+						.requestMatchers("/users/{id}/delete").permitAll()
 						// PRIVATE PAGES
 						.requestMatchers("/admin/**").hasAnyRole("ADMIN")
 						.requestMatchers("/courses/**").hasAnyRole("USER")
