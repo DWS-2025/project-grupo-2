@@ -67,7 +67,7 @@ El usuario es dueño de su destino, así como el fuego lo es de su llama: nace e
 
 <h3 align="center">Diagrama de Entidades</h3>
 <div align="center">
-  <img src="https://github.com/DWS-2025/project-grupo-2/blob/main/content/diagrams/Database_Diagram.svg" alt="Diagrama de Base de Datos"/>
+  <img src="https://github.com/DWS-2025/project-grupo-2/blob/main/content/diagrams/Database_Diagram-v-3.svg" alt="Diagrama de Base de Datos"/>
 </div>
 <h1 align="center">V2.0</h1>
 <h1>TOP 4+1 COMMITS by Mineja2017</h1>
