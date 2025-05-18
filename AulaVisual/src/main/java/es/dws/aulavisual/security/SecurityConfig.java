@@ -99,7 +99,7 @@ public class SecurityConfig {
 					.requestMatchers(HttpMethod.PUT, "/api/users/*/").hasRole("USER")
 					.requestMatchers(HttpMethod.PUT, "/api/users/*/image/").hasRole("USER")
 					.requestMatchers(HttpMethod.GET, "/api/users/*/image/").hasRole("USER")
-					.requestMatchers(HttpMethod.DELETE, "/api/users/*/").hasRole("ADMIN")
+					.requestMatchers(HttpMethod.DELETE, "/api/users/*/").hasRole("USER")
 					//SUBMISSIONS
 					.requestMatchers(HttpMethod.GET, "/api/course/*/submissions").hasRole("TEACHER")
 					.requestMatchers(HttpMethod.GET, "/api/user/*/submissions").hasRole("USER")

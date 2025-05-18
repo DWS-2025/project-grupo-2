@@ -2,6 +2,8 @@ package es.dws.aulavisual.service;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.security.NoSuchAlgorithmException;
 import java.security.MessageDigest;
 import java.sql.Blob;
@@ -12,6 +14,7 @@ import java.util.stream.Collectors;
 import es.dws.aulavisual.DTO.*;
 import es.dws.aulavisual.Mapper.UserMapper;
 import es.dws.aulavisual.model.Course;
+import es.dws.aulavisual.model.Submission;
 import es.dws.aulavisual.model.User;
 import es.dws.aulavisual.repository.UserRepository;
 import org.hibernate.engine.jdbc.BlobProxy;
@@ -120,8 +123,21 @@ public class UserService {
                     Course course = userToDelete.getCourseTeaching();
                     course.setTeacher(null);
                 }
-                userRepository.deleteById(id);
+                for(Submission submission : userToDelete.getSubmissions()) {
 
+                    try{
+                        Path submissionPath = java.nio.file.Paths.get("files/submissions/");
+                        Path path = submissionPath.resolve("course-" + submission.getCourse().getId());
+                        Path filePath = path.resolve(submission.getStudent().getId() + ".pdf");
+                        Files.deleteIfExists(filePath);
+                        submission.getCourse().getSubmissions().remove(submission);
+                    }catch (IOException e){
+
+                        System.out.println("Error deleting file: " + e.getMessage());
+                    }
+                }
+                userToDelete.getSubmissions().clear();
+                userRepository.delete(userToDelete);
                 return userMapper.toDTO(userToDelete);
             }
             throw new RuntimeException("No tienes permisos para eliminar este usuario");
@@ -242,7 +258,8 @@ public class UserService {
     public UserDTO findByIdDTO(long id) {
 
         User logguedUser = getLoggedUser();
-        if(hasRoleOrHigher("TEACHER")) {
+        User requestedUser = findById(id);
+        if((hasRoleOrHigher("TEACHER") && requestedUser.getCourses().contains(logguedUser.getCourseTeaching())) || hasRoleOrHigher("ADMIN") || logguedUser.getId() == id) {
 
             return userMapper.toDTO(findById(id));
         }
