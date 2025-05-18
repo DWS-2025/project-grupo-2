@@ -129,28 +129,28 @@ El usuario es dueño de su destino, así como el fuego lo es de su llama: nace e
 <h1 align="center">V3.0</h1>
 <h1>TOP 6-1 COMMITS by Mineja2017</h1>
 <h2>1. User Service Add Security</h2>
-  <p><strong>Commit:</strong> <a href="https://github.com/DWS-2025/project-grupo-2/commit/f1617f5d3ab5429f8c9316fbdae5d40652ffa33a">9537df2</a></p>
+  <p><strong>Commit:</strong> <a href="https://github.com/DWS-2025/project-grupo-2/commit/f1617f5d3ab5429f8c9316fbdae5d40652ffa33a">f1617f5</a></p>
   <p><strong>Mensaje:</strong> User service add security finished</p>
   <p><strong>Descripción:</strong> En este conjuro, el servicio de usuarios recibe capas impenetrables de seguridad: autenticación reforzada, control de accesos y encriptación de datos sensibles, sellando las puertas de Mordor a los intrusos.</p>
   
   <h2>2. REST Module Security</h2>
-  <p><strong>Commit:</strong> <a href="https://github.com/DWS-2025/project-grupo-2/commit/b8f0c73bc56dff740a40861413ee99b34b2cd70f">9537df2</a></p>
+  <p><strong>Commit:</strong> <a href="https://github.com/DWS-2025/project-grupo-2/commit/b8f0c73bc56dff740a40861413ee99b34b2cd70f">b8f0c73</a></p>
   <p><strong>Mensaje:</strong> REST-module-security finished</p>
   <p><strong>Descripción:</strong> Con la elegancia de un guardián élfico, este commit endurece los endpoints REST de módulos, envolviéndolos en runas de autorización y respondiendo con sabiduría divina a cada petición.</p>
 
   <h2>3. Finished REST User Security</h2>
-  <p><strong>Commit:</strong> <a href="https://github.com/DWS-2025/project-grupo-2/commit/631ddd84f1425df00f804735f844fe31a584db07">9537df2</a></p>
+  <p><strong>Commit:</strong> <a href="https://github.com/DWS-2025/project-grupo-2/commit/631ddd84f1425df00f804735f844fe31a584db07">631ddd8</a></p>
   <p><strong>Mensaje:</strong> Finished REST user security</p>
   <p><strong>Descripción:</strong> Tras una larga peregrinación por rutas de código, la seguridad REST para usuarios alcanza su culminación: roles, permisos y validaciones se alinean, como las estrellas en la Puerta Negra.</p>
 
   <h2>4. Added Sanitization?</h2>
-  <p><strong>Commit:</strong> <a href="https://github.com/DWS-2025/project-grupo-2/commit/0c4edbbef62a7b2a72539b606e0d3a52c6217beb">9537df2</a></p>
+  <p><strong>Commit:</strong> <a href="https://github.com/DWS-2025/project-grupo-2/commit/0c4edbbef62a7b2a72539b606e0d3a52c6217beb">0c4edbb</a></p>
   <p><strong>Mensaje:</strong> added sanitization? not quite sure</p>
   <p><strong>Descripción:</strong> Como Gandalf plantando su bastón en el Puente de Khazad-dûm, este commit invocó el OWASP HTML Sanitizer para detener el avance de cualquier inyección maligna; tal como el Mago gritó “¡No pasarás!” y partió el puente bajo el Balrog, nuestra sanitización fractura y arroja al abismo cualquier script malicioso que intente subyugar el sistema.</p>
   <img src="https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExNHN0NWl4bDcya3o1aDV3eW9yYmZsbjY1NjcweWlwMnhwc3NyOW9nYiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/njYrp176NQsHS/giphy.gif">
 
   <h2>"10/2". Securely Save Submission in Disk</h2>
-  <p><strong>Commit:</strong> <a href="https://github.com/DWS-2025/project-grupo-2/commit/c18d96676401cd295bc997d00f7749679b2ea813">9537df2</a></p>
+  <p><strong>Commit:</strong> <a href="https://github.com/DWS-2025/project-grupo-2/commit/c18d96676401cd295bc997d00f7749679b2ea813">c18d966</a></p>
   <p><strong>Mensaje:</strong> Securely save submission in disk</p>
   <p><strong>Descripción:</strong> Con la bendición de Ilúvatar y el resplandor de las Valar, las entregas ya no duermen en frágiles blobs en las entrañas de la montaña solitaria (La base de Datos), pues ahora reposan seguras en el disco, bajo custodias de rutas cifradas y control de integridad.</p>
   

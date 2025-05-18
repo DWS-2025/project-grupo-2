@@ -2,7 +2,6 @@ package es.dws.aulavisual.security;
 
 import es.dws.aulavisual.security.jwt.JwtRequestFilter;
 import es.dws.aulavisual.security.jwt.UnauthorizedHandlerJwt;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -28,17 +27,19 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 public class SecurityConfig {
 
-	@Autowired
-	private JwtRequestFilter jwtRequestFilter;
 
-	@Autowired
-	RepositoryUserDetailsService userDetailsService;
+	private final JwtRequestFilter jwtRequestFilter;
+	private final RepositoryUserDetailsService userDetailsService;
+	private final UnauthorizedHandlerJwt unauthorizedHandlerJwt;
+	private final CustomAccessDeniedHandler customAccessDeniedHandler;
 
-	@Autowired
-	private UnauthorizedHandlerJwt unauthorizedHandlerJwt;
+	public SecurityConfig(JwtRequestFilter jwtRequestFilter, RepositoryUserDetailsService userDetailsService, UnauthorizedHandlerJwt unauthorizedHandlerJwt, CustomAccessDeniedHandler customAccessDeniedHandler) {
 
-	@Autowired
-	private CustomAccessDeniedHandler customAccessDeniedHandler;
+		this.jwtRequestFilter = jwtRequestFilter;
+		this.userDetailsService = userDetailsService;
+		this.unauthorizedHandlerJwt = unauthorizedHandlerJwt;
+		this.customAccessDeniedHandler = customAccessDeniedHandler;
+	}
 
 	@Bean
 	public PasswordEncoder passwordEncoder() {
@@ -80,8 +81,6 @@ public class SecurityConfig {
 	@Bean
 	@Order(1)
 	public SecurityFilterChain apiFilterChain(HttpSecurity http) throws Exception {
-
-		String commonPath = "/api/";
 
 		DefaultMethodSecurityExpressionHandler expressionHandler = new DefaultMethodSecurityExpressionHandler();
 		expressionHandler.setRoleHierarchy(roleHierarchy());
@@ -193,7 +192,7 @@ public class SecurityConfig {
 						.permitAll()
 				)
 				.exceptionHandling(ex -> ex
-						.accessDeniedHandler(customAccessDeniedHandler) // Solo para 403
+						.accessDeniedHandler(customAccessDeniedHandler)
 				);
 
 		return http.build();
