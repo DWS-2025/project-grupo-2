@@ -128,31 +128,61 @@ El usuario es dueño de su destino, así como el fuego lo es de su llama: nace e
   <p><em>Y así esta edad termina dejando paso a la siguiente, en la que, con mucha seguridad, viviremos muchas más aventuras épicas protegiendo lo que hemos construido frente a las temibles bestias de Morgoth.</em></p>
 <h1 align="center">V3.0</h1>
 <h1>TOP 6-1 COMMITS by Mineja2017</h1>
-<h2>1. User Service Add Security</h2>
+<h2>1. El Manto de Mithril del Usuario</h2>
   <p><strong>Commit:</strong> <a href="https://github.com/DWS-2025/project-grupo-2/commit/f1617f5d3ab5429f8c9316fbdae5d40652ffa33a">f1617f5</a></p>
   <p><strong>Mensaje:</strong> User service add security finished</p>
   <p><strong>Descripción:</strong> En este conjuro, el servicio de usuarios recibe capas impenetrables de seguridad: autenticación reforzada, control de accesos y encriptación de datos sensibles, sellando las puertas de Mordor a los intrusos.</p>
   
-  <h2>2. REST Module Security</h2>
+  <h2>2. Los Juramentos del Módulo Sagrado</h2>
   <p><strong>Commit:</strong> <a href="https://github.com/DWS-2025/project-grupo-2/commit/b8f0c73bc56dff740a40861413ee99b34b2cd70f">b8f0c73</a></p>
   <p><strong>Mensaje:</strong> REST-module-security finished</p>
   <p><strong>Descripción:</strong> Con la elegancia de un guardián élfico, este commit endurece los endpoints REST de módulos, envolviéndolos en runas de autorización y respondiendo con sabiduría divina a cada petición.</p>
 
-  <h2>3. Finished REST User Security</h2>
+  <h2>3. El Eclipse de los Endpoints Profanos</h2>
   <p><strong>Commit:</strong> <a href="https://github.com/DWS-2025/project-grupo-2/commit/631ddd84f1425df00f804735f844fe31a584db07">631ddd8</a></p>
   <p><strong>Mensaje:</strong> Finished REST user security</p>
   <p><strong>Descripción:</strong> Tras una larga peregrinación por rutas de código, la seguridad REST para usuarios alcanza su culminación: roles, permisos y validaciones se alinean, como las estrellas en la Puerta Negra.</p>
 
-  <h2>4. Added Sanitization?</h2>
+  <h2>4. El Bastón de la Purga Digital</h2>
   <p><strong>Commit:</strong> <a href="https://github.com/DWS-2025/project-grupo-2/commit/0c4edbbef62a7b2a72539b606e0d3a52c6217beb">0c4edbb</a></p>
   <p><strong>Mensaje:</strong> added sanitization? not quite sure</p>
   <p><strong>Descripción:</strong> Como Gandalf plantando su bastón en el Puente de Khazad-dûm, este commit invocó el OWASP HTML Sanitizer para detener el avance de cualquier inyección maligna; tal como el Mago gritó “¡No pasarás!” y partió el puente bajo el Balrog, nuestra sanitización fractura y arroja al abismo cualquier script malicioso que intente subyugar el sistema.</p>
   <img src="https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExNHN0NWl4bDcya3o1aDV3eW9yYmZsbjY1NjcweWlwMnhwc3NyOW9nYiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/njYrp176NQsHS/giphy.gif">
 
-  <h2>"10/2". Securely Save Submission in Disk</h2>
+  <h2>"10/2".El Refugio de los Archivos Perdidos</h2>
   <p><strong>Commit:</strong> <a href="https://github.com/DWS-2025/project-grupo-2/commit/c18d96676401cd295bc997d00f7749679b2ea813">c18d966</a></p>
   <p><strong>Mensaje:</strong> Securely save submission in disk</p>
   <p><strong>Descripción:</strong> Con la bendición de Ilúvatar y el resplandor de las Valar, las entregas ya no duermen en frágiles blobs en las entrañas de la montaña solitaria (La base de Datos), pues ahora reposan seguras en el disco, bajo custodias de rutas cifradas y control de integridad.</p>
+
+  <h1>TOP (2*3)+(6−7) COMMITS by Granusti</h1>
+<h2>1. El Despertar del Menú de los Maestros</h2>
+<p><strong>Commit:</strong> <a href="https://github.com/DWS-2025/project-grupo-2/commit/f301d7590a197921cf110042cc96d3852b33b15a">f301d75</a></p>
+<p><strong>Mensaje:</strong> Courses menu to teachers</p>
+<p><strong>Descripción:</strong> En los salones del conocimiento, los maestros clamaban por una visión clara de sus dominios. Este commit respondió a su llamado, otorgándoles acceso al menú de cursos. Como si se abrieran las puertas de la Biblioteca de Minas Tirith, los sabios pudieron contemplar y gestionar sus enseñanzas con renovada claridad.</p>
+
+
+<h2>2. La Purga del Código No Deseado</h2>
+<p><strong>Commit:</strong> <a href="https://github.com/DWS-2025/project-grupo-2/commit/aeb4ae0af76d4f60ae9ddbf906fad287694eec0e">aeb4ae0</a></p>
+<p><strong>Mensaje:</strong> We didn't want the feature</p>
+<p><strong>Descripción:</strong> A veces, incluso los más sabios cometen errores. Este commit representa la valentía de reconocer y eliminar una característica no deseada. Como los elfos que abandonan una senda errónea para preservar la armonía, el código fue purgado, restaurando el equilibrio y la intención original del proyecto.</p>
+
+<h2>3. El Juicio del Usuario</h2>
+<p><strong>Commit:</strong> <a href="https://github.com/DWS-2025/project-grupo-2/commit/adf7c8d14bed5941de5fc82d1bb9d5192282051e">adf7c8d</a></p>
+<p><strong>Mensaje:</strong> Delete user</p>
+<p><strong>Descripción:</strong> El poder de decidir el destino propio es sagrado. Este commit otorgó a los usuarios la capacidad de eliminar sus cuentas, un acto de libertad y responsabilidad. Como los antiguos héroes que elegían su destino, los usuarios ahora podían cerrar su ciclo en la aplicación con dignidad y autonomía.</p>
+
+
+<h2>4. La Silenciación de las Voces</h2>
+<p><strong>Commit:</strong> <a href="https://github.com/DWS-2025/project-grupo-2/commit/6d1b933c5f95ad60fd0bdd9964f4c93bbd9fd960">6d1b933</a></p>
+<p><strong>Mensaje:</strong> Delete comments</p>
+<p><strong>Descripción:</strong> En los foros y debates, algunas voces deben ser silenciadas para mantener la armonía. Este commit introdujo la funcionalidad de eliminar comentarios, permitiendo que la comunidad se autorregule. Como los guardianes de Lothlórien que protegen su bosque, el código ahora podía preservar la paz y el respeto entre sus usuarios.</p>
+
+
+<h2>(4*2)-3. La Ira del Balrog</h2>
+<p><strong>Commit:</strong> <a href="https://github.com/DWS-2025/project-grupo-2/commit/8ff1ef50e406e60f640a5e06198cf8556ee6ba2f">8ff1ef5</a></p>
+<p><strong>Mensaje:</strong> Sorry teacher Mineja</p>
+<p><strong>Descripción:</strong> En las profundidades del repositorio, el mago Granuji osó alterar el código sin prever las consecuencias. Pero su hechizo fue interrumpido por el despertar del temido Balrog Mineja, señor de la corrección y guardián del estilo. Envuelto en fuego y argumentos incontestables, el Balrog se alzó en clase y con voz atronadora exigió que se deshiciera el conjuro mal lanzado. Granuji, sabio pero no insensato, aceptó el duelo perdido y en este commit selló su rendición con un humilde “Sorry teacher Mineja”. Fue una lección grabada con fuego en el corazón del repositorio... y en el alma del mago.</p>
+
   
 <h3 align="center">Miembros</h3>
 <div align="center">
