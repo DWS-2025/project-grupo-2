@@ -8,6 +8,7 @@
 </head>
 <body>
 <div class="container">
+    <a class="center" href="/courses/{{courseId}}">Volver al curso</a>
     <h1>Entrega del Curso {{courseName}}</h1>
     {{#submissions}}
     <form action="/teacher/courses/{{courseId}}/grade/{{student.id}}" method="post" id="grade-user-{{student.id}}"></form>
